@@ -23,36 +23,65 @@
 
   <audio id="bgMusic" loop><source src="gambang-kromong.mp3" type="audio/mpeg"></audio>
 
-  <div class="relative w-full h-[100dvh] sm:w-[320px] sm:h-[650px] sm:rounded-[40px] sm:shadow-2xl sm:border-[8px] sm:border-slate-800 overflow-hidden">
+  <div class="relative w-full h-[100dvh] sm:w-[330px] sm:h-[670px] sm:rounded-[40px] sm:shadow-2xl sm:border-[8px] sm:border-slate-800 overflow-hidden">
     <div class="absolute inset-0 bg-cover bg-center z-0" style="background-image: url('https://images.unsplash.com/photo-1555899434-94d1368aa7af?q=80&w=600&auto=format&fit=crop')">
       <div class="absolute inset-0 bg-black/60"></div>
     </div>
 
     <div class="hidden sm:block absolute top-0 inset-x-0 h-6 bg-slate-950 rounded-b-xl w-32 mx-auto z-20"></div>
     
-    <button id="musicToggle" class="absolute top-12 right-4 z-30 p-2.5 glass rounded-full text-white/50 hover:text-white transition" title="Musik">
-      <svg id="musicIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <button id="musicToggle" class="absolute top-9 right-4 z-30 p-2 glass rounded-full text-white/50 hover:text-white transition" title="Musik">
+      <svg id="musicIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
     </button>
 
-    <div class="absolute inset-0 z-10 overflow-y-auto no-scrollbar pt-12 pb-20 px-6">
-      <div id="clock" class="glass text-slate-200 text-[20px] font-medium py-2 px-5 rounded-full mb-6 shadow-md mx-auto w-fit text-center">Memuat waktu...</div>
+    <div class="absolute inset-0 z-10 overflow-y-auto no-scrollbar pt-9 pb-10 px-5">
+      <div id="clock" class="glass text-slate-200 text-[18px] font-medium py-1.5 px-4 rounded-full mb-4 shadow-md mx-auto w-fit text-center leading-snug">Memuat waktu...</div>
 
-      <div class="text-center mb-6">
-        <h1 class="text-3xl font-bold text-white drop-shadow tracking-wide mb-1">Menu Utama</h1>
+      <div class="text-center mb-5">
+        <h1 class="text-2xl font-bold text-white drop-shadow tracking-wide mb-0.5">Menu Utama</h1>
         <p class="text-[11px] text-slate-300/80">Tahan &amp; geser tombol untuk mengatur urutan</p>
       </div>
 
-      <div id="sortable-buttons" class="flex flex-col gap-4">
-        <a data-id="b1" href="insentif-pbb.html" class="btn-item flex items-center justify-between w-full py-4 px-5 rounded-full text-white font-semibold shadow-lg glass bg-slate-800/80 hover:bg-blue-600 border border-slate-600">
+      <div id="sortable-buttons" class="flex flex-col gap-3">
+        <a data-id="b1" href="insentif-pbb.html" class="btn-item flex items-center justify-between w-full py-3.5 px-5 rounded-full text-sm text-white font-semibold shadow-lg glass bg-slate-800/80 hover:bg-blue-600 border border-slate-600">
           <span class="w-4"></span><span class="flex-1 text-center">Insentif PBB</span><span class="text-slate-400">⋮⋮</span>
         </a>
-        <a data-id="b2" href="insentif-bphtb.html" class="btn-item flex items-center justify-between w-full py-4 px-5 rounded-full text-white font-semibold shadow-lg glass bg-slate-800/80 hover:bg-purple-600 border border-slate-600">
+        <a data-id="b2" href="insentif-bphtb.html" class="btn-item flex items-center justify-between w-full py-3.5 px-5 rounded-full text-sm text-white font-semibold shadow-lg glass bg-slate-800/80 hover:bg-purple-600 border border-slate-600">
           <span class="w-4"></span><span class="flex-1 text-center">Insentif BPHTB</span><span class="text-slate-400">⋮⋮</span>
         </a>
-        <a data-id="b3" href="alur-pelayanan-pbb.html" class="btn-item flex items-center justify-between w-full py-4 px-5 rounded-full text-white font-semibold shadow-lg glass bg-slate-800/80 hover:bg-amber-600 border border-slate-600">
+        <a data-id="b3" href="alur-pelayanan-pbb.html" class="btn-item flex items-center justify-between w-full py-3.5 px-5 rounded-full text-sm text-white font-semibold shadow-lg glass bg-slate-800/80 hover:bg-amber-600 border border-slate-600">
           <span class="w-4"></span><span class="flex-1 text-center">Alur Pelayanan PBB</span><span class="text-slate-400">⋮⋮</span>
         </a>
-        <a data-id="b4" href="alur-bphtb.html" class="btn-item flex items-center justify-between w-full py-4 px-5 rounded-full text-white font-semibold shadow-lg glass bg-slate-800/80 hover:bg-emerald-600 border border-slate-600">
+        <a data-id="b4" href="alur-bphtb.html" class="btn-item flex items-center justify-between w-full py-3.5 px-5 rounded-full text-sm text-white font-semibold shadow-lg glass bg-slate-800/80 hover:bg-emerald-600 border border-slate-600">
           <span class="w-4"></span><span class="flex-1 text-center">Alur Verifikasi BPHTB</span><span class="text-slate-400">⋮⋮</span>
         </a>
-        <a data-id="b5" href="https://pajak-daerah.github.io/Form_Jkt/" target="_blank" rel="noopener noreferrer" class="btn-item flex items-center justify-between w-full py-4 px-5 rounded-full text-white font-semibold shadow-lg glass bg-slate-80
+        <a data-id="b5" href="https://pajak-daerah.github.io/Form_Jkt/" target="_blank" rel="noopener noreferrer" class="btn-item flex items-center justify-between w-full py-3.5 px-5 rounded-full text-sm text-white font-semibold shadow-lg glass bg-slate-800/80 hover:bg-cyan-600 border border-slate-600">
+          <span class="w-4"></span><span class="flex-1 text-center">Formulir Pelayanan Pajak</span><span class="text-slate-400">⋮⋮</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="hidden sm:block absolute bottom-2 inset-x-0 h-1 bg-slate-500 rounded-full w-24 mx-auto z-20"></div>
+  </div>
+
+  <script>
+    function updateClock() {
+      const d = new Date();
+      const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][d.getDay()];
+      const bln = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][d.getMonth()];
+      const tgl = String(d.getDate()).padStart(2,'0');
+      const jam = String(d.getHours()).padStart(2,'0');
+      const mnt = String(d.getMinutes()).padStart(2,'0');
+      document.getElementById('clock').innerText = `${hari}, ${tgl}-${bln}-${d.getFullYear()} ${jam}:${mnt}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    const bgMusic = document.getElementById('bgMusic');
+    const musicToggle = document.getElementById('musicToggle');
+    const musicIcon = document.getElementById('musicIcon');
+    let isPlaying = false;
+
+    function toggleAudioState(play) {
+      isPlaying = play;
+      musicToggle.class

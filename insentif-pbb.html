@@ -2,48 +2,75 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Bagan Hierarki Insentif PBB - DKI Jakarta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bagan Hierarki Insentif PBB-P2 Lengkap - DKI Jakarta</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; overflow: hidden; margin: 0; touch-action: none; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     
-    /* Menyembunyikan scrollbar pada toolbar (mobile) */
+    * { box-sizing: border-box; }
+    html, body { 
+      font-family: 'Inter', sans-serif; 
+      background-color: #f4f6f8; 
+      margin: 0; 
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden; 
+      overscroll-behavior: none;
+    }
+    
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     /* CSS Bagan Hierarki (Tree) */
-    .tree ul { padding-top: 25px; position: relative; transition: all 0.5s; display: flex; justify-content: center; padding-left: 0; }
-    .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 25px 8px 0 8px; transition: all 0.5s; }
-    .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 1.5px solid #94a3b8; width: 50%; height: 25px; }
-    .tree li::after { right: auto; left: 50%; border-left: 1.5px solid #94a3b8; }
+    .tree ul { padding-top: 28px; position: relative; display: flex; justify-content: center; padding-left: 0; margin: 0; }
+    .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 28px 10px 0 10px; }
+    .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #94a3b8; width: 50%; height: 28px; }
+    .tree li::after { right: auto; left: 50%; border-left: 2px solid #94a3b8; }
     .tree li:only-child::after, .tree li:only-child::before { display: none; }
     .tree li:only-child { padding-top: 0; }
     .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
-    .tree li:last-child::before { border-right: 1.5px solid #94a3b8; border-radius: 0; }
+    .tree li:last-child::before { border-right: 2px solid #94a3b8; border-radius: 0; }
     .tree li:first-child::after { border-radius: 0; }
-    .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 1.5px solid #94a3b8; width: 0; height: 25px; margin-left: -0.75px; }
+    .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid #94a3b8; width: 0; height: 28px; margin-left: -1px; }
 
-    /* Efek Node */
-    .node-item { display: inline-block; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .node-item:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.15); }
+    .node-item { display: inline-block; text-decoration: none; }
     
     /* Kanvas Interaktif */
-    #canvas-area { cursor: grab; width: 100%; height: 100%; position: relative; overflow: hidden; touch-action: none; }
+    #canvas-area { 
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      cursor: grab; 
+      overflow: hidden; 
+      touch-action: none;
+      background-color: #f4f6f8;
+    }
     #canvas-area:active { cursor: grabbing; }
-    #tree-wrapper { position: absolute; left: 50%; top: 40px; transform-origin: top center; will-change: transform; user-select: none; }
+    
+    #tree-wrapper { 
+      position: absolute; 
+      left: 0; 
+      top: 0; 
+      transform-origin: 0 0; 
+      will-change: transform; 
+      user-select: none;
+      -webkit-user-select: none;
+      padding: 40px;
+    }
 
     /* Mode Cetak PDF */
     @media print {
-      body { overflow: visible; background: white; touch-action: auto; }
+      html, body { overflow: visible !important; height: auto !important; background: white !important; }
       #header, .no-print { display: none !important; }
-      #canvas-area { height: auto !important; overflow: visible; position: static; cursor: auto; }
-      #tree-wrapper { position: static; transform: scale(0.65) !important; transform-origin: top left; left: 0; top: 0; margin-left: -150px; }
+      #canvas-area { position: static !important; overflow: visible !important; height: auto !important; }
+      #tree-wrapper { position: static !important; transform: scale(0.42) !important; transform-origin: top left !important; }
     }
   </style>
 </head>
-<body class="flex flex-col h-[100dvh] overflow-hidden">
+<body class="flex flex-col h-screen w-screen overflow-hidden">
 
   <!-- Modal QR Code -->
   <div id="qr-modal" class="fixed inset-0 bg-slate-900/60 z-[100] hidden flex items-center justify-center backdrop-blur-sm transition-opacity opacity-0">
@@ -56,140 +83,513 @@
   </div>
 
   <!-- HEADER & TOOLBAR -->
-  <div id="header" class="bg-[#114b7e] text-white pt-4 pb-3 px-5 sm:px-8 shadow-md z-50 flex flex-col gap-3 shrink-0 border-b-4 border-[#0d3b66]">
+  <div id="header" class="bg-[#114b7e] text-white py-3 px-4 sm:px-8 shadow-md z-50 flex flex-col justify-center gap-2 shrink-0 border-b-4 border-[#0d3b66]">
     <div>
-      <h1 class="text-lg sm:text-[22px] font-bold tracking-wide leading-tight">Bagan Hierarki Pengurangan & Pembebasan Pokok PBB-P2</h1>
-      <p class="text-[10px] sm:text-xs text-blue-200 mt-1 max-w-5xl leading-relaxed hidden sm:block">Kriteria berdasarkan Keputusan Gubernur DKI Jakarta Nomor 857 Tahun 2025 jo. Nomor 458 Tahun 2026, serta Kepgub 281/2025 & 339/2026. Berlaku 1 April - 31 Desember 2026.</p>
+      <h1 class="text-base sm:text-[20px] font-bold tracking-wide leading-tight truncate">Bagan Hierarki Insentif PBB-P2 DKI Jakarta (Lengkap)</h1>
+      <p class="text-[10px] sm:text-xs text-blue-200 hidden sm:block truncate">Kepgub DKI Jakarta Nomor 339 Tahun 2026 & Kepgub 857/2025 (Berlaku 1 April - 31 Desember 2026)</p>
     </div>
     
-    <!-- Tombol Fitur -->
-    <div class="flex items-center gap-2 text-sm overflow-x-auto no-scrollbar pb-1">
-      <button onclick="window.print()" class="shrink-0 bg-white text-slate-800 hover:bg-slate-100 px-3 py-1.5 rounded font-semibold shadow-sm flex items-center gap-1.5 transition text-xs sm:text-sm">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Cetak PDF
+    <div class="flex items-center gap-2 text-sm overflow-x-auto no-scrollbar">
+      <button onclick="window.print()" class="shrink-0 bg-white text-slate-800 hover:bg-slate-100 px-2.5 py-1 rounded font-semibold shadow-sm flex items-center gap-1 text-xs">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        PDF
       </button>
       
-      <div class="shrink-0 flex items-center bg-white rounded shadow-sm text-slate-800 h-[32px] sm:h-[36px]">
-        <button id="btn-zoom-out" class="px-3 h-full hover:bg-slate-100 border-r border-slate-200 font-bold text-lg active:bg-slate-200">−</button>
-        <span id="zoom-level" class="px-2 sm:px-4 text-[11px] sm:text-xs font-bold font-mono min-w-[3.5rem] sm:min-w-[4rem] text-center">45%</span>
-        <button id="btn-zoom-in" class="px-3 h-full hover:bg-slate-100 border-l border-slate-200 font-bold text-lg active:bg-slate-200">+</button>
+      <div class="shrink-0 flex items-center bg-white rounded shadow-sm text-slate-800 h-[28px]">
+        <button id="btn-zoom-out" class="px-2.5 h-full hover:bg-slate-100 border-r border-slate-200 font-bold text-base active:bg-slate-200">−</button>
+        <span id="zoom-level" class="px-2 text-[11px] font-bold font-mono min-w-[3.2rem] text-center">50%</span>
+        <button id="btn-zoom-in" class="px-2.5 h-full hover:bg-slate-100 border-l border-slate-200 font-bold text-base active:bg-slate-200">+</button>
       </div>
       
-      <button id="btn-reset" class="shrink-0 bg-white text-slate-800 hover:bg-slate-100 px-3 py-1.5 rounded font-semibold shadow-sm transition text-xs sm:text-sm">Reset</button>
-      <button id="btn-qr" class="shrink-0 bg-white text-slate-800 hover:bg-slate-100 px-3 py-1.5 rounded font-semibold shadow-sm transition text-xs sm:text-sm">Lihat QR Code</button>
-      <a href="index.html" class="shrink-0 ml-auto bg-slate-800/40 border border-slate-400 text-white hover:bg-slate-800/60 px-3 py-1.5 rounded font-semibold flex items-center gap-1.5 transition text-xs sm:text-sm">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Pelayanan UP3D
+      <button id="btn-reset" class="shrink-0 bg-white text-slate-800 hover:bg-slate-100 px-2.5 py-1 rounded font-semibold shadow-sm text-xs">Reset</button>
+      <button id="btn-qr" class="shrink-0 bg-white text-slate-800 hover:bg-slate-100 px-2.5 py-1 rounded font-semibold shadow-sm text-xs">QR</button>
+      <a href="index.html" class="shrink-0 ml-auto bg-slate-800/50 border border-slate-400 text-white hover:bg-slate-800/80 px-2.5 py-1 rounded font-semibold flex items-center gap-1 text-xs">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Pelayanan UP3D
       </a>
     </div>
   </div>
 
   <!-- AREA KANVAS BAGAN -->
-  <div id="canvas-area" class="flex-1 bg-[#f4f6f8]">
-    <div id="tree-wrapper" class="tree pb-32">
-      
+  <div id="canvas-area">
+    <div id="tree-wrapper" class="tree">
       <ul>
         <li>
-          <div class="node-item bg-[#124d85] text-white rounded-lg shadow-lg px-8 py-3.5 border border-[#0d3b66]">
-            <div class="font-bold text-xl mb-0.5">Insentif PBB-P2 DKI Jakarta (Tahun 2026)</div>
-            <div class="text-[13px] text-blue-200 font-medium">Masa Berlaku: 1 April 2026 s.d. 31 Desember 2026</div>
+          <!-- LEVEL 1: ROOT -->
+          <div class="node-item bg-[#124d85] text-white rounded-xl shadow-lg px-10 py-4 border-2 border-[#0d3b66]">
+            <div class="font-extrabold text-2xl mb-1">INSENTIF PBB-P2 DKI JAKARTA (TAHUN 2026)</div>
+            <div class="text-xs text-blue-200 font-medium">Dasar Hukum: Kepgub No. 339 Tahun 2026 (Berlaku 1 April 2026) & Kepgub 857/2025</div>
+            <div class="mt-2 inline-block bg-blue-900/60 border border-blue-400/30 rounded px-3 py-1 text-[11px] text-amber-300 font-semibold">
+              ★ KETENTUAN UMUM: Diberikan TANPA mensyaratkan bebas tunggakan pajak daerah (Diktum KETIGA)
+            </div>
           </div>
           
           <ul>
-            <!-- CABANG 1: POKOK PAJAK -->
+            <!-- LEVEL 2: POKOK PAJAK -->
             <li>
-              <div class="node-item bg-[#0369a1] text-white rounded-md shadow px-8 py-2.5 border border-[#0284c7]">
-                <div class="font-bold text-[18px]">1. POKOK PAJAK</div>
+              <div class="node-item bg-[#0369a1] text-white rounded-lg shadow-md px-10 py-3 border border-[#0284c7]">
+                <div class="font-bold text-xl">1. POKOK PAJAK PBB-P2</div>
               </div>
               <ul>
-                <!-- 1.1 SECARA JABATAN -->
+                
+                <!-- LEVEL 3: 1.1 SECARA JABATAN -->
                 <li>
-                  <div class="node-item bg-[#0ea5e9] text-white rounded-md shadow px-5 py-2 border border-[#38bdf8]">
-                    <div class="font-bold text-[15px]">1.1. Diberikan Secara Jabatan (Otomatis)</div>
-                    <div class="text-[10px] text-sky-100 mt-1">Tanpa perlu mengajukan permohonan</div>
+                  <div class="node-item bg-[#0ea5e9] text-white rounded-lg shadow px-6 py-2.5 border border-[#38bdf8]">
+                    <div class="font-bold text-base">1.1. Diberikan Secara Jabatan (Otomatis)</div>
+                    <div class="text-[11px] text-sky-100 mt-0.5">Langsung memotong sistem tanpa pengajuan permohonan</div>
                   </div>
                   <ul>
+                    
+                    <!-- LEVEL 4: A. PEMBEBASAN POKOK -->
                     <li>
-                      <div class="node-item bg-[#14b8a6] text-white rounded shadow-md px-4 py-2 border border-[#0d9488]">
-                        <div class="font-bold text-[15px]">A. Pembebasan PBB-P2</div>
-                        <div class="text-[10px] text-teal-100">Diskon 100% Penuh</div>
+                      <div class="node-item bg-[#0d9488] text-white rounded-md shadow px-5 py-2 border border-[#115e59]">
+                        <div class="font-bold text-[15px]">A. Pembebasan Pokok (100%)</div>
+                        <div class="text-[10px] text-teal-100">Tahun Pajak 2026</div>
                       </div>
                       <ul>
                         <li>
-                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[240px] relative overflow-hidden">
-                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#14b8a6]"></div>
-                            <div class="pl-4 py-3 pr-3 flex flex-col gap-1.5">
-                              <span class="text-[12px] text-slate-700 leading-snug font-bold">Rumah Tapak & Rusun</span>
-                              <span class="text-[10.5px] text-slate-600 leading-tight">Rumah Tapak NJOP ≤ Rp2 Miliar atau Rusun/Apartemen NJOP ≤ Rp650 Juta.</span>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[280px] overflow-hidden text-left">
+                            <div class="bg-[#14b8a6] text-white px-3 py-1.5 font-bold text-xs">Kategori & Batas NJOP</div>
+                            <div class="p-3 text-[11px] text-slate-700 space-y-2">
+                              <div class="border-b pb-1.5">
+                                <span class="font-bold text-teal-700 block">1. Rumah Tapak:</span>
+                                NJOP s.d. <strong>Rp 2.000.000.000,-</strong> (2 Miliar).
+                              </div>
+                              <div>
+                                <span class="font-bold text-teal-700 block">2. Rumah Susun / Apartemen:</span>
+                                NJOP s.d. <strong>Rp 650.000.000,-</strong> (650 Juta).
+                              </div>
                             </div>
                           </div>
+                          <ul>
+                            <li>
+                              <div class="node-item bg-teal-50 border border-teal-200 shadow-sm rounded-lg flex flex-col w-[280px] overflow-hidden text-left">
+                                <div class="bg-teal-100 text-teal-900 px-3 py-1.5 font-bold text-[11px]">Syarat & Ketentuan Wajib</div>
+                                <ul class="p-3 text-[10.5px] text-slate-700 list-disc pl-6 space-y-1">
+                                  <li>Wajib Pajak <strong>Orang Pribadi</strong>.</li>
+                                  <li><strong>NIK sudah tervalidasi</strong> di sistem pajak daerah.</li>
+                                  <li>Hanya berlaku untuk <strong>1 (satu) objek</strong> dengan NJOP terbesar per 1 Januari 2026.</li>
+                                </ul>
+                              </div>
+                            </li>
+                          </ul>
                         </li>
+
                         <li>
-                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[240px] relative overflow-hidden">
-                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#14b8a6]"></div>
-                            <div class="pl-4 py-3 pr-3 flex flex-col gap-1.5">
-                              <span class="text-[12px] text-slate-700 leading-snug font-bold">Aset Negara/Fasum</span>
-                              <span class="text-[10.5px] text-slate-600 leading-tight">BMN/BMD, BLU Pelayanan Dasar, Rumah Negara I & II, Barang Rampasan.</span>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[250px] overflow-hidden text-left">
+                            <div class="bg-[#14b8a6] text-white px-3 py-1.5 font-bold text-xs">Objek Khusus & Fasum</div>
+                            <div class="p-3 text-[11px] text-slate-700 space-y-1.5">
+                              <p><strong>Aset Negara/Daerah:</strong> BMN, BMD, Rumah Negara Gol. I & II.</p>
+                              <p><strong>Pelayanan Dasar:</strong> Objek BLU pelayanan dasar & olahraga, Fasum, Barang Rampasan.</p>
                             </div>
                           </div>
                         </li>
                       </ul>
                     </li>
                     
+                    <!-- LEVEL 4: B. PENGURANGAN POKOK -->
                     <li>
-                      <div class="node-item bg-[#22c55e] text-white rounded shadow-md px-4 py-2 border border-[#16a34a]">
-                        <div class="font-bold text-[15px]">B. Pengurangan Pokok</div>
-                        <div class="text-[10px] text-green-100">Pemotongan Tagihan SPPT 2026</div>
+                      <div class="node-item bg-[#16a34a] text-white rounded-md shadow px-5 py-2 border border-[#15803d]">
+                        <div class="font-bold text-[15px]">B. Pengurangan Pokok 2026</div>
+                        <div class="text-[10px] text-green-100">Penyesuaian Ketetapan SPPT</div>
                       </div>
                       <ul>
                         <li>
-                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[220px] relative overflow-hidden">
-                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#22c55e]"></div>
-                            <div class="pl-4 py-3 pr-3 flex flex-col gap-1">
-                              <span class="text-[13px] text-green-600 font-black">Diskon 50%</span>
-                              <span class="text-[10.5px] text-slate-700 leading-tight">Bagi objek yang tidak dapat bebas pajak & tagihan 2025 bernilai Rp0.</span>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[260px] overflow-hidden text-left">
+                            <div class="bg-[#22c55e] text-white px-3 py-1.5 font-bold text-xs">1. Pengurangan Pokok 50%</div>
+                            <div class="p-3 text-[11px] text-slate-700">
+                              Diberikan sebesar <strong>50% dari PBB-P2 terutang</strong> tahun pajak 2026.
                             </div>
                           </div>
+                          <ul>
+                            <li>
+                              <div class="node-item bg-green-50 border border-green-200 shadow-sm rounded-lg flex flex-col w-[260px] overflow-hidden text-left">
+                                <div class="bg-green-100 text-green-900 px-3 py-1.5 font-bold text-[11px]">Syarat & Ketentuan</div>
+                                <ul class="p-3 text-[10.5px] text-slate-700 list-disc pl-6 space-y-1">
+                                  <li>Tidak memenuhi syarat bebas 100% (angka 1).</li>
+                                  <li>Bukan objek PBB-P2 baru ditetapkan tahun 2026.</li>
+                                  <li>SPPT tahun 2025 bernilai <strong>Rp 0,00</strong> (bukan karena salah data/rekam).</li>
+                                </ul>
+                              </div>
+                            </li>
+                          </ul>
                         </li>
+
                         <li>
-                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[220px] relative overflow-hidden">
-                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#22c55e]"></div>
-                            <div class="pl-4 py-3 pr-3 flex flex-col gap-1">
-                              <span class="text-[13px] text-green-600 font-black">Pembatasan Naik 5%</span>
-                              <span class="text-[10.5px] text-slate-700 leading-tight">Membatasi lonjakan tagihan max 5% dari tagihan 2025.</span>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[280px] overflow-hidden text-left">
+                            <div class="bg-[#22c55e] text-white px-3 py-1.5 font-bold text-xs">2. Pembatasan Kenaikan (Max 5%)</div>
+                            <div class="p-3 text-[11px] text-slate-700">
+                              Pengurangan nilai tertentu agar kenaikan tagihan 2026 <strong>tidak melebihi 5%</strong> dari tagihan tahun 2025.
                             </div>
                           </div>
+                          <ul>
+                            <li>
+                              <div class="node-item bg-green-50 border border-green-200 shadow-sm rounded-lg flex flex-col w-[280px] overflow-hidden text-left">
+                                <div class="bg-green-100 text-green-900 px-3 py-1.5 font-bold text-[11px]">Syarat & Ketentuan</div>
+                                <ul class="p-3 text-[10.5px] text-slate-700 list-disc pl-6 space-y-1">
+                                  <li>Tidak memenuhi kriteria bebas 100%.</li>
+                                  <li>Kenaikan asli tahun 2026 > 5% dari SPPT 2025.</li>
+                                  <li>SPPT 2025 bernilai <strong>> Rp 0,00</strong>.</li>
+                                  <li>Bukan hasil perekaman penilaian individual 2026.</li>
+                                  <li>Jika ada tambah luas bumi/bangunan, kenaikan asli <strong>tidak lebih dari 25%</strong>.</li>
+                                </ul>
+                              </div>
+                            </li>
+                          </ul>
                         </li>
                       </ul>
                     </li>
 
+                    <!-- LEVEL 4: C. KERINGANAN BAYAR -->
                     <li>
-                      <div class="node-item bg-[#eab308] text-white rounded shadow-md px-4 py-2 border border-[#ca8a04]">
-                        <div class="font-bold text-[15px]">C. Keringanan Bayar</div>
+                      <div class="node-item bg-[#ca8a04] text-white rounded-md shadow px-5 py-2 border border-[#a16207]">
+                        <div class="font-bold text-[15px]">C. Keringanan Pembayaran</div>
                         <div class="text-[10px] text-yellow-100">Diskon Cepat (Early Bird)</div>
                       </div>
                       <ul>
                         <li>
-                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded flex flex-col w-[260px] overflow-hidden">
-                            <div class="bg-slate-100 px-3 py-1.5 border-b font-bold text-[11px] text-slate-700 text-left">Pajak Tahun 2026</div>
-                            <div class="p-2 flex flex-col gap-1.5 text-left text-[10.5px] text-slate-600">
-                              <div class="flex justify-between items-center"><span class="bg-[#eab308] text-white px-1.5 py-0.5 rounded font-bold">10%</span><span>Bayar 1 April - 31 Mei 2026</span></div>
-                              <div class="flex justify-between items-center"><span class="bg-[#eab308] text-white px-1.5 py-0.5 rounded font-bold">7,5%</span><span>Bayar 1 Juni - 31 Juli 2026</span></div>
-                              <div class="flex justify-between items-center"><span class="bg-[#eab308] text-white px-1.5 py-0.5 rounded font-bold">5%</span><span>Bayar 1 Ags - 30 Sep 2026</span></div>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[270px] overflow-hidden text-left">
+                            <div class="bg-[#eab308] text-white px-3 py-1.5 font-bold text-xs">1. Pajak Tahun 2026</div>
+                            <div class="p-3 flex flex-col gap-2 text-[11px] text-slate-700">
+                              <div class="flex justify-between items-center border-b pb-1">
+                                <span class="bg-yellow-500 text-white px-2 py-0.5 rounded font-bold">Diskon 10%</span>
+                                <span>1 Apr – 31 Mei 2026</span>
+                              </div>
+                              <div class="flex justify-between items-center border-b pb-1">
+                                <span class="bg-yellow-500 text-white px-2 py-0.5 rounded font-bold">Diskon 7,5%</span>
+                                <span>1 Jun – 31 Jul 2026</span>
+                              </div>
+                              <div class="flex justify-between items-center">
+                                <span class="bg-yellow-500 text-white px-2 py-0.5 rounded font-bold">Diskon 5%</span>
+                                <span>1 Ags – 30 Sep 2026</span>
+                              </div>
                             </div>
                           </div>
                         </li>
+
                         <li>
-                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded flex flex-col w-[230px] overflow-hidden">
-                            <div class="bg-slate-100 px-3 py-1.5 border-b font-bold text-[11px] text-slate-700 text-left">Tunggakan 2021 s.d. 2025</div>
-                            <div class="p-2 flex flex-col gap-1.5 text-left text-[10.5px] text-slate-600">
-                              <div class="flex justify-between items-center"><span class="bg-[#ca8a04] text-white px-1.5 py-0.5 rounded font-bold">5%</span><span>Bayar s/d 31 Des 2026</span></div>
-                              <div class="text-[9.5px] italic mt-1 text-center bg-yellow-50 p-1 rounded border border-yellow-200">Tidak ada diskon pokok untuk tunggakan 1993-2020 di Kepgub 339/2026</div>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[250px] overflow-hidden text-left">
+                            <div class="bg-[#eab308] text-white px-3 py-1.5 font-bold text-xs">2. Tunggakan 2021 – 2025</div>
+                            <div class="p-3 flex flex-col gap-2 text-[11px] text-slate-700">
+                              <div class="flex justify-between items-center">
+                                <span class="bg-amber-600 text-white px-2 py-0.5 rounded font-bold">Diskon 5%</span>
+                                <span>1 Apr – 31 Des 2026</span>
+                              </div>
+                              <div class="text-[10px] bg-amber-50 text-amber-800 p-2 rounded border border-amber-200 mt-1">
+                                <strong>Catatan:</strong> Tunggakan tahun 1993–2020 tidak mendapatkan diskon pokok pada Kepgub 339/2026.
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li>
+                          <div class="node-item bg-yellow-50 border border-yellow-300 shadow-sm rounded-lg flex flex-col w-[450px] overflow-hidden text-left">
+                            <div class="bg-yellow-100 text-yellow-900 px-3 py-1.5 font-bold text-[11px]">Mekanisme Pembayaran yang Diakui (Angka 6)</div>
+                            <div class="p-2.5 text-[10.5px] text-slate-700 grid grid-cols-3 gap-2">
+                              <div class="bg-white p-2 rounded border"><strong>1. Angsuran:</strong> Berdasarkan SK Fasilitas Angsuran.</div>
+                              <div class="bg-white p-2 rounded border"><strong>2. SK Pengurangan:</strong> Pembayaran atas SK Pengurangan/Keringanan.</div>
+                              <div class="bg-white p-2 rounded border"><strong>3. Kompensasi:</strong> Melalui pemindahbukuan atau kompensasi.</div>
                             </div>
                           </div>
                         </li>
                       </ul>
                     </li>
+
                   </ul>
                 </li>
 
-                <!-- 1.2 ATAS PERM
+                <!-- LEVEL 3: 1.2 ATAS PERMOHONAN -->
+                <li>
+                  <div class="node-item bg-[#ea580c] text-white rounded-lg shadow px-6 py-2.5 border border-[#c2410c]">
+                    <div class="font-bold text-base">1.2. Atas Permohonan Wajib Pajak</div>
+                    <div class="text-[11px] text-orange-100 mt-0.5">Diajukan melalui pajakonline.jakarta.go.id</div>
+                  </div>
+                  <ul>
+                    
+                    <li>
+                      <div class="node-item bg-[#f97316] text-white rounded-md shadow px-5 py-2 border border-[#ea580c]">
+                        <div class="font-bold text-[15px]">A. Pengurangan Khusus 75%</div>
+                        <div class="text-[10px] text-orange-100">Kepgub 339/2026 (Ahli Waris)</div>
+                      </div>
+                      <ul>
+                        <li>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[290px] overflow-hidden text-left">
+                            <div class="bg-orange-500 text-white px-3 py-1.5 font-bold text-xs">Kategori Penerima & Objek</div>
+                            <div class="p-3 text-[11px] text-slate-700 space-y-2">
+                              <p><strong>Subjek:</strong> Keluarga sedarah lurus 1 derajat ke bawah (anak) dari Veteran, Perintis Kemerdekaan, Pahlawan Nasional, Penerima Bintang, Mantan Presiden/Wapres, atau Mantan Gubernur/Wagub DKI <strong>yang telah meninggal dunia</strong> (beserta janda/dudanya).</p>
+                              <p><strong>Objek:</strong> Rumah tapak, rusun, atau tanah kosong max <strong>1.000 m²</strong>.</p>
+                            </div>
+                          </div>
+                          <ul>
+                            <li>
+                              <div class="node-item bg-orange-50 border border-orange-200 shadow-sm rounded-lg flex flex-col w-[290px] overflow-hidden text-left">
+                                <div class="bg-orange-100 text-orange-900 px-3 py-1.5 font-bold text-[11px]">Ketentuan & Dokumen Lampiran</div>
+                                <ul class="p-3 text-[10.5px] text-slate-700 list-disc pl-6 space-y-1">
+                                  <li>Hanya untuk <strong>1 objek</strong> pilihan WP & 1 kali permohonan per SK Gelar.</li>
+                                  <li>SPPT yang dimohonkan <strong>belum dilunasi</strong>.</li>
+                                  <li><strong>Wajib Lampirkan:</strong> Fotokopi SK Penetapan Gelar/Veteran, Surat Kematian, dan KK/Akta Kelahiran.</li>
+                                </ul>
+                              </div>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+
+                    <li>
+                      <div class="node-item bg-[#f97316] text-white rounded-md shadow px-5 py-2 border border-[#ea580c]">
+                        <div class="font-bold text-[15px]">B. Pengurangan Umum</div>
+                        <div class="text-[10px] text-orange-100">Kepgub 857/2025 (Maks. 100% / 50%)</div>
+                      </div>
+                      <ul>
+                        <li>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[270px] overflow-hidden text-left">
+                            <div class="bg-orange-500 text-white px-3 py-1.5 font-bold text-xs">Kategori & Besaran Diskon</div>
+                            <div class="p-3 text-[11px] text-slate-700 space-y-2">
+                              <div>
+                                <span class="font-bold text-orange-600 block">Maksimal 100%:</span>
+                                WP Penghasilan Rendah, Badan Rugi/Pailit, Bencana Alam, Veteran/Pahlawan (masih hidup), Pensiunan TNI/Polri/PNS/Guru.
+                              </div>
+                              <div>
+                                <span class="font-bold text-orange-600 block">50% / 25%:</span>
+                                Cagar Budaya, Lembaga Agama/Sosial, RTH, Lahan Pertanian.
+                              </div>
+                            </div>
+                          </div>
+                          <ul>
+                            <li>
+                              <div class="node-item bg-orange-50 border border-orange-200 shadow-sm rounded-lg flex flex-col w-[270px] overflow-hidden text-left">
+                                <div class="bg-orange-100 text-orange-900 px-3 py-1.5 font-bold text-[11px]">Persyaratan Dokumen</div>
+                                <ul class="p-3 text-[10.5px] text-slate-700 list-disc pl-6 space-y-1">
+                                  <li>Fotokopi KTP & SPPT PBB-P2.</li>
+                                  <li>Bukti pendukung (SK Pensiun, Laporan Keuangan Audit, SKTM, atau SK Bencana).</li>
+                                  <li>Tidak sedang dalam sengketa pajak.</li>
+                                </ul>
+                              </div>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+
+                  </ul>
+                </li>
+              </ul>
+            </li>
+
+            <!-- LEVEL 2: DENDA / SANKSI ADMINISTRATIF -->
+            <li>
+              <div class="node-item bg-[#be123c] text-white rounded-lg shadow-md px-10 py-3 border border-[#9f1239]">
+                <div class="font-bold text-xl">2. DENDA PAJAK (SANKSI ADMINISTRATIF)</div>
+              </div>
+              <ul>
+                <li>
+                  <div class="node-item bg-[#e11d48] text-white rounded-lg shadow px-6 py-2.5 border border-[#be123c]">
+                    <div class="font-bold text-base">2.1. Pembebasan Sanksi Secara Jabatan (100% Dihapus)</div>
+                    <div class="text-[11px] text-rose-100 mt-0.5">Berlaku Otomatis: 1 April 2026 s.d. 31 Desember 2026</div>
+                  </div>
+                  <ul>
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[260px] overflow-hidden text-left">
+                        <div class="bg-[#f43f5e] text-white px-3 py-1.5 font-bold text-xs">A. Bunga Angsuran</div>
+                        <div class="p-3 text-[11px] text-slate-700">
+                          Pembebasan sanksi berupa <strong>bunga angsuran</strong> bagi Wajib Pajak yang melakukan pembayaran cicilan PBB-P2 pada periode 1 April – 31 Desember 2026.
+                        </div>
+                      </div>
+                    </li>
+
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[300px] overflow-hidden text-left">
+                        <div class="bg-[#f43f5e] text-white px-3 py-1.5 font-bold text-xs">B. Bunga Terlambat Bayar (2021 – 2025)</div>
+                        <div class="p-3 text-[11px] text-slate-700 space-y-2">
+                          <div class="border-b pb-1.5">
+                            <span class="font-bold text-rose-700 block">1. Pembayaran Tunggakan:</span>
+                            Diberikan kepada WP yang melunasi pokok PBB-P2 tahun pajak <strong>2021 s.d. 2025</strong> pada 1 April – 31 Desember 2026.
+                          </div>
+                          <div>
+                            <span class="font-bold text-rose-700 block">2. Tunggakan Sanksi Saja:</span>
+                            Berlaku bagi WP yang <strong>sudah melunasi pokok</strong> 2021–2025 sebelum aturan ini terbit, namun masih memiliki tagihan denda/sanksi yang belum dibayar (baik sudah/belum terbit STPD).
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+
+                  </ul>
+                </li>
+              </ul>
+            </li>
+
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas-area');
+    const tree = document.getElementById('tree-wrapper');
+    const zoomText = document.getElementById('zoom-level');
+    
+    let scale = 0.5;
+    let panX = 20;
+    let panY = 20;
+
+    function centerInitialView() {
+      const canvasRect = canvas.getBoundingClientRect();
+      const treeWidth = tree.offsetWidth || 2400;
+      const isMobile = window.innerWidth < 768;
+      scale = isMobile ? 0.25 : 0.5;
+      panX = (canvasRect.width - (treeWidth * scale)) / 2;
+      if (panX < 20 && isMobile) panX = 20;
+      panY = 20;
+      applyTransform();
+    }
+
+    function applyTransform() {
+      tree.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      zoomText.innerText = Math.round(scale * 100) + '%';
+    }
+
+    // Inisialisasi posisi setelah DOM dan font selesai dimuat
+    window.addEventListener('load', centerInitialView);
+    setTimeout(centerInitialView, 100);
+
+    // 1. TOMBOL ZOOM IN, ZOOM OUT & RESET
+    document.getElementById('btn-zoom-in').addEventListener('click', () => {
+      scale = Math.min(scale * 1.2, 2.5);
+      applyTransform();
+    });
+
+    document.getElementById('btn-zoom-out').addEventListener('click', () => {
+      scale = Math.max(scale * 0.8, 0.15);
+      applyTransform();
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', centerInitialView);
+
+    // 2. ZOOM VIA SCROLL MOUSE (DESKTOP)
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+      const newScale = Math.max(0.15, Math.min(scale * zoomFactor, 2.5));
+      
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      panX = mouseX - (mouseX - panX) * (newScale / scale);
+      panY = mouseY - (mouseY - panY) * (newScale / scale);
+      scale = newScale;
+      
+      applyTransform();
+    }, { passive: false });
+
+    // 3. GESER VIA MOUSE DRAG (DESKTOP)
+    let isMouseDown = false;
+    let startMouseX = 0, startMouseY = 0;
+
+    canvas.addEventListener('mousedown', (e) => {
+      isMouseDown = true;
+      startMouseX = e.clientX - panX;
+      startMouseY = e.clientY - panY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isMouseDown) return;
+      panX = e.clientX - startMouseX;
+      panY = e.clientY - startMouseY;
+      applyTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      isMouseDown = false;
+    });
+
+    // 4. GESER (1 JARI) & CUBIT ZOOM (2 JARI) (HP)
+    let isTouching = false;
+    let startTouchX = 0, startTouchY = 0;
+    let initialPinchDist = 0;
+    let initialScale = 1;
+    let pinchCenterX = 0, pinchCenterY = 0;
+
+    function getDistance(t1, t2) {
+      return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+    }
+
+    function getMidpoint(t1, t2) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: ((t1.clientX + t2.clientX) / 2) - rect.left,
+        y: ((t1.clientY + t2.clientY) / 2) - rect.top
+      };
+    }
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isTouching = true;
+        startTouchX = e.touches[0].clientX - panX;
+        startTouchY = e.touches[0].clientY - panY;
+      } else if (e.touches.length === 2) {
+        isTouching = false;
+        initialPinchDist = getDistance(e.touches[0], e.touches[1]);
+        initialScale = scale;
+        const mid = getMidpoint(e.touches[0], e.touches[1]);
+        pinchCenterX = mid.x;
+        pinchCenterY = mid.y;
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      
+      if (e.touches.length === 1 && isTouching) {
+        panX = e.touches[0].clientX - startTouchX;
+        panY = e.touches[0].clientY - startTouchY;
+        applyTransform();
+      } else if (e.touches.length === 2 && initialPinchDist > 0) {
+        const currentDist = getDistance(e.touches[0], e.touches[1]);
+        const newScale = Math.max(0.15, Math.min(initialScale * (currentDist / initialPinchDist), 2.5));
+        
+        panX = pinchCenterX - (pinchCenterX - panX) * (newScale / scale);
+        panY = pinchCenterY - (pinchCenterY - panY) * (newScale / scale);
+        scale = newScale;
+        
+        applyTransform();
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) {
+        initialPinchDist = 0;
+      }
+      if (e.touches.length === 1) {
+        isTouching = true;
+        startTouchX = e.touches[0].clientX - panX;
+        startTouchY = e.touches[0].clientY - panY;
+      } else if (e.touches.length === 0) {
+        isTouching = false;
+      }
+    });
+
+    // 5. MODAL QR CODE
+    const btnQr = document.getElementById('btn-qr');
+    const qrModal = document.getElementById('qr-modal');
+    const closeQr = document.getElementById('close-qr');
+    const qrContent = document.getElementById('qr-content');
+
+    btnQr.addEventListener('click', () => {
+      qrModal.classList.remove('hidden');
+      setTimeout(() => { qrModal.classList.remove('opacity-0'); qrContent.classList.remove('scale-95'); }, 10);
+    });
+    
+    function hideModal() {
+      qrModal.classList.add('opacity-0');
+      qrContent.classList.add('scale-95');
+      setTimeout(() => { qrModal.classList.add('hidden'); }, 300);
+    }
+    
+    closeQr.addEventListener('click', hideModal);
+    qrModal.addEventListener('click', (e) => { if(e.target === qrModal) hideModal(); });
+  </script>
+</body>
+</html>

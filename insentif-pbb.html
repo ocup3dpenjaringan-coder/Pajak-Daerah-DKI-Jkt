@@ -2,130 +2,103 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Bagan Hierarki Insentif PBB - DKI Jakarta</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; overflow: hidden; margin: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; overflow: hidden; margin: 0; touch-action: none; }
     
-    /* Inti CSS untuk Garis Penghubung (Tree) */
-    .tree ul {
-      padding-top: 25px; position: relative; transition: all 0.5s;
-      display: flex; justify-content: center; padding-left: 0;
-    }
-    .tree li {
-      float: left; text-align: center; list-style-type: none;
-      position: relative; padding: 25px 8px 0 8px; transition: all 0.5s;
-    }
-    /* Garis horizontal */
-    .tree li::before, .tree li::after {
-      content: ''; position: absolute; top: 0; right: 50%;
-      border-top: 1.5px solid #94a3b8; width: 50%; height: 25px;
-    }
-    .tree li::after {
-      right: auto; left: 50%; border-left: 1.5px solid #94a3b8;
-    }
-    /* Menghilangkan garis untuk anak tunggal / ujung */
+    /* Menyembunyikan scrollbar pada toolbar (mobile) */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* CSS Bagan Hierarki (Tree) */
+    .tree ul { padding-top: 25px; position: relative; transition: all 0.5s; display: flex; justify-content: center; padding-left: 0; }
+    .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 25px 8px 0 8px; transition: all 0.5s; }
+    .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 1.5px solid #94a3b8; width: 50%; height: 25px; }
+    .tree li::after { right: auto; left: 50%; border-left: 1.5px solid #94a3b8; }
     .tree li:only-child::after, .tree li:only-child::before { display: none; }
     .tree li:only-child { padding-top: 0; }
     .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
     .tree li:last-child::before { border-right: 1.5px solid #94a3b8; border-radius: 0; }
     .tree li:first-child::after { border-radius: 0; }
-    /* Garis vertikal ke bawah dari induk */
-    .tree ul ul::before {
-      content: ''; position: absolute; top: 0; left: 50%;
-      border-left: 1.5px solid #94a3b8; width: 0; height: 25px; margin-left: -0.75px;
-    }
+    .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 1.5px solid #94a3b8; width: 0; height: 25px; margin-left: -0.75px; }
 
-    /* Efek Hover pada Kotak (Node) */
-    .node-item {
-      display: inline-block;
-      text-decoration: none;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .node-item:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.15);
-    }
+    /* Efek Node */
+    .node-item { display: inline-block; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .node-item:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.15); }
     
-    /* Area Kanvas untuk Fitur Drag & Zoom */
-    #canvas-area {
-      cursor: grab;
-      width: 100vw;
-      height: calc(100vh - 120px);
-      overflow: hidden;
-      position: relative;
-    }
+    /* Kanvas Interaktif */
+    #canvas-area { cursor: grab; width: 100%; position: relative; overflow: hidden; }
     #canvas-area:active { cursor: grabbing; }
-    
-    #tree-wrapper {
-      transform-origin: top center;
-      position: absolute;
-      left: 50%;
-      top: 40px;
-      transform: translateX(-50%) scale(0.85); /* Skala bawaan */
-      will-change: transform;
-    }
+    #tree-wrapper { position: absolute; left: 50%; top: 40px; transform-origin: top center; will-change: transform; user-select: none; }
 
-    /* Mode Cetak (Print PDF) */
+    /* Mode Cetak PDF */
     @media print {
-      body { overflow: visible; background: white; }
-      #header, #toolbar, .no-print { display: none !important; }
-      #canvas-area { height: auto; overflow: visible; position: static; cursor: auto; }
-      #tree-wrapper { position: static; transform: scale(0.65) !important; transform-origin: top left; left: 0; top: 0; margin-left: -150px;}
+      body { overflow: visible; background: white; touch-action: auto; }
+      #header, .no-print { display: none !important; }
+      #canvas-area { height: auto !important; overflow: visible; position: static; cursor: auto; }
+      #tree-wrapper { position: static; transform: scale(0.65) !important; transform-origin: top left; left: 0; top: 0; margin-left: -150px; }
     }
   </style>
 </head>
-<body class="flex flex-col h-screen">
+<body class="flex flex-col h-[100dvh] overflow-hidden">
 
-  <!-- HEADER DAN TOOLBAR BIRU TUA -->
-  <div id="header" class="bg-[#114b7e] text-white pt-5 pb-4 px-8 shadow-md z-50 flex flex-col gap-4 shrink-0 border-b-4 border-[#0d3b66]">
+  <!-- Modal QR Code (Tersembunyi by default) -->
+  <div id="qr-modal" class="fixed inset-0 bg-slate-900/60 z-[100] hidden flex items-center justify-center backdrop-blur-sm transition-opacity opacity-0">
+    <div class="bg-white p-6 rounded-2xl shadow-2xl text-center max-w-[300px] w-full mx-4 transform scale-95 transition-transform duration-300" id="qr-content">
+      <h3 class="text-lg font-bold text-slate-800 mb-1">Scan QR Code</h3>
+      <p class="text-[11px] text-slate-500 mb-4 leading-relaxed">Pindai kode ini untuk membuka halaman Insentif PBB-P2 di perangkat lain.</p>
+      <!-- Gambar QR mengarah ke URL GitHub Anda -->
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://ocup3dpenjaringan-coder.github.io/Pajak-Daerah-DKI-Jkt/insentif-pbb.html" alt="QR Code PBB" class="mx-auto mb-5 border p-2 rounded-xl shadow-sm w-40 h-40">
+      <button id="close-qr" class="bg-slate-800 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-slate-700 transition w-full text-sm">Tutup</button>
+    </div>
+  </div>
+
+  <!-- HEADER & TOOLBAR -->
+  <div id="header" class="bg-[#114b7e] text-white pt-4 pb-3 px-5 sm:px-8 shadow-md z-50 flex flex-col gap-3 shrink-0 border-b-4 border-[#0d3b66]">
     <div>
-      <h1 class="text-[22px] font-bold tracking-wide">Bagan Hierarki Pengurangan dan Pembebasan Pokok PBB-P2 — DKI Jakarta</h1>
-      <p class="text-xs text-blue-100 mt-1 max-w-5xl leading-relaxed">Kriteria berdasarkan Keputusan Gubernur DKI Jakarta Nomor 857 Tahun 2025 jo. Nomor 458 Tahun 2026, serta kebijakan Pembebasan Otomatis sesuai Kepgub 281/2025 & 339/2026. Pengurangan dikelompokkan menurut besar persentasenya; kode huruf menunjuk pada urutan kriteria.</p>
+      <h1 class="text-lg sm:text-[22px] font-bold tracking-wide leading-tight">Bagan Hierarki Pengurangan & Pembebasan Pokok PBB-P2</h1>
+      <p class="text-[10px] sm:text-xs text-blue-200 mt-1 max-w-5xl leading-relaxed hidden sm:block">Kriteria berdasarkan Keputusan Gubernur DKI Jakarta Nomor 857 Tahun 2025 jo. Nomor 458 Tahun 2026, serta Kepgub 281/2025 & 339/2026.</p>
     </div>
     
-    <!-- Tombol Fitur -->
-    <div id="toolbar" class="flex items-center gap-3 text-sm">
-      <button onclick="window.print()" class="bg-white text-slate-800 hover:bg-slate-100 px-4 py-2 rounded font-semibold shadow-sm flex items-center gap-2 transition">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Simpan sebagai PDF
+    <!-- Tombol Fitur (Bisa di-scroll menyamping di HP) -->
+    <div class="flex items-center gap-2 text-sm overflow-x-auto no-scrollbar pb-1">
+      <button onclick="window.print()" class="shrink-0 bg-white text-slate-800 hover:bg-slate-100 px-3 py-1.5 rounded font-semibold shadow-sm flex items-center gap-1.5 transition text-xs sm:text-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Cetak PDF
       </button>
       
       <!-- Kontrol Zoom -->
-      <div class="flex items-center bg-white rounded shadow-sm text-slate-800 h-[36px]">
-        <button id="btn-zoom-out" class="px-3.5 h-full hover:bg-slate-100 border-r border-slate-200 font-bold text-lg active:bg-slate-200">−</button>
-        <span id="zoom-level" class="px-4 text-xs font-bold font-mono min-w-[4rem] text-center">85%</span>
-        <button id="btn-zoom-in" class="px-3.5 h-full hover:bg-slate-100 border-l border-slate-200 font-bold text-lg active:bg-slate-200">+</button>
+      <div class="shrink-0 flex items-center bg-white rounded shadow-sm text-slate-800 h-[32px] sm:h-[36px]">
+        <button id="btn-zoom-out" class="px-3 h-full hover:bg-slate-100 border-r border-slate-200 font-bold text-lg active:bg-slate-200">−</button>
+        <span id="zoom-level" class="px-2 sm:px-4 text-[11px] sm:text-xs font-bold font-mono min-w-[3.5rem] sm:min-w-[4rem] text-center">45%</span>
+        <button id="btn-zoom-in" class="px-3 h-full hover:bg-slate-100 border-l border-slate-200 font-bold text-lg active:bg-slate-200">+</button>
       </div>
       
-      <button id="btn-reset" class="bg-white text-slate-800 hover:bg-slate-100 px-4 py-2 rounded font-semibold shadow-sm transition">Reset</button>
+      <button id="btn-reset" class="shrink-0 bg-white text-slate-800 hover:bg-slate-100 px-3 py-1.5 rounded font-semibold shadow-sm transition text-xs sm:text-sm">Reset</button>
       
-      <button class="bg-white text-slate-800 hover:bg-slate-100 px-4 py-2 rounded font-semibold shadow-sm transition">Lihat QR Code</button>
+      <button id="btn-qr" class="shrink-0 bg-white text-slate-800 hover:bg-slate-100 px-3 py-1.5 rounded font-semibold shadow-sm transition text-xs sm:text-sm">Lihat QR Code</button>
       
-      <!-- Tombol Kembali ke Menu HP -->
-      <a href="index.html" class="ml-auto bg-slate-800/40 border border-slate-400 text-white hover:bg-slate-800/60 px-4 py-2 rounded font-semibold flex items-center gap-2 transition">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Menu Utama
+      <a href="index.html" class="shrink-0 ml-auto bg-slate-800/40 border border-slate-400 text-white hover:bg-slate-800/60 px-3 py-1.5 rounded font-semibold flex items-center gap-1.5 transition text-xs sm:text-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Pelayanan UP3D
       </a>
     </div>
   </div>
 
-  <!-- AREA KANVAS BAGAN (Bisa ditarik dan digeser) -->
-  <div id="canvas-area">
-    <div id="tree-wrapper" class="tree flex justify-center pb-24">
+  <!-- AREA KANVAS BAGAN (Flex-1 memastikan kanvas mengisi sisa layar) -->
+  <div id="canvas-area" class="flex-1 bg-[#f4f6f8]">
+    <div id="tree-wrapper" class="tree pb-32">
       
+      <!-- Struktur Hirarki (Sama dengan sebelumnya) -->
       <ul>
         <li>
-          <!-- Node Induk Utama (Root) -->
           <div class="node-item bg-[#124d85] text-white rounded-lg shadow-lg px-8 py-3.5 border border-[#0d3b66]">
             <div class="font-bold text-xl mb-0.5">Insentif PBB-P2 DKI Jakarta</div>
             <div class="text-[13px] text-blue-200 font-medium">Pajak Bumi dan Bangunan Perdesaan dan Perkotaan</div>
           </div>
-          
-          <!-- Kategori Level 2 -->
           <ul>
-            
             <!-- CABANG 1: BEBAS OTOMATIS -->
             <li>
               <div class="node-item bg-[#0d9488] text-white rounded-md shadow px-5 py-2.5 border border-[#0f766e]">
@@ -139,7 +112,6 @@
                     <div class="text-[10px]">Tanpa pengajuan permohonan</div>
                   </div>
                   <ul>
-                    <!-- Leaf Nodes Bebas Otomatis -->
                     <li>
                       <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[260px] relative overflow-hidden">
                         <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#14b8a6]"></div>
@@ -268,4 +240,179 @@
                   </div>
                   <ul>
                     <li>
-                      <div class="node-item bg-
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[200px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#f97316]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#f97316] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">d</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Cagar Budaya / Suaka Alam (Komersial)</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+
+            <!-- CABANG 4: PEMBEBASAN (JABATAN/NEGARA) -->
+            <li>
+              <div class="node-item bg-[#2563eb] text-white rounded-md shadow px-5 py-2.5 border border-[#1d4ed8]">
+                <div class="font-bold text-[15px]">Pembebasan Pokok PBB-P2</div>
+                <div class="text-[11px] text-blue-100">Diberikan Secara Jabatan (Aset Negara)</div>
+              </div>
+              <ul>
+                <li>
+                  <div class="node-item bg-[#3b82f6] text-white rounded shadow-md px-5 py-2 border border-[#2563eb]">
+                    <div class="font-bold text-[22px]">100%</div>
+                    <div class="text-[10px]">Dibebaskan Penuh</div>
+                  </div>
+                  <ul>
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[250px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#3b82f6]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#3b82f6] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">a</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-medium">BMN / BMD, BLU Pelayanan Dasar, Rumah Negara I & II, Barang Rampasan, Fasum</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+
+            <!-- CABANG 5: PEMBEBASAN (PERMOHONAN) -->
+            <li>
+              <div class="node-item bg-[#9333ea] text-white rounded-md shadow px-5 py-2.5 border border-[#7e22ce]">
+                <div class="font-bold text-[15px]">Pembebasan Pokok PBB-P2</div>
+                <div class="text-[11px] text-purple-100">Atas Permohonan Wajib Pajak</div>
+              </div>
+              <ul>
+                <li>
+                  <div class="node-item bg-[#a855f7] text-white rounded shadow-md px-5 py-2 border border-[#9333ea]">
+                    <div class="font-bold text-[22px]">100%</div>
+                    <div class="text-[10px]">Dibebaskan Penuh</div>
+                  </div>
+                  <ul>
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[270px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#a855f7]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#a855f7] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">a</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Veteran, Pahlawan, Pensiunan TNI/Polri/PNS, Guru/Dosen, Mantan Presiden & Kepala Daerah</span>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[260px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#a855f7]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#a855f7] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">b</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Lembaga Agama (Non-Ibadah), Lahan Pertanian/Perikanan >50%, Objek Sitaan</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // --- FITUR DRAG (TOUCH & MOUSE) & ZOOM KANVAS ---
+    const container = document.getElementById('canvas-area');
+    const tree = document.getElementById('tree-wrapper');
+    const zoomText = document.getElementById('zoom-level');
+    
+    // Auto-detect mobile vs desktop untuk mengatur skala awal (Lebih kecil di HP)
+    const isMobile = window.innerWidth < 768;
+    let scale = isMobile ? 0.45 : 0.85; 
+    let translateX = 0;
+    let translateY = isMobile ? 200 : 0; // Turunkan sedikit di HP agar tidak tertutup header
+    let isDragging = false;
+    let startX, startY;
+
+    function updateTransform() {
+      tree.style.transform = `translateX(calc(-50% + ${translateX}px)) translateY(${translateY}px) scale(${scale})`;
+      zoomText.innerText = Math.round(scale * 100) + '%';
+    }
+    updateTransform(); // Panggil pertama kali
+
+    // 1. ZOOM IN & OUT (TOMBOL KONTROL)
+    document.getElementById('btn-zoom-in').addEventListener('click', () => {
+      scale = Math.min(scale + 0.1, 2); updateTransform();
+    });
+    document.getElementById('btn-zoom-out').addEventListener('click', () => {
+      scale = Math.max(scale - 0.1, 0.2); updateTransform();
+    });
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      scale = isMobile ? 0.45 : 0.85; translateX = 0; translateY = isMobile ? 200 : 0; updateTransform();
+    });
+
+    // 2. FUNGSI DRAG UTAMA (MENANGKAP KOORDINAT MOUSE / JARI)
+    function startDrag(clientX, clientY) {
+      isDragging = true;
+      startX = clientX - translateX;
+      startY = clientY - translateY;
+      container.style.cursor = 'grabbing';
+    }
+    function moveDrag(clientX, clientY) {
+      if (!isDragging) return;
+      translateX = clientX - startX;
+      translateY = clientY - startY;
+      updateTransform();
+    }
+    function endDrag() {
+      isDragging = false;
+      container.style.cursor = 'grab';
+    }
+
+    // Aksi Klik dan Tarik Mouse (Desktop)
+    container.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+    window.addEventListener('mousemove', (e) => { if (isDragging) { e.preventDefault(); moveDrag(e.clientX, e.clientY); } });
+    window.addEventListener('mouseup', endDrag);
+
+    // Aksi Sentuh Jari (Mobile Touch Support - Perbaikan Utama)
+    container.addEventListener('touchstart', (e) => {
+      if(e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }, {passive: false});
+    container.addEventListener('touchmove', (e) => {
+      if (isDragging && e.touches.length === 1) { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); }
+    }, {passive: false});
+    container.addEventListener('touchend', endDrag);
+
+    // Aksi Putar Roda Mouse (Scroll to Zoom di Desktop)
+    container.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        scale = Math.max(0.2, Math.min(scale + (e.deltaY > 0 ? -0.05 : 0.05), 2));
+        updateTransform();
+      }
+    }, { passive: false });
+
+    // --- FITUR MODAL QR CODE ---
+    const btnQr = document.getElementById('btn-qr');
+    const qrModal = document.getElementById('qr-modal');
+    const closeQr = document.getElementById('close-qr');
+    const qrContent = document.getElementById('qr-content');
+
+    function openModal() {
+      qrModal.classList.remove('hidden');
+      setTimeout(() => { qrModal.classList.remove('opacity-0'); qrContent.classList.remove('scale-95'); }, 10);
+    }
+    function closeModal() {
+      qrModal.classList.add('opacity-0'); qrContent.classList.add('scale-95');
+      setTimeout(() => { qrModal.classList.add('hidden'); }, 300);
+    }
+
+    btnQr.addEventListener('click', openModal);
+    closeQr.addEventListener('click', closeModal);
+    qrModal.addEventListener('click', (e) => { if(e.target === qrModal) closeModal(); });
+
+  </script>
+</body>
+</html>

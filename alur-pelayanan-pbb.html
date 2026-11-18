@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alur Kerja (Workflow) Pelayanan PBB-P2 DKI Jakarta Secara Elektronik</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background-color: #e2e8f0;
+      color: #0f172a;
+      overflow-x: hidden;
+    }
+
+    /* Custom Scrollbar for Canvas */
+    #canvas-viewport::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    #canvas-viewport::-webkit-scrollbar-track {
+      background: #cbd5e1;
+    }
+    #canvas-viewport::-webkit-scrollbar-thumb {
+      background: #64748b;
+      border-radius: 5px;
+    }
+    #canvas-viewport::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* Paper sheet styling */
+    .workflow-sheet {
+      background: #ffffff;
+      box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.22), 0 4px 12px -2px rgba(15, 23, 42, 0.12);
+      border-radius: 6px;
+      transform-origin: top center;
+      transition: transform 0.15s ease-out;
+    }
+
+    /* Print Styles for clean PDF export */
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 8mm;
+      }
+      body {
+        background: #ffffff !important;
+      }
+      #top-navbar, #floating-controls, #doc-modal {
+        display: none !important;
+      }
+      #canvas-viewport {
+        overflow: visible !important;
+        height: auto !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+      }
+      .workflow-sheet {
+        box-shadow: none !important;
+        transform: scale(0.76) !important;
+        transform-origin: top left !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col h-screen select-none">
+
+  <!-- TOP NAVBAR (Navy Dark Theme matching Bapenda Reference) -->
+  <header id="top-navbar" class="bg-[#0f172a] text-white px-4 py-2.5 shadow-lg border-b border-slate-700 z-30 flex flex-wrap items-center justify-between gap-3">
+    <!-- Left: Title & Subtitle -->
+    <div class="flex items-center gap-3 min-w-[260px]">
+      <div class="w-9 h-9 rounded-lg bg-blue-600/20 border border-blue-400/40 flex items-center justify-center shrink-0">
+        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+        </svg>
+      </div>
+      <div>
+        <h1 id="nav-title" class="text-sm sm:text-base font-bold tracking-tight text-white leading-snug">
+          Alur Kerja (Workflow) Pelayanan PBB-P2 DKI Jakarta - Balik Nama PBB
+        </h1>
+        <p class="text-[11px] sm:text-xs text-slate-300 font-normal">
+          Standar Operasional Prosedur Pelayanan PBB-P2 Secara Elektronik &bull; Bapenda DKI Jakarta
+        </p>
+      </div>
+    </div>
+
+    <!-- Center-Right: Service Selector Dropdown -->
+    <div class="flex items-center gap-2 flex-1 max-w-md">
+      <label for="service-select" class="text-xs font-semibold text-slate-300 whitespace-nowrap hidden xl:inline">
+        Pilih Layanan:
+      </label>
+      <div class="relative w-full">
+        <select id="service-select" class="w-full appearance-none bg-slate-800 hover:bg-slate-700 text-white text-xs sm:text-sm font-semibold rounded-lg pl-3 pr-9 py-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer transition">
+          <option value="balik_nama">1. Balik Nama PBB</option>
+          <option value="pembetulan">2. Pembetulan SPPT / SKP PBB</option>
+          <option value="update_data">3. Update / Pemutakhiran Data PBB</option>
+          <option value="mutasi">4. Mutasi PBB (Perubahan Objek/Subjek)</option>
+          <option value="pemecahan">5. Pemecahan Objek PBB</option>
+          <option value="restitusi">6. Restitusi (Kelebihan Pembayaran)</option>
+          <option value="kompensasi">7. Kompensasi Kelebihan Pembayaran</option>
+          <option value="pinbuk">8. Pemindahbukuan (Pinbuk) PBB</option>
+          <option value="salinan">9. Salinan Dokumen PBB (SPPT / SK NJOP)</option>
+          <option value="sk_njop">10. Penerbitan Surat Keterangan NJOP (SK NJOP)</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-300">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Zoom & Action Buttons (Matching Reference UI) -->
+    <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+      <button id="btn-zoom-out" type="button" class="bg-slate-100 hover:bg-white text-slate-900 text-xs font-semibold px-2.5 py-1.5 rounded-md shadow-sm transition active:scale-95">
+        &minus; Zoom Out
+      </button>
+      <span id="zoom-indicator" class="text-xs sm:text-sm font-bold text-white min-w-[46px] text-center tabular-nums">
+        100%
+      </span>
+      <button id="btn-zoom-in" type="button" class="bg-slate-100 hover:bg-white text-slate-900 text-xs font-semibold px-2.5 py-1.5 rounded-md shadow-sm transition active:scale-95">
+        + Zoom In
+      </button>
+      <button id="btn-fit" type="button" class="bg-slate-100 hover:bg-white text-slate-900 text-xs font-semibold px-3 py-1.5 rounded-md shadow-sm transition active:scale-95">
+        Fit
+      </button>
+      <button id="btn-print" type="button" class="bg-[#16a34a] hover:bg-[#15803d] text-white text-xs font-bold px-3 py-1.5 rounded-md shadow-sm transition active:scale-95 flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Simpan sebagai PDF
+      </button>
+      <button id="btn-info" type="button" class="bg-[#eab308] hover:bg-[#ca8a04] text-slate-950 text-xs font-bold px-3 py-1.5 rounded-md shadow-sm transition active:scale-95 flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Info &amp; Syarat Dokumen
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT CANVAS -->
+  <main id="canvas-viewport" class="flex-1 overflow-auto p-4 sm:p-6 flex justify-center items-start bg-[#e2e8f0] cursor-grab active:cursor-grabbing">
+    <div id="sheet-wrapper" class="workflow-sheet p-5 sm:p-7">
+      <!-- Dynamic SVG Flowchart Container -->
+      <div id="svg-container"></div>
+    </div>
+  </main>
+
+  <!-- MODAL: INFO & SYARAT DOKUMEN -->
+  <div id="doc-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[88vh]">
+      <!-- Modal Header -->
+      <div class="bg-[#0f172a] text-white px-5 py-3.5 flex items-center justify-between">
+        <div>
+          <span class="text-[11px] uppercase tracking-wider text-amber-400 font-bold">Persyaratan &amp; Catatan SOP</span>
+          <h2 id="modal-title" class="text-base sm:text-lg font-bold">Balik Nama PBB</h2>
+        </div>
+        <button id="btn-close-modal" type="button" class="text-slate-300 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-5 overflow-y-auto space-y-4 text-sm text-slate-700 select-text">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3.5">
+          <h3 class="font-bold text-blue-900 text-xs uppercase tracking-wide mb-1">Deskripsi &amp; Tujuan Layanan</h3>
+          <p id="modal-desc" class="text-slate-800 text-xs sm:text-sm leading-relaxed"></p>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wide mb-2 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+            Persyaratan Dokumen Elektronik (Pajak Online DKI Jakarta)
+          </h3>
+          <ul id="modal-docs" class="space-y-1.5 text-xs sm:text-sm"></ul>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+            <span class="text-[11px] font-bold text-slate-500 uppercase">Produk Hukum / Output</span>
+            <p id="modal-output" class="font-semibold text-slate-900 text-xs sm:text-sm mt-0.5"></p>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+            <span class="text-[11px] font-bold text-slate-500 uppercase">Kewenangan &amp; SLA</span>
+            <p id="modal-sla" class="font-semibold text-slate-900 text-xs sm:text-sm mt-0.5"></p>
+          </div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-900">
+          <strong>Catatan Verifikasi Regulasi:</strong> Alur kerja ini disusun berdasarkan praktik standar tata kelola pelayanan PBB-P2 Bapenda DKI Jakarta melalui sistem <em>Pajak Online</em>. Rincian norma waktu (SLA) dan ketentuan teknis merujuk pada Keputusan Kepala Bapenda DKI Jakarta tentang SOP Pelayanan Pajak Daerah yang berlaku.
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-slate-50 px-5 py-3 border-t border-slate-200 flex justify-end">
+        <button id="btn-close-modal-footer" type="button" class="bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition">
+          Tutup Jendela
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * KONFIGURASI LAYOUT SWIMLANE (6 KOLOM PERSIS REFERENSI BAPENDA DKI)
+     * Kolom 0: WP (x: 0..220, center: 110)
+     * Kolom 1: Sistem (x: 220..440, center: 330)
+     * Kolom 2: Pelayanan & Penetapan (x: 440..660, center: 550)
+     * Kolom 3: Penagihan (x: 660..880, center: 770)
+     * Kolom 4: Pendataan (x: 880..1100, center: 990)
+     * Kolom 5: Kaunit (x: 1100..1320, center: 1210)
+     */
+    const LANES = [
+      { id: 0, title: "WP", x: 0, w: 220, cx: 110, bg: "#ffffff" },
+      { id: 1, title: "Sistem", x: 220, w: 220, cx: 330, bg: "#f8fafc" },
+      { id: 2, title: "Pelayanan & Penetapan", x: 440, w: 220, cx: 550, bg: "#ffffff" },
+      { id: 3, title: "Penagihan", x: 660, w: 220, cx: 770, bg: "#f8fafc" },
+      { id: 4, title: "Pendataan", x: 880, w: 220, cx: 990, bg: "#ffffff" },
+      { id: 5, title: "Kaunit", x: 1100, w: 220, cx: 1210, bg: "#f8fafc" }
+    ];
+
+    /**
+     * DATABASE LENGKAP 10 LAYANAN PBB-P2 DKI JAKARTA
+     * Setiap layanan berisi:
+     * - title, headerTitle, desc, docs, output, sla
+     * - height: tinggi kanvas SVG
+     * - nodes: daftar node (start, end, process, decision, doc) dengan koordinat grid presisi
+     * - edges: daftar garis penghubung ortogonal (waypoints) dengan label 'ya' / 'tdk'
+     */
+    const WORKFLOW_DATA = {
+      // =========================================================================
+      // 1. BALIK NAMA PBB
+      // =========================================================================
+      balik_nama: {
+        title: "Balik Nama PBB",
+        headerTitle: "Alur Kerja (Workflow) Pelayanan Balik Nama PBB Secara Elektronik",
+        desc: "Perubahan data Subjek Pajak PBB-P2 karena adanya peralihan hak atas bumi dan/atau bangunan (jual beli, hibah, waris, lelang, atau putusan pengadilan) tanpa mengubah batas/luas objek pajak.",
+        docs: [
+          { name: "KTP / Identitas Pemohon (Wajib Pajak Baru) & NPWP", req: "Wajib" },
+          { name: "Surat Kuasa bermeterai & KTP Penerima Kuasa (jika dikuasakan)", req: "Kondisional" },
+          { name: "Bukti Peralihan Hak: Sertifikat Tanah / AJB / Akta Hibah / Akta Waris", req: "Wajib" },
+          { name: "Bukti Pelunasan BPHTB (e-SSPD BPHTB yang telah divalidasi)", req: "Wajib" },
+          { name: "SPPT PBB Tahun Berjalan & Bukti Lunas PBB 5 tahun terakhir", req: "Wajib" }
+        ],
+        output: "SPPT PBB-P2 Elektronik atas Nama Wajib Pajak Baru",
+        sla: "Kepala UPPPD / Bapenda DKI Jakarta [Verifikasi SLA pada Kepka Bapenda]",
+        height: 980,
+        nodes: [
+          { id: "n1", type: "start", lane: 0, y: 125, text: ["Mulai"] },
+          { id: "n2", type: "process", lane: 0, y: 215, text: ["WP mengajukan permohonan", "balik nama & unggah dokumen", "via Pajak Online"] },
+          { id: "n3", type: "process", lane: 1, y: 215, text: ["Sistem menerbitkan", "Tanda Terima Elektronik", "& nomor pelayanan"] },
+          { id: "n4", type: "process", lane: 2, y: 215, text: ["Penelitian formal &", "kelengkapan berkas", "peralihan hak"] },
+          { id: "n5", type: "decision", lane: 2, y: 345, text: ["Berkas formal", "& syarat lengkap?"] },
+          { id: "n6", type: "process", lane: 1, y: 475, text: ["Sistem kirim notifikasi", "elektronik: berkas tidak", "lengkap / perlu perbaikan"] },
+          { id: "n7", type: "process", lane: 0, y: 475, text: ["WP melengkapi &", "unggah ulang dokumen", "perbaikan"] },
+          { id: "n8", type: "process", lane: 3, y: 345, text: ["Pengecekan status", "piutang / tunggakan", "PBB & validasi BPHTB"] },
+          { id: "n9", type: "decision", lane: 3, y: 485, text: ["Lunas PBB &", "BPHTB valid?"] },
+          { id: "n10", type: "process", lane: 1, y: 605, text: ["Notifikasi kewajiban", "pelunasan tunggakan", "PBB / validasi BPHTB"] },
+          { id: "n11", type: "decision", lane: 4, y: 485, text: ["Perlu penelitian", "lapangan objek?"] },
+          { id: "n12", type: "process", lane: 4, y: 615, text: ["Penelitian lapangan &", "pemutakhiran data", "subjek/objek di SISMIOP"] },
+          { id: "n13", type: "process", lane: 2, y: 735, text: ["Drafting penetapan", "perubahan nama subjek", "pajak (SPPT Baru)"] },
+          { id: "n14", type: "decision", lane: 5, y: 735, text: ["Kaunit menyetujui", "penetapan?"] },
+          { id: "n15", type: "process", lane: 1, y: 845, text: ["Sistem menerbitkan", "e-SPPT PBB Baru &", "arsip digital"] },
+          { id: "n16", type: "doc", lane: 0, y: 845, text: ["e-SPPT Balik Nama", "Status: Ditetapkan"] },
+          { id: "n17", type: "end", lane: 0, y: 940, text: ["Selesai"] }
+        ],
+        edges: [
+          { from: "n1", to: "n2", points: [[110, 147], [110, 183]] },
+          { from: "n2", to: "n3", points: [[202, 215], [238, 215]] },
+          { from: "n3", to: "n4", points: [[422, 215], [458, 215]] },
+          { from: "n4", to: "n5", points: [[550, 247], [550, 293]] },
+          // n5 tdk -> n6
+          { from: "n5", to: "n6", label: "tdk", labelPos: [565, 415], points: [[550, 397], [550, 475], [422, 475]] },
+          { from: "n6", to: "n7", points: [[238, 475], [202, 475]] },
+          // n7 loop back to n4
+          { from: "n7", to: "n4", points: [[110, 443], [110, 310], [448, 310], [448, 215], [458, 215]] },
+          // n5 ya -> n8
+          { from: "n5", to: "n8", label: "ya", labelPos: [628, 336], points: [[615, 345], [678, 345]] },
+          { from: "n8", to: "n9", points: [[770, 377], [770, 433]] },
+          // n9 tdk -> n10
+          { from: "n9", to: "n10", label: "tdk", labelPos: [785, 558], points: [[770, 537], [770, 605], [422, 605]] },
+          // n10 -> n7
+          { from: "n10", to: "n7", points: [[238, 605], [110, 605], [110, 507]] },
+          // n9 ya -> n11
+          { from: "n9", to: "n11", label: "ya", labelPos: [855, 476], points: [[835, 485], [925, 485]] },
+          // n11 ya -> n12
+          { from: "n11", to: "n12", label: "ya", labelPos: [1005, 555], points: [[990, 537], [990, 583]] },
+          // n11 tdk -> n13 (bypass survey)
+          { from: "n11", to: "n13", label: "tdk", labelPos: [895, 476], points: [[925, 485], [888, 485], [888, 685], [550, 685], [550, 703]] },
+          // n12 -> n13
+          { from: "n12", to: "n13", points: [[990, 647], [990, 685], [550, 685], [550, 703]] },
+          // n13 -> n14
+          { from: "n13", to: "n14", points: [[642, 735], [1145, 735]] },
+          // n14 tdk -> back to n13
+          { from: "n14", to: "n13", label: "tdk", labelPos: [1225, 795], points: [[1210, 787], [1210, 805], [550, 805], [550, 767]] },
+          // n14 ya -> n15
+          { from: "n14", to: "n15", label: "ya", labelPos: [1285, 726], points: [[1275, 735], [1295, 735], [1295, 845], [422, 845]] },
+          // n15 -> n16 -> n17
+          { from: "n15", to: "n16", points: [[238, 845], [192, 845]] },
+          { from: "n16", to: "n17", points: [[110, 879], [110, 918]] }
+        ]
+      },
+
+      // =========================================================================
+      // 2. PEMBETULAN SPPT / SKP PBB
+      // =========================================================================
+      pembetulan: {
+        title: "Pembetulan SPPT / SKP PBB",
+        headerTitle: "Alur Kerja (Workflow) Pelayanan Pembetulan SPPT / SKP PBB Secara Elektronik",
+        desc: "Pembetulan atas SPPT, SKP PBB, atau STP PBB yang dalam penerbitannya terdapat kesalahan tulis, kesalahan hitung, dan/atau kekeliruan penerapan ketentuan peraturan perpajakan daerah (misal salah luas bumi/bangunan, salah kelas NJOP, atau salah nama/alamat).",
+        docs: [
+          { name: "Surat Permohonan Pembetulan dari Wajib Pajak", req: "Wajib" },
+          { name: "KTP / Identitas Wajib Pajak & Surat Kuasa (jika dikuasakan)", req: "Wajib" },
+          { name: "Asli / Salinan SPPT atau SKP PBB yang dimohonkan pembetulan", req: "Wajib" },
+          { name: "Bukti pendukung fisik/yuridis: Sertifikat Tanah, IMB/PBG, Gambar Ukur", req: "Wajib" },
+          { name: "Bukti pembayaran PBB (jika sudah dibayar sebagian/seluruhnya)", req: "Kondisional" }
+        ],
+        output: "SK Pembetulan & SPPT PBB Pembetulan (Kurang/Nihil/Lebih Bayar)",
+        sla: "Kepala UPPPD / Kepala Bapenda DKI Jakarta [Verifikasi SLA pada Kepka Bapenda]",
+        height: 980,
+        nodes: [
+          { id: "n1", type: "start", lane: 0, y: 125, text: ["Mulai"] },
+          { id: "n2", type: "process", lane: 0, y: 215, text: ["WP ajukan permohonan", "pembetulan & unggah", "bukti kesalahan data"] },
+          { id: "n3", type: "process", lane: 1, y: 215, text: ["Sistem registrasi", "berkas & terbitkan", "Tanda Terima Elektronik"] },
+          { id: "n4", type: "process", lane: 2, y: 215, text: ["Verifikasi formal &", "analisis jenis kesalahan", "tulis/hitung/ketetapan"] },
+          { id: "n5", type: "decision", lane: 2, y: 345, text: ["Syarat formal", "terpenuhi?"] },
+          { id: "n6", type: "process", lane: 1, y: 465, text: ["Notifikasi penolakan /", "permintaan kelengkapan", "berkas ke WP"] },
+          { id: "n7", type: "process", lane: 0, y: 465, text: ["WP memperbaiki &", "mengirim ulang berkas", "pembetulan"] },
+          { id: "n8", type: "decision", lane: 4, y: 345, text: ["Perlu penelitian", "lapangan / ukur?"] },
+          { id: "n9", type: "process", lane: 4, y: 475, text: ["Survey lapangan, ukur", "ulang luas/kelas &", "buat Berita Acara"] },
+          { id: "n10", type: "process", lane: 2, y: 605, text: ["Hitung ulang NJOP &", "ketetapan PBB terutang", "(Kurang / Lebih Bayar)"] },
+          { id: "n11", type: "process", lane: 3, y: 605, text: ["Rekonsiliasi pembayaran", "eksisting & penyesuaian", "piutang pada sistem"] },
+          { id: "n12", type: "decision", lane: 5, y: 725, text: ["Kaunit setujui", "SK Pembetulan?"] },
+          { id: "n13", type: "process", lane: 1, y: 835, text: ["Terbit SK Pembetulan &", "SPPT Pembetulan", "elektronik"] },
+          { id: "n14", type: "doc", lane: 0, y: 835, text: ["SK & SPPT Pembetulan", "Status: Diterbitkan"] },
+          { id: "n15", type: "end", lane: 0, y: 935, text: ["Selesai"] }
+        ],
+        edges: [
+          { from: "n1", to: "n2", points: [[110, 147], [110, 183]] },
+          { from: "n2", to: "n3", points: [[202, 215], [238, 215]] },
+          { from: "n3", to: "n4", points: [[422, 215], [458, 215]] },
+          { from: "n4", to: "n5", points: [[550, 247], [550, 293]] },
+          { from: "n5", to: "n6", label: "tdk", labelPos: [565, 410], points: [[550, 397], [550, 465], [422, 465]] },
+          { from: "n6", to: "n7", points: [[238, 465], [202, 465]] },
+          { from: "n7", to: "n4", points: [[110, 433], [110, 305], [448, 305], [448, 215], [458, 215]] },
+          { from: "n5", to: "n8", label: "ya", labelPos: [628, 336], points: [[615, 345], [925, 345]] },
+          { from: "n8", to: "n9", label: "ya", labelPos: [1005, 415], points: [[990, 397], [990, 443]] },
+          { from: "n8", to: "n10", label: "tdk", labelPos: [895, 336], points: [[925, 345], [890, 345], [890, 545], [550, 545], [550, 573]] },
+          { from: "n9", to: "n10", points: [[990, 507], [990, 545], [550, 545], [550, 573]] },
+          { from: "n10", to: "n11", points: [[642, 605], [678, 605]] },
+          { from: "n11", to: "n12", points: [[770, 637], [770, 725], [1145, 725]] },
+          { from: "n12", to: "n10", label: "tdk", labelPos: [1225, 785], points: [[1210, 777], [1210, 795], [550, 795], [550, 637]] },
+          { from: "n12", to: "n13", label: "ya", labelPos: [1285, 716], points: [[1275, 725], [1295, 725], [1295, 835], [422, 835]] },
+          { from: "n13", to: "n14", points: [[238, 835], [192, 835]] },
+          { from: "n14", to: "n15", points: [[110, 869], [110, 913]] }
+        ]
+      },
+
+      // =========================================================================
+      // 3. UPDATE / PEMUTAKHIRAN DATA PBB
+      // =========================================================================
+      update_data: {
+        title: "Update / Pemutakhiran Data PBB",
+        headerTitle: "Alur Kerja (Workflow) Update / Pemutakhiran Data PBB Secara Elektronik",
+        desc: "Pemutakhiran informasi identitas Wajib Pajak (NIK, NPWP, alamat domisili/korespondensi, nomor telepon, email) maupun pembaruan data fasilitas bangunan tanpa mengubah status kepemilikan hak atas tanah.",
+        docs: [
+          { name: "e-KTP / Kartu Keluarga Wajib Pajak (terintegrasi Dukcapil)", req: "Wajib" },
+          { name: "NPWP Wajib Pajak (untuk pemadanan NIK-NPWP)", req: "Opsional" },
+          { name: "SPPT PBB Tahun Terakhir / Nomor Objek Pajak (NOP)", req: "Wajib" },
+          { name: "Surat Keterangan Domisili / Akta Perusahaan (untuk WP Badan)", req: "Kondisional" }
+        ],
+        output: "Profil Subjek & Objek PBB Termutakhir pada Sistem Pajak Online",
+        sla: "Otomatis Sistem / Verifikasi Kantor UPPPD [Verifikasi SLA pada Kepka Bapenda]",
+        height: 860,
+        nodes: [
+          { id: "n1", type: "start", lane: 0, y: 125, text: ["Mulai"] },
+          { id: "n2", type: "process", lane: 0, y: 215, text: ["WP login Pajak Online", "& input pemutakhiran", "NIK/alamat/kontak"] },
+          { id: "n3", type: "process", lane: 1, y: 215, text: ["Sistem validasi NIK", "via webservice Dukcapil", "& cek kepemilikan NOP"] },
+          { id: "n4", type: "decision", lane: 1, y: 345, text: ["Data NIK & NOP", "cocok otomatis?"] },
+          { id: "n5", type: "process", lane: 2, y: 345, text: ["Verifikasi manual", "dokumen identitas &", "riwayat subjek pajak"] },
+          { id: "n6", type: "decision", lane: 2, y: 475, text: ["Dokumen identitas", "valid & sesuai?"] },
+          { id: "n7", type: "process", lane: 1, y: 595, text: ["Kirim notifikasi", "penolakan / minta", "unggah ulang KTP"] },
+          { id: "n8", type: "process", lane: 0, y: 595, text: ["WP perbaiki input", "data & unggah bukti", "identitas yang jelas"] },
+          { id: "n9", type: "process", lane: 4, y: 475, text: ["Sinkronisasi pembaruan", "atribut data pada", "basis data SISMIOP"] },
+          { id: "n10", type: "decision", lane: 5, y: 605, text: ["Persetujuan", "pemutakhiran?"] },
+          { id: "n11", type: "process", lane: 1, y: 715, text: ["Update database master", "& kirim konfirmasi", "elektronik ke WP"] },
+          { id: "n12", type: "doc", lane: 0, y: 715, text: ["Bukti Update Data", "Status: Termutakhir"] },
+          { id: "n13", type: "end", lane: 0, y: 815, text: ["Selesai"] }
+        ],
+        edges: [
+          { from: "n1", to: "n2", points: [[110, 147], [110, 183]] },
+          { from: "n2", to: "n3", points: [[202, 215], [238, 215]] },
+          { from: "n3", to: "n4", points: [[330, 247], [330, 293]] },
+          // n4 ya -> skip manual verification directly to n9
+          { from: "n4", to: "n9", label: "ya", labelPos: [345, 412], points: [[330, 397], [330, 425], [990, 425], [990, 443]] },
+          // n4 tdk -> manual verification n5
+          { from: "n4", to: "n5", label: "tdk", labelPos: [412, 336], points: [[395, 345], [458, 345]] },
+          { from: "n5", to: "n6", points: [[550, 377], [550, 423]] },
+          { from: "n6", to: "n7", label: "tdk", labelPos: [565, 540], points: [[550, 527], [550, 595], [422, 595]] },
+          { from: "n7", to: "n8", points: [[238, 595], [202, 595]] },
+          { from: "n8", to: "n2", points: [[110, 563], [110, 247]] },
+          { from: "n6", to: "n9", label: "ya", labelPos: [635, 466], points: [[615, 475], [898, 475]] },
+          { from: "n9", to: "n10", points: [[990, 507], [990, 605], [1145, 605]] },
+          { from: "n10", to: "n5", label: "tdk", labelPos: [1225, 655], points: [[1210, 657], [1210, 670], [655, 670], [655, 345], [642, 345]] },
+          { from: "n10", to: "n11", label: "ya", labelPos: [1285, 596], points: [[1275, 605], [1295, 605], [1295, 715], [422, 715]] },
+          { from: "n11", to: "n12", points: [[238, 715], [192, 715]] },
+          { from: "n12", to: "n13", points: [[110, 749], [110, 793]] }
+        ]
+      },
+
+      // =========================================================================
+      // 4. MUTASI PBB
+      // =========================================================================
+      mutasi: {
+        title: "Mutasi PBB (Perubahan Objek/Subjek)",
+        headerTitle: "Alur Kerja (Workflow) Pelayanan Mutasi PBB Secara Elektronik",
+        desc: "Pencatatan perubahan data objek dan/atau subjek PBB akibat peralihan hak disertai perubahan fisik bangunan (penambahan/pengurangan luas bangunan) atau penggabungan objek pajak.",
+        docs: [
+          { name: "Formulir SPOP & LSPOP Elektronik yang telah diisi lengkap", req: "Wajib" },
+          { name: "KTP / Identitas Pemohon & NPWP", req: "Wajib" },
+          { name: "Bukti kepemilikan & peralihan hak (Sertifikat / AJB / Akta Penggabungan)", req: "Wajib" },
+          { name: "IMB / PBG atau Denah / Foto Bangunan Terbaru", req: "Wajib" },
+          { name: "Bukti Lunas PBB & Validasi BPHTB", req: "Wajib" }
+        ],
+        output: "SPPT PBB Hasil Mutasi & Pembaruan Peta Blok / SISMIOP",
+        sla: "Kepala UPPPD / Bapenda DKI Jakarta [Verifikasi SLA pada Kepka Bapenda]",
+        height: 980,
+        nodes: [
+          { id: "n1", type: "start", lane: 0, y: 125, text: ["Mulai"] },
+          { id: "n2", type: "process", lane: 0, y: 215, text: ["WP ajukan mutasi,", "isi e-SPOP/LSPOP &", "unggah berkas"] },
+          { id: "n3", type: "process", lane: 1, y: 215, text: ["Sistem validasi isian", "e-SPOP & terbitkan", "Tanda Terima Berkas"] },
+          { id: "n4", type: "process", lane: 2, y: 215, text: ["Penelitian administrasi", "berkas peralihan &", "kelengkapan SPOP"] },
+          { id: "n5", type: "decision", lane: 2, y: 345, text: ["Berkas formal", "lengkap?"] },
+          { id: "n6", type: "process", lane: 1, y: 465, text: ["Notifikasi kekurangan", "dokumen mutasi", "kepada WP"] },
+          { id: "n7", type: "process", lane: 0, y: 465, text: ["WP melengkapi berkas", "mutasi via Pajak Online"] },
+          { id: "n8", type: "process", lane: 3, y: 345, text: ["Cek pelunasan PBB", "NOP asal & validasi", "pembayaran BPHTB"] },
+          { id: "n9", type: "decision", lane: 3, y: 475, text: ["Bebas tunggakan", "& BPHTB valid?"] },
+          { id: "n10", type: "process", lane: 4, y: 475, text: ["Penilaian objek, ukur", "luas tanah/bangunan &", "update peta blok"] },
+          { id: "n11", type: "process", lane: 2, y: 615, text: ["Penetapan NJOP &", "perhitungan ketetapan", "PBB hasil mutasi"] },
+          { id: "n12", type: "decision", lane: 5, y: 735, text: ["Kaunit setujui", "penetapan mutasi?"] },
+          { id: "n13", type: "process", lane: 1, y: 845, text: ["Penerbitan e-SPPT", "Mutasi & pengarsipan", "elektronik"] },
+          { id: "n14", type: "doc", lane: 0, y: 845, text: ["e-SPPT Mutasi PBB", "Status: Ditetapkan"] },
+          { id: "n15", type: "end", lane: 0, y: 940, text: ["Selesai"] }
+        ],
+        edges: [
+          { from: "n1", to: "n2", points: [[110, 147], [110, 183]] },
+          { from: "n2", to: "n3", points: [[202, 215], [238, 215]] },
+          { from: "n3", to: "n4", points: [[422, 215], [458, 215]] },
+          { from: "n4", to: "n5", points: [[550, 247], [550, 293]] },
+          { from: "n5", to: "n6", label: "tdk", labelPos: [565, 410], points: [[550, 397], [550, 465], [422, 465]] },
+          { from: "n6", to: "n7", points: [[238, 465], [202, 465]] },
+          { from: "n7", to: "n4", points: [[110, 433], [110, 305], [448, 305], [448, 215], [458, 215]] },
+          { from: "n5", to: "n8", label: "ya", labelPos: [628, 336], points: [[615, 345], [678, 345]] },
+          { from: "n8", to: "n9", points: [[770, 377], [770, 423]] },
+          { from: "n9", to: "n6", label: "tdk", labelPos: [785, 540], points: [[770, 527], [770, 555], [330, 555], [330, 497]] },
+          { from: "n9", to: "n10", label: "ya", labelPos: [852, 466], points: [[835, 475], [898, 475]] },
+          { from: "n10", to: "n11", points: [[990, 507], [990, 615], [642, 615]] },
+          { from: "n11", to: "n12", points: [[550, 647], [550, 735], [1145, 735]] },
+          { from: "n12", to: "n11", label: "tdk", labelPos: [1225, 785], points: [[1210, 787], [1210, 795], [515, 795], [515, 647]] },
+          { from: "n12", to: "n13", label: "ya", labelPos: [1285, 726], points: [[1275, 735], [1295, 735], [1295, 845], [422, 845]] },
+          { from: "n13", to: "n14", points: [[238, 845], [192, 845]] },
+          { from: "n14", to: "n15", points: [[110, 879], [110, 918]] }
+        ]
+      },
+
+      // =========================================================================
+      // 5. PEMECAHAN OBJEK PBB
+      // =========================================================================
+      pemecahan: {
+        title: "Pemecahan Objek PBB",
+        headerTitle: "Alur Kerja (Workflow) Pelayanan Pemecahan Objek PBB Secara Elektronik",
+        desc: "Pemisahan satu Nomor Objek Pajak (NOP) induk menjadi beberapa NOP baru sesuai pemecahan sertifikat tanah/siteplan (misalnya pemecahan kavling perumahan, waris terbagi, atau jual beli sebagian bidang tanah).",
+        docs: [
+          { name: "Surat Permohonan Pemecahan NOP & SPOP/LSPOP masing-masing pecahan", req: "Wajib" },
+          { name: "KTP / Identitas Pemohon & Akta Pendirian (jika Badan/Developer)", req: "Wajib" },
+          { name: "Sertifikat Induk & Sertifikat Pecahan / Siteplan yang disahkan BPN", req: "Wajib" },
+          { name: "Bukti Lunas PBB NOP Induk sampai dengan tahun berjalan", req: "Wajib" },
+          { name: "Akta Jual Beli / Hibah / Waris (jika pemecahan disertai balik nama)", req: "Kondisional" }
+        ],
+        output: "Penerbitan NOP Baru & SPPT PBB Masing-Masing Bidang Pecahan",
+        sla: "Kepala UPPPD / Bapenda DKI Jakarta [Verifikasi SLA pada Kepka Bapenda]",
+        height: 1020,
+        nodes: [
+          { id: "n1", type: "start", lane: 0, y: 125, text: ["Mulai"] },
+          { id: "n2", type: "process", lane: 0, y: 215, text: ["WP ajukan pemecahan", "NOP, isi e-SPOP pecahan", "& unggah siteplan/SHM"] },
+          { id: "n3", type: "process", lane: 1, y: 215, text: ["Sistem validasi berkas", "& terbitkan Tanda", "Terima Elektronik"] },
+          { id: "n4", type: "process", lane: 2, y: 215, text: ["Verifikasi formal &", "kesesuaian total luas", "pecahan vs NOP induk"] },
+          { id: "n5", type: "decision", lane: 2, y: 345, text: ["Berkas & total", "luas sesuai?"] },
+          { id: "n6", type: "process", lane: 1, y: 465, text: ["Notifikasi perbaikan", "data luas / kekurangan", "dokumen BPN ke WP"] },
+          { id: "n7", type: "process", lane: 0, y: 465, text: ["WP perbaiki dokumen", "pecahan & unggah ulang"] },
+          { id: "n8", type: "process", lane: 3, y: 345, text: ["Pengecekan status", "pelunasan seluruh", "tunggakan NOP Induk"] },
+          { id: "n9", type: "decision", lane: 3, y: 475, text: ["NOP Induk", "lunas PBB?"] },
+          { id: "n10", type: "process", lane: 4, y: 475, text: ["Penelitian lapangan,", "pemetaan bidang baru", "& pembentukan NOP baru"] },
+          { id: "n11", type: "process", lane: 4, y: 615, text: ["Penilaian NJOP tiap", "NOP baru & penonaktifan", "NOP Induk di SISMIOP"] },
+          { id: "n12", type: "process", lane: 2, y: 745, text: ["Penetapan ketetapan", "SPPT masing-masing", "NOP hasil pemecahan"] },
+          { id: "n13", type: "decision", lane: 5, y: 745, text: ["Kaunit setujui", "NOP & SPPT baru?"] },
+          { id: "n14", type: "process", lane: 1, y: 875, text: ["Sistem terbitkan NOP", "baru & e-SPPT PBB", "hasil pemecahan"] },
+          { id: "n15", type: "doc", lane: 0, y: 875, text: ["e-SPPT NOP Pecahan", "Status: Ditetapkan"] },
+          { id: "n16", type: "end", lane: 0, y: 975, text: ["Selesai"] }
+        ],
+        edges: [
+          { from: "n1", to: "n2", points: [[110, 147], [110, 183]] },
+          { from: "n2", to: "n3", points: [[202, 215], [238, 215]] },
+          { from: "n3", to: "n4", points: [[422, 215], [458, 215]] },
+          { from: "n4", to: "n5", points: [[550, 247], [550, 293]] },
+          { from: "n5", to: "n6", label: "tdk", labelPos: [565, 410], points: [[550, 397], [550, 465], [422, 465]] },
+          { from: "n6", to: "n7", points: [[238, 465], [202, 465]] },
+          { from: "n7", to: "n4", points: [[110, 433], [110, 305], [448, 305], [448, 215], [458, 215]] },
+          { from: "n5", to: "n8", label: "ya", labelPos: [628, 336], points: [[615, 345], [678, 345]] },
+          { from: "n8", to: "n9", points: [[770, 377], [770, 423]] },
+          { from: "n9", to: "n6", label: "tdk", labelPos: [785, 540], points: [[770, 527], [770, 555], [330, 555], [330, 497]] },
+          { from: "n9", to: "n10", label: "ya", labelPos: [852, 466], points: [[835, 475], [898, 475]] },
+          { from: "n10", to: "n11", points: [[990, 507], [990, 583]] },
+          { from: "n11", to: "n12", points: [[990, 647], [990, 685], [550, 685], [550, 713]] },
+          { from: "n12", to: "n13", points: [[642, 745], [1145, 745]] },
+          { from: "n13", to: "n12", label: "tdk", labelPos: [1225, 805], points: [[1210, 797], [1210, 815], [550, 815], [550, 777]] },
+          { from: "n13", to: "n14", label: "ya", labelPos: [1285, 736], points: [[1275, 745], [1295, 745], [1295, 875], [422, 875]] },
+          { from: "n14", to: "n15", points: [[238, 875], [192, 875]] },
+          { from: "n15", to: "n16", points: [[110, 909], [110, 953]] }
+        ]
+      },
+
+      // =========================================================================
+      // 6. RESTITUSI (KELEBIHAN PEMBAYARAN PBB)
+      // =========================================================================
+      restitusi: {
+        title: "Restitusi (Kelebihan Pembayaran PBB)",
+        headerTitle: "Alur Kerja (Workflow) Pelayanan Restitusi Kelebihan Pembayaran PBB Secara Elektronik",
+        desc: "Pengembalian kelebihan pembayaran PBB-P2 kepada Wajib Pajak akibat pembayaran ganda, kesalahan hitung, atau diterbitkannya SK Pembetulan/Keberatan/Banding yang menyebabkan pajak terutang lebih kecil dari yang telah dibayar.",
+        docs: [
+          { name: "Surat Permohonan Restitusi mencantumkan alasan & perhitungan", req: "Wajib" },
+          { name: "KTP / Identitas Wajib Pajak & NPWP", req: "Wajib" },
+          { name: "Bukti Setor / SSPD / NTPD Asli & Rekening Koran Pembayaran", req: "Wajib" },
+          { name: "Fotokopi Buku Tabungan / Rekening Bank atas nama Wajib Pajak", req: "Wajib" },
+          { name: "SK Pembetulan / SK Keberatan / Putusan Banding (jika dasar lebih bayar)", req: "Kondisional" }
+        ],
+        output: "SKPLB (Surat Ketetapan Pajak Lebih Bayar) & Pencairan Dana (SP2D)",
+        sla: "Kepala UPPPD / Kepala Bapenda DKI Jakarta & BPKD [Verifikasi SLA pada Kepka Bapenda]",
+        height: 1020,
+        nodes: [
+          { id: "n1", type: "start", lane: 0, y: 125, text: ["Mulai"] },
+          { id: "n2", type: "process", lane: 0, y: 215, text: ["WP ajukan restitusi,", "input rekening & unggah", "bukti lebih bayar"] },
+          { id: "n3", type: "process", lane: 1, y: 215, text: ["Sistem registrasi", "permohonan & terbitkan", "Tanda Terima Elektronik"] },
+          { id: "n4", type: "process", lane: 2, y: 215, text: ["Penelitian formal &", "verifikasi dasar hukum", "kelebihan pembayaran"] },
+          { id: "n5", type: "decision", lane: 2, y: 345, text: ["Berkas formal", "lengkap & valid?"] },
+          { id: "n6", type: "process", lane: 1, y: 465, text: ["Notifikasi kekurangan", "bukti setor / dokumen", "rekening ke WP"] },
+          { id: "n7", type: "process", lane: 0, y: 465, text: ["WP melengkapi bukti", "pembayaran & rekening"] },
+          { id: "n8", type: "process", lane: 3, y: 345, text: ["Konfirmasi kas daerah /", "Bank DKI & cek utang", "pajak WP lainnya"] },
+          { id: "n9", type: "decision", lane: 3, y: 485, text: ["Setoran sah &", "terbukti lebih bayar?"] },
+          { id: "n10", type: "process", lane: 4, y: 485, text: ["Pemeriksaan lapangan /", "kantor & penyusunan", "Laporan Hasil Pemeriksaan"] },
+          { id: "n11", type: "process", lane: 2, y: 625, text: ["Perhitungan nilai bersih", "restitusi (dikurangi", "kompensasi utang pajak)"] },
+          { id: "n12", type: "decision", lane: 5, y: 745, text: ["Kaunit / Bapenda", "setujui SKPLB?"] },
+          { id: "n13", type: "process", lane: 3, y: 865, text: ["Penerbitan SKPLB,", "SPMKP & proses transfer", "ke rekening WP"] },
+          { id: "n14", type: "doc", lane: 0, y: 865, text: ["SKPLB & Bukti Transfer", "Status: Dicairkan"] },
+          { id: "n15", type: "end", lane: 0, y: 965, text: ["Selesai"] }
+        ],
+        edges: [
+          { from: "n1", to: "n2", points: [[110, 147], [110, 183]] },
+          { from: "n2", to: "n3", points: [[202, 215], [238, 215]] },
+          { from: "n3", to: "n4", points: [[422, 215], [458, 215]] },
+          { from: "n4", to: "n5", points: [[550, 247], [550, 293]] },
+          { from: "n5", to: "n6", label: "tdk", labelPos: [565, 410], points: [[550, 397], [550, 465], [422, 465]] },
+          { from: "n6", to: "n7", points: [[238, 465], [202, 465]] },
+          { from: "n7", to: "n4", points: [[110, 433], [110, 305], [448, 305], [448, 215], [458, 215]] },
+          { from: "n5", to: "n8", label: "ya", labelPos: [628, 336], points: [[615, 345], [678, 345]] },
+          { from: "n8", to: "n9", points: [[770, 377], [770, 433]] },
+          { from: "n9", to: "n6", label: "tdk", labelPos: [785, 550], points: [[770, 537], [770, 565], [330, 565], [330, 497]] },
+          { from: "n9", to: "n10", label: "ya", labelPos: [852, 476], points: [[835, 485], [898, 485]] },
+          { from: "n10", to: "n11", points: [[990, 517], [990, 625], [642, 625]] },
+          { from: "n11", to: "n12", points: [[550, 657], [550, 745], [1145, 745]] },
+          { from: "n12", to: "n11", label: "tdk", labelPos: [1225, 795], points: [[1210, 797], [1210, 810], [515, 810], [515, 657]] },
+          { from: "n12", to: "n13", label: "ya", labelPos: [1285, 736], points: [[1275, 745], [1295, 745], [1295, 865], [862, 865]] },
+          { from: "n13", to: "n14", points: [[678, 865], [192, 865]] },
+          { from: "n14", to: "n15", points: [[110, 899], [110, 943]] }
+        ]
+      },
+
+      // =========================================================================
+      // 7. KOMPENSASI KELEBIHAN PEMBAYARAN PBB
+      // =========================================================================
+      kompensasi: {
+        title: "Kompensasi Kelebihan Pembayaran PBB",
+        headerTitle: "Alur Kerja (Workflow) Pelayanan Kompensasi Kelebihan Pembayaran PBB Secara Elektronik",
+        desc: "Pengalihan kelebihan pembayaran PBB-P2 untuk diperhitungkan sebagai pembayaran utang/tagihan PBB pada tahun pajak berikutnya atau pada NOP lain milik Wajib Pajak yang sama.",
+        docs: [
+          { name: "Surat Permohonan Kompensasi mencantumkan NOP Asal & NOP/Tahun Tujuan", req: "Wajib" },
+          { name: "KTP / Identitas Wajib Pajak & Surat Kuasa (jika dikuasakan)", req: "Wajib" },
+          { name: "Bukti Pembayaran PBB (SSPD / NTPD) yang mengalami kelebihan bayar", req: "Wajib" },
+          { name: "SPPT PBB Tahun/Objek Tujuan Kompensasi", req: "Wajib" },
+          { name: "SKPLB / SK Pembetulan / SK Keberatan (jika telah terbit ketetapan)", req: "Kondisional" }
+        ],
+        output: "Surat Keputusan Kompensasi & Bukti Pelunasan Tagihan NOP Tujuan",
+        sla: "Kepala UPPPD / Bapenda DKI Jakarta [Verifikasi SLA pada Kepka Bapenda]",
+        height: 940,
+        nodes: [
+          { id: "n1", type: "start", lane: 0, y: 125, text: ["Mulai"] },
+          { id: "n2", type: "process", lane: 0, y: 215, text: ["WP ajukan kompensasi,", "pilih NOP/tahun tujuan", "& unggah bukti bayar"] },
+          { id: "n3", type: "process", lane: 1, y: 215, text: ["Sistem validasi NOP asal", "& NOP tujuan serta", "terbitkan Tanda Terima"] },
+          { id: "n4", type: "process", lane: 2, y: 215, text: ["Verifikasi formal &", "kesamaan identitas", "subjek pajak"] },
+          { id: "n5", type: "decision", lane: 2, y: 345, text: ["Syarat formal &", "subjek sesuai?"] },
+          { id: "n6", type: "process", lane: 1, y: 465, text: ["Kirim notifikasi", "penolakan / perbaikan", "berkas ke WP"] },
+          { id: "n7", type: "process", lane: 0, y: 465, text: ["WP perbaiki dokumen", "permohonan kompensasi"] },
+          { id: "n8", type: "process", lane: 3, y: 345, text: ["Verifikasi kebenaran", "lebih bayar & hitung", "saldo piutang tujuan"] },
+          { id: "n9", type: "decision", lane: 3, y: 485, text: ["Saldo lebih bayar", "valid & mencukupi?"] },
+          { id: "n10", type: "process", lane: 2, y: 615, text: ["Penyusunan draft SK", "Kompensasi & rincian", "pemotongan tagihan"] },
+          { id: "n11", type: "decision", lane: 5, y: 615, text: ["Kaunit setujui", "SK Kompensasi?"] },
+          { id: "n12", type: "process", lane: 3, y: 745, text: ["Eksekusi pemindah-", "tanganan saldo & update", "lunas NOP tujuan"] },
+          { id: "n13", type: "process", lane: 1, y: 745, text: ["Sistem terbitkan SK", "Kompensasi & bukti", "lunas elektronik"] },
+          { id: "n14", type: "doc", lane: 0, y: 745, text: ["SK Kompensasi PBB", "Status: Dikompensasikan"] },
+          { id: "n15", type: "end", lane: 0, y: 855, text: ["Selesai"] }
+        ],
+        edges: [
+          { from: "n1", to: "n2", points: [[110, 147], [110, 183]] },
+          { from: "n2", to: "n3", points: [[202, 215], [238, 215]] },
+          { from: "n3", to: "n4", points: [[422, 215], [458, 215]] },
+          { from: "n4", to: "n5", points: [[550, 247], [550, 293]] },
+          { from: "n5", to: "n6", label: "tdk", labelPos: [565, 410], points: [[550, 397], [550, 465], [422, 465]] },
+          { from: "n6", to: "n7", points: [[238, 465], [202, 465]] },
+          { from: "n7", to: "n4", points: [[110, 433], [110, 305], [448, 305], [448, 215], [458, 215]] },
+          { from: "n5", to: "n8", label: "ya", labelPos: [628, 336], points: [[615, 345], [678, 345]] },
+          { from: "n8", to: "n9", points: [[770, 377], [770, 433]] },
+          { from: "n9", to: "n6", label: "tdk", labelPos: [785, 540], points: [[770, 537], [770, 555], [330, 555], [330, 497]] },
+          { from: "n9", to: "n10", label: "ya", labelPos: [685, 555], points: [[770, 537], [770, 560], [550, 560], [550, 583]] },
+          { from: "n10", to: "n11", points: [[642, 615], [1145, 615]] },
+          { from: "n11", to: "n10", label: "tdk", labelPos: [1225, 675], points: [[1210, 667], [1210, 685], [550, 685], [550, 647]] },
+          { from: "n11", to: "n12", label: "ya", labelPos: [1285, 606], points: [[1275, 615], [1295, 615], [1295, 745], [862, 745]] },
+          { from: "n12", to: "n13", points: [[678, 745], [422, 745]] },
+          { from: "n13", to: "n14", points: [[238, 745], [192, 745]] },
+          { from: "n14", to: "n15", points: [[110, 779], [110, 833]] }
+        ]
+      },
+
+      // =========================================================================
+      // 8. PEMINDAHBUKUAN (PINBUK) PBB
+      // =========================================================================
+      pinbuk: {
+        title: "Pemindahbukuan (Pinbuk) PBB",
+        headerTitle: "Alur Kerja (Workflow) Pelayanan Pemindahbukuan (Pinbuk) PBB Secara Elektronik",
+        desc: "Pemindahan pencatatan penerimaan pembayaran PBB-P2 karena kesalahan pengisian Nomor Objek Pajak (NOP), tahun pajak, atau kode bayar saat penyetoran melalui Bank/kanal pembayaran.",
+        docs: [
+          { name: "Surat Permohonan Pemindahbukuan (menjelaskan kronologi salah bayar)", req: "Wajib" },
+          { name: "Asli Bukti Setor / Struk ATM / Resi Mobile Banking / NTPD", req: "Wajib" },
+          { name: "KTP / Identitas Penyetor & Pemilik Objek Pajak Tujuan", req: "Wajib" },
+          { name: "Surat Pernyataan Tidak Keberatan (jika salah bayar ke NOP pihak lain)", req: "Kondisional" },
+          { name: "SPPT PBB NOP Salah Bayar & SPPT PBB NOP Tujuan", req: "Wajib" }
+        ],
+        output: "Bukti Pemindahbukuan (Bk-Pbk) & Status Lunas pada NOP/Tahun Tujuan",
+        sla: "Kepala UPPPD / Bapenda DKI Jakarta [Verifikasi SLA pada Kepka Bapenda]",
+        height: 940,
+        nodes: [
+          { id: "n1", type: "start", lane: 0, y: 125, text: ["Mulai"] },
+          { id: "n2", type: "process", lane: 0, y: 215, text: ["WP ajukan Pinbuk,", "input NTPD, NOP salah", "& NOP/tahun tujuan"] },
+          { id: "n3", type: "process", lane: 1, y: 215, text: ["Sistem cek NTPD pada", "database penerimaan", "& terbitkan resi"] },
+          { id: "n4", type: "process", lane: 2, y: 215, text: ["Verifikasi formal &", "surat pernyataan", "pihak terkait"] },
+          { id: "n5", type: "decision", lane: 2, y: 345, text: ["Berkas formal", "lengkap?"] },
+          { id: "n6", type: "process", lane: 1, y: 465, text: ["Notifikasi kekurangan", "bukti bayar / surat", "pernyataan ke WP"] },
+          { id: "n7", type: "process", lane: 0, y: 465, text: ["WP melengkapi bukti", "setor & pernyataan"] },
+          { id: "n8", type: "process", lane: 3, y: 345, text: ["Konfirmasi transaksi", "Bank Persepsi & cek", "status NOP tujuan"] },
+          { id: "n9", type: "decision", lane: 3, y: 485, text: ["Dana masuk RKUD &", "layak dipinbuk?"] },
+          { id: "n10", type: "process", lane: 3, y: 615, text: ["Penyusunan konsep", "Bukti Pemindahbukuan", "(Bk-Pbk)"] },
+          { id: "n11", type: "decision", lane: 5, y: 615, text: ["Kaunit setujui", "Bk-Pbk?"] },
+          { id: "n12", type: "process", lane: 1, y: 745, text: ["Posting jurnal pinbuk,", "terbit Bk-Pbk & update", "lunas NOP tujuan"] },
+          { id: "n13", type: "doc", lane: 0, y: 745, text: ["Bukti Pemindahbukuan", "Status: Dipindahbukukan"] },
+          { id: "n14", type: "end", lane: 0, y: 855, text: ["Selesai"] }
+        ],
+        edges: [
+          { from: "n1", to: "n2", points: [[110, 147], [110, 183]] },
+          { from: "n2", to: "n3", points: [[202, 215], [238, 215]] },
+          { from: "n3", to: "n4", points: [[422, 215], [458, 215]] },
+          { from: "n4", to: "n5", points: [[550, 247], [550, 293]] },
+          { from: "n5", to: "n6", label: "tdk", labelPos: [565, 410], points: [[550, 397], [550, 465], [422, 465]] },
+          { from: "n6", to: "n7", points: [[238, 465], [202, 465]] },
+          { from: "n7", to: "n4", points: [[110, 433], [110, 305], [448, 305], [448, 215], [458, 215]] },
+          { from: "n5", to: "n8", label: "ya", labelPos: [628, 336], points: [[615, 345], [678, 345]] },
+          { from: "n8", to: "n9", points: [[770, 377], [770, 433]] },
+          { from: "n9", to: "n6", label: "tdk", labelPos: [785, 540], points: [[770, 537], [770, 555], [330, 555], [330, 497]] },
+          { from: "n9", to: "n10", label: "ya", labelPos: [785, 562], points: [[770, 537], [770, 583]] },
+          { from: "n10", to: "n11", points: [[862, 615], [1145, 615]] },
+          { from: "n11", to: "n10", label: "tdk", labelPos: [1225, 675], points: [[1210, 667], [1210, 685], [770, 685], [770, 647]] },
+          { from: "n11", to: "n12", label: "ya", labelPos: [1285, 606], points: [[1275, 615], [1295, 615], [1295, 745], [422, 745]] },
+          { from: "n12", to: "n13", points: [[238, 745], [192, 745]] },
+          { from: "n13", to: "n14", points: [[110, 779], [110, 833]] }
+        ]
+      },
+
+      // =========================================================================
+      // 9. SALINAN DOKUMEN PBB (SPPT / SK NJOP)
+      // =========================================================================
+      salinan: {
+        title: "Salinan Dokumen PBB (SPPT / SK NJOP)",
+        headerTitle: "Alur Kerja (Workflow) Pelayanan Salinan SPPT / Dokumen PBB Secara Elektronik",
+        desc: "Penerbitan salinan resmi SPPT PBB, SKP PBB, atau dokumen ketetapan pajak lainnya sebagai pengganti dokumen milik Wajib Pajak yang hilang, rusak, atau tidak diterima.",
+        docs: [
+          { name: "KTP / Identitas Wajib Pajak (sesuai nama pada SPPT)", req: "Wajib" },
+          { name: "Surat Kuasa bermeterai & KTP Penerima Kuasa (jika diwakilkan)", req: "Kondisional" },
+          { name: "Nomor Objek Pajak (NOP) & Tahun Pajak yang dimintakan salinan", req: "Wajib" },
+          { name: "Bukti kepemilikan (Sertifikat/AJB) jika identitas belum terpadankan NIK", req: "Kondisional" }
+        ],
+        output: "Salinan Resmi e-SPPT / Dokumen Ketetapan PBB Bertanda Tangan Elektronik",
+        sla: "Layanan Mandiri Real-Time (e-SPPT) / Kantor UPPPD [Verifikasi SLA pada Kepka Bapenda]",
+        height: 820,
+        nodes: [
+          { id: "n1", type: "start", lane: 0, y: 125, text: ["Mulai"] },
+          { id: "n2", type: "process", lane: 0, y: 215, text: ["WP login Pajak Online", "& pilih menu unduh /", "permohonan Salinan"] },
+          { id: "n3", type: "process", lane: 1, y: 215, text: ["Sistem cek kesesuaian", "NIK akun dengan", "data subjek pada NOP"] },
+          { id: "n4", type: "decision", lane: 1, y: 345, text: ["Akun WP terverifikasi", "pemilik sah NOP?"] },
+          { id: "n5", type: "process", lane: 2, y: 345, text: ["Verifikasi berkas kuasa", "& bukti kepemilikan", "oleh petugas loket"] },
+          { id: "n6", type: "decision", lane: 2, y: 475, text: ["Hak akses pemohon", "valid & sah?"] },
+          { id: "n7", type: "process", lane: 1, y: 585, text: ["Notifikasi penolakan", "akses / minta bukti", "hubungan hukum"] },
+          { id: "n8", type: "process", lane: 0, y: 585, text: ["WP unggah bukti", "kepemilikan / surat kuasa"] },
+          { id: "n9", type: "process", lane: 2, y: 475, text: ["Pencarian arsip", "ketetapan & penerbitan", "salinan resmi"] },
+          { id: "n10", type: "decision", lane: 5, y: 585, text: ["Pengesahan TTE", "Salinan Dokumen?"] },
+          { id: "n11", type: "process", lane: 1, y: 695, text: ["Sistem generate file", "Salinan e-SPPT dengan", "QR Code & TTE"] },
+          { id: "n12", type: "doc", lane: 0, y: 695, text: ["Salinan Resmi e-SPPT", "Status: Tersedia Unduh"] },
+          { id: "n13", type: "end", lane: 0, y: 785, text: ["Selesai"] }
+        ],
+        edges: [
+          { from: "n1", to: "n2", points: [[110, 147], [110, 183]] },
+          { from: "n2", to: "n3", points: [[202, 215], [238, 215]] },
+          { from: "n3", to: "n4", points: [[330, 247], [330, 293]] },
+          // n4 ya -> langsung generate e-SPPT mandiri
+          { from: "n4", to: "n11", label: "ya", labelPos: [345, 425], points: [[330, 397], [330, 663]] },
+          // n4 tdk -> manual verification
+          { from: "n4", to: "n5", label: "tdk", labelPos: [412, 336], points: [[395, 345], [458, 345]] },
+          { from: "n5", to: "n6", points: [[550, 377], [550, 423]] },
+          { from: "n6", to: "n7", label: "tdk", labelPos: [565, 535], points: [[550, 527], [550, 585], [422, 585]] },
+          { from: "n7", to: "n8", points: [[238, 585], [202, 585]] },
+          { from: "n8", to: "n2", points: [[110, 553], [110, 247]] },
+          { from: "n6", to: "n9", label: "ya", labelPos: [628, 466], points: [[615, 475], [648, 475], [648, 415], [550, 415], [550, 443]] },
+          { from: "n9", to: "n10", points: [[642, 475], [1210, 475], [1210, 533]] },
+          { from: "n10", to: "n11", label: "ya", labelPos: [1225, 650], points: [[1210, 637], [1210, 695], [422, 695]] },
+          { from: "n10", to: "n7", label: "tdk", labelPos: [1115, 576], points: [[1145, 585], [422, 585]] },
+          { from: "n11", to: "n12", points: [[238, 695], [192, 695]] },
+          { from: "n12", to: "n13", points: [[110, 729], [110, 763]] }
+        ]
+      },
+
+      // =========================================================================
+      // 10. PENERBITAN SURAT KETERANGAN NJOP (SK NJOP)
+      // =========================================================================
+      sk_njop: {
+        title: "Penerbitan Surat Keterangan NJOP (SK NJOP)",
+        headerTitle: "Alur Kerja (Workflow) Penerbitan Surat Keterangan NJOP Secara Elektronik",
+        desc: "Penerbitan keterangan tertulis mengenai besarnya Nilai Jual Objek Pajak (NJOP) atas suatu objek bumi dan/atau bangunan pada tahun pajak tertentu (umumnya untuk keperluan transaksi jual beli, agunan bank, atau penetapan waris).",
+        docs: [
+          { name: "Surat Permohonan Penerbitan SK NJOP melalui Pajak Online", req: "Wajib" },
+          { name: "KTP / Identitas Pemohon & NPWP", req: "Wajib" },
+          { name: "Bukti Kepemilikan Tanah/Bangunan (Sertifikat / Girik / Akta)", req: "Wajib" },
+          { name: "SPPT PBB Tahun Terakhir (jika objek sudah terdaftar memiliki NOP)", req: "Kondisional" },
+          { name: "Surat Lurah & SPOP/LSPOP (jika objek belum pernah terdaftar NOP)", req: "Kondisional" }
+        ],
+        output: "Surat Keterangan NJOP (SK NJOP) Elektronik Bertanda Tangan Elektronik",
+        sla: "Kepala UPPPD DKI Jakarta [Verifikasi SLA pada Kepka Bapenda]",
+        height: 940,
+        nodes: [
+          { id: "n1", type: "start", lane: 0, y: 125, text: ["Mulai"] },
+          { id: "n2", type: "process", lane: 0, y: 215, text: ["WP ajukan SK NJOP,", "input NOP / data lokasi", "& unggah bukti hak"] },
+          { id: "n3", type: "process", lane: 1, y: 215, text: ["Sistem registrasi", "permohonan & cek data", "NJOP tahun berjalan"] },
+          { id: "n4", type: "process", lane: 2, y: 215, text: ["Verifikasi formal", "identitas pemohon &", "bukti penguasaan hak"] },
+          { id: "n5", type: "decision", lane: 2, y: 345, text: ["Berkas formal", "lengkap & sah?"] },
+          { id: "n6", type: "process", lane: 1, y: 465, text: ["Notifikasi kekurangan", "bukti kepemilikan /", "identitas ke WP"] },
+          { id: "n7", type: "process", lane: 0, y: 465, text: ["WP melengkapi &", "mengunggah dokumen"] },
+          { id: "n8", type: "decision", lane: 4, y: 345, text: ["Objek sudah punya", "penetapan NJOP?"] },
+          { id: "n9", type: "process", lane: 4, y: 475, text: ["Pendataan, penilaian", "klasifikasi bumi/bangunan", "& penetapan NJOP"] },
+          { id: "n10", type: "process", lane: 2, y: 605, text: ["Penyusunan konsep", "Surat Keterangan NJOP", "(SK NJOP)"] },
+          { id: "n11", type: "decision", lane: 5, y: 605, text: ["Kaunit setujui &", "TTE SK NJOP?"] },
+          { id: "n12", type: "process", lane: 1, y: 735, text: ["Sistem terbitkan", "SK NJOP Elektronik", "dengan QR Validasi"] },
+          { id: "n13", type: "doc", lane: 0, y: 735, text: ["SK NJOP Elektronik", "Status: Diterbitkan"] },
+          { id: "n14", type: "end", lane: 0, y: 845, text: ["Selesai"] }
+        ],
+        edges: [
+          { from: "n1", to: "n2", points: [[110, 147], [110, 183]] },
+          { from: "n2", to: "n3", points: [[202, 215], [238, 215]] },
+          { from: "n3", to: "n4", points: [[422, 215], [458, 215]] },
+          { from: "n4", to: "n5", points: [[550, 247], [550, 293]] },
+          { from: "n5", to: "n6", label: "tdk", labelPos: [565, 410], points: [[550, 397], [550, 465], [422, 465]] },
+          { from: "n6", to: "n7", points: [[238, 465], [202, 465]] },
+          { from: "n7", to: "n4", points: [[110, 433], [110, 305], [448, 305], [448, 215], [458, 215]] },
+          { from: "n5", to: "n8", label: "ya", labelPos: [628, 336], points: [[615, 345], [925, 345]] },
+          // n8 tdk -> belum ada NJOP -> pendataan & penilaian
+          { from: "n8", to: "n9", label: "tdk", labelPos: [1005, 415], points: [[990, 397], [990, 443]] },
+          // n8 ya -> sudah ada NJOP -> langsung draft SK NJOP
+          { from: "n8", to: "n10", label: "ya", labelPos: [895, 336], points: [[925, 345], [885, 345], [885, 545], [550, 545], [550, 573]] },
+          { from: "n9", to: "n10", points: [[990, 507], [990, 545], [550, 545], [550, 573]] },
+          { from: "n10", to: "n11", points: [[642, 605], [1145, 605]] },
+          { from: "n11", to: "n10", label: "tdk", labelPos: [1225, 665], points: [[1210, 657], [1210, 675], [550, 675], [550, 637]] },
+          { from: "n11", to: "n12", label: "ya", labelPos: [1285, 596], points: [[1275, 605], [1295, 605], [1295, 735], [422, 735]] },
+          { from: "n12", to: "n13", points: [[238, 735], [192, 735]] },
+          { from: "n13", to: "n14", points: [[110, 769], [110, 823]] }
+        ]
+      }
+    };
+
+    /**
+     * RENDERER SVG SWIMLANE PRESISI TINGGI
+     */
+    function renderWorkflowSVG(serviceKey) {
+      const data = WORKFLOW_DATA[serviceKey];
+      if (!data) return;
+
+      const totalWidth = 1320;
+      const totalHeight = data.height;
+      const headerHeight = 42;
+      const laneHeaderHeight = 36;
+      const topOffset = headerHeight + laneHeaderHeight;
+
+      let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}" style="display:block; background:#ffffff;">`;
+
+      // Definitions: Arrowhead & Drop Shadow
+      svg += `
+        <defs>
+          <marker id="arrow-blue" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#1d4ed8" />
+          </marker>
+          <filter id="node-shadow" x="-5%" y="-5%" width="110%" height="115%">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.10" />
+          </filter>
+        </defs>
+      `;
+
+      // 1. Swimlane Columns Background
+      LANES.forEach((lane) => {
+        svg += `<rect x="${lane.x}" y="${topOffset}" width="${lane.w}" height="${totalHeight - topOffset}" fill="${lane.bg}" />`;
+      });
+
+      // 2. Main Top Header Banner (Light Blue matching reference)
+      svg += `
+        <rect x="0" y="0" width="${totalWidth}" height="${headerHeight}" fill="#bfdbfe" stroke="#1e293b" stroke-width="1.8" />
+        <text x="${totalWidth / 2}" y="27" text-anchor="middle" font-size="16" font-weight="800" fill="#0f172a">
+          ${escapeXML(data.headerTitle)}
+        </text>
+      `;
+
+      // 3. Swimlane Column Headers & Vertical Dividers
+      LANES.forEach((lane) => {
+        svg += `
+          <rect x="${lane.x}" y="${headerHeight}" width="${lane.w}" height="${laneHeaderHeight}" fill="#e2e8f0" stroke="#1e293b" stroke-width="1.5" />
+          <text x="${lane.cx}" y="${headerHeight + 23}" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0f172a">
+            ${escapeXML(lane.title)}
+          </text>
+          <line x1="${lane.x}" y1="${topOffset}" x2="${lane.x}" y2="${totalHeight}" stroke="#cbd5e1" stroke-width="1.2" />
+        `;
+      });
+
+      // Outer Border of Diagram
+      svg += `<rect x="0" y="0" width="${totalWidth}" height="${totalHeight}" fill="none" stroke="#1e293b" stroke-width="2" />`;
+
+      // 4. Render Orthogonal Connectors (Edges)
+      data.edges.forEach((edge) => {
+        const pts = edge.points.map(p => `${p[0]},${p[1]}`).join(" ");
+        svg += `<polyline points="${pts}" fill="none" stroke="#1d4ed8" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-blue)" />`;
+
+        if (edge.label && edge.labelPos) {
+          const isYa = edge.label.toLowerCase() === "ya";
+          const badgeFill = isYa ? "#dcfce7" : "#fee2e2";
+          const textFill = isYa ? "#15803d" : "#dc2626";
+          const [lx, ly] = edge.labelPos;
+          svg += `
+            <rect x="${lx - 13}" y="${ly - 10}" width="26" height="16" rx="4" fill="${badgeFill}" />
+            <text x="${lx}" y="${ly + 2}" text-anchor="middle" font-size="11.5" font-weight="800" fill="${textFill}">
+              ${escapeXML(edge.label)}
+            </text>
+          `;
+        }
+      });
+
+      // 5. Render Flowchart Nodes
+      data.nodes.forEach((node) => {
+        const cx = LANES[node.lane].cx;
+        const cy = node.y;
+
+        if (node.type === "start" || node.type === "end") {
+          // Dark Capsule Oval
+          const w = 112;
+          const h = 44;
+          svg += `
+            <rect x="${cx - w / 2}" y="${cy - h / 2}" width="${w}" height="${h}" rx="22" fill="#0f172a" filter="url(#node-shadow)" />
+            <text x="${cx}" y="${cy + 5}" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">
+              ${escapeXML(node.text[0])}
+            </text>
+          `;
+        } else if (node.type === "process") {
+          // Rounded White Box with Thick Border
+          const w = 184;
+          const h = 64;
+          svg += `
+            <rect x="${cx - w / 2}" y="${cy - h / 2}" width="${w}" height="${h}" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2" filter="url(#node-shadow)" />
+          `;
+          svg += renderMultilineText(cx, cy, node.text, 12, "#0f172a", "600");
+        } else if (node.type === "decision") {
+          // Soft Yellow Diamond
+          const rx = 65;
+          const ry = 52;
+          const points = `${cx},${cy - ry} ${cx + rx},${cy} ${cx},${cy + ry} ${cx - rx},${cy}`;
+          svg += `
+            <polygon points="${points}" fill="#fde68a" stroke="#78350f" stroke-width="2" stroke-linejoin="round" filter="url(#node-shadow)" />
+          `;
+          svg += renderMultilineText(cx, cy, node.text, 11.5, "#0f172a", "700");
+        } else if (node.type === "doc") {
+          // Cream Document Shape with Wave Bottom
+          const w = 164;
+          const h = 62;
+          const left = cx - w / 2;
+          const right = cx + w / 2;
+          const top = cy - h / 2;
+          const bottom = cy + h / 2 - 4;
+          const d = `M ${left} ${top} L ${right} ${top} L ${right} ${bottom} Q ${cx + w / 4} ${bottom - 10}, ${cx} ${bottom} T ${left} ${bottom} Z`;
+          svg += `
+            <path d="${d}" fill="#fef3c7" stroke="#b45309" stroke-width="2" filter="url(#node-shadow)" />
+          `;
+          // Line 1 dark, Line 2 blue bold status
+          const line1 = node.text[0] || "";
+          const line2 = node.text[1] || "";
+          svg += `
+            <text x="${cx}" y="${cy - 6}" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">${escapeXML(line1)}</text>
+            <text x="${cx}" y="${cy + 11}" text-anchor="middle" font-size="11.5" font-weight="800" fill="#1d4ed8">${escapeXML(line2)}</text>
+          `;
+        }
+      });
+
+      svg += `</svg>`;
+      document.getElementById("svg-container").innerHTML = svg;
+    }
+
+    function renderMultilineText(cx, cy, lines, fontSize, fill, weight) {
+      const lineHeight = fontSize + 4;
+      const totalTextHeight = (lines.length - 1) * lineHeight;
+      const startY = cy - totalTextHeight / 2 + 4;
+      return lines.map((line, idx) => {
+        return `<text x="${cx}" y="${startY + idx * lineHeight}" text-anchor="middle" font-size="${fontSize}" font-weight="${weight}" fill="${fill}">${escapeXML(line)}</text>`;
+      }).join("");
+    }
+
+    function escapeXML(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+    }
+
+    /**
+     * INTERAKTIVITAS: ZOOM, FIT, SERVICE SWITCH, PRINT & MODAL
+     */
+    let currentZoom = 1.0;
+    let currentService = "balik_nama";
+
+    const sheetWrapper = document.getElementById("sheet-wrapper");
+    const zoomIndicator = document.getElementById("zoom-indicator");
+    const serviceSelect = document.getElementById("service-select");
+    const navTitle = document.getElementById("nav-title");
+    const canvasViewport = document.getElementById("canvas-viewport");
+
+    function applyZoom(zoom) {
+      currentZoom = Math.min(1.8, Math.max(0.45, Number(zoom.toFixed(2))));
+      sheetWrapper.style.transform = `scale(${currentZoom})`;
+      zoomIndicator.textContent = `${Math.round(currentZoom * 100)}%`;
+
+      // Adjust wrapper margin so scrolling reaches bottom cleanly when zoomed
+      const svgEl = sheetWrapper.querySelector("svg");
+      if (svgEl) {
+        const rawH = Number(svgEl.getAttribute("height")) || 950;
+        const scaledH = rawH * currentZoom;
+        const diffH = scaledH - rawH;
+        sheetWrapper.style.marginBottom = diffH > 0 ? `${diffH + 24}px` : "0px";
+      }
+    }
+
+    function fitToScreen() {
+      const availableWidth = canvasViewport.clientWidth - 64;
+      const sheetFullWidth = 1376; // 1320 SVG + 56 padding
+      const fitRatio = Math.min(1.0, Math.max(0.45, availableWidth / sheetFullWidth));
+      applyZoom(fitRatio);
+    }
+
+    function loadService(key) {
+      currentService = key;
+      const data = WORKFLOW_DATA[key];
+      navTitle.textContent = `Alur Kerja (Workflow) Pelayanan PBB-P2 DKI Jakarta - ${data.title}`;
+      renderWorkflowSVG(key);
+      applyZoom(currentZoom);
+    }
+
+    // Event Listeners: Service Dropdown
+    serviceSelect.addEventListener("change", (e) => {
+      loadService(e.target.value);
+      canvasViewport.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    // Event Listeners: Zoom & Fit
+    document.getElementById("btn-zoom-in").addEventListener("click", () => applyZoom(currentZoom + 0.1));
+    document.getElementById("btn-zoom-out").addEventListener("click", () => applyZoom(currentZoom - 0.1));
+    document.getElementById("btn-fit").addEventListener("click", fitToScreen);
+
+    // Event Listener: Print / Save as PDF
+    document.getElementById("btn-print").addEventListener("click", () => {
+      window.print();
+    });
+
+    // Modal Info & Syarat Dokumen
+    const docModal = document.getElementById("doc-modal");
+    document.getElementById("btn-info").addEventListener("click", () => {
+      const data = WORKFLOW_DATA[currentService];
+      document.getElementById("modal-title").textContent = data.title;
+      document.getElementById("modal-desc").textContent = data.desc;
+      document.getElementById("modal-output").textContent = data.output;
+      document.getElementById("modal-sla").textContent = data.sla;
+
+      const docsList = document.getElementById("modal-docs");
+      docsList.innerHTML = data.docs.map(d => {
+        const badgeClass = d.req === "Wajib"
+          ? "bg-blue-100 text-blue-800 border-blue-200"
+          : "bg-amber-100 text-amber-800 border-amber-200";
+        return `
+          <li class="flex items-start justify-between gap-2 p-2 rounded-md bg-slate-50 border border-slate-200">
+            <span class="text-slate-800 font-medium">${d.name}</span>
+            <span class="text-[11px] font-bold px-2 py-0.5 rounded border shrink-0 ${badgeClass}">${d.req}</span>
+          </li>
+        `;
+      }).join("");
+
+      docModal.classList.remove("hidden");
+      docModal.classList.add("flex");
+    });
+
+    function closeModal() {
+      docModal.classList.add("hidden");
+      docModal.classList.remove("flex");
+    }
+
+    document.getElementById("btn-close-modal").addEventListener("click", closeModal);
+    document.getElementById("btn-close-modal-footer").addEventListener("click", closeModal);
+    docModal.addEventListener("click", (e) => {
+      if (e.target === docModal) closeModal();
+    });
+
+    // Drag to Pan on Viewport
+    let isPanning = false;
+    let startX = 0, startY = 0, scrollLeft = 0, scrollTop = 0;
+
+    canvasViewport.addEventListener("mousedown", (e) => {
+      isPanning = true;
+      startX = e.pageX - canvasViewport.offsetLeft;
+      startY = e.pageY - canvasViewport.offsetTop;
+      scrollLeft = canvasViewport.scrollLeft;
+      scrollTop = canvasViewport.scrollTop;
+    });
+
+    canvasViewport.addEventListener("mouseleave", () => { isPanning = false; });
+    canvasViewport.addEventListener("mouseup", () => { isPanning = false; });
+    canvasViewport.addEventListener("mousemove", (e) => {
+      if (!isPanning) return;
+      e.preventDefault();
+      const x = e.pageX - canvasViewport.offsetLeft;
+      const y = e.pageY - canvasViewport.offsetTop;
+      canvasViewport.scrollLeft = scrollLeft - (x - startX);
+      canvasViewport.scrollTop = scrollTop - (y - startY);
+    });
+
+    // Initialize on load
+    window.addEventListener("DOMContentLoaded", () => {
+      loadService("balik_nama");
+      fitToScreen();
+    });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth < 1400) fitToScreen();
+    });
+  </script>
+</body>
+</html>

@@ -84,4 +84,41 @@
 
     function toggleAudioState(play) {
       isPlaying = play;
-      musicToggle.class
+      musicToggle.classList.toggle('text-white', play);
+      musicToggle.classList.toggle('text-white/50', !play);
+      musicIcon.classList.toggle('spin-slow', play);
+    }
+
+    function playMusic() {
+      bgMusic.play().then(() => toggleAudioState(true)).catch(() => {});
+    }
+
+    window.addEventListener('DOMContentLoaded', playMusic);
+    document.body.addEventListener('click', () => { if (!isPlaying) playMusic(); }, { once: true });
+    musicToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isPlaying ? (bgMusic.pause(), toggleAudioState(false)) : playMusic();
+    });
+
+    const container = document.getElementById('sortable-buttons');
+    const KEY = 'pajak_dki_order_v5';
+    let dragging = false;
+
+    JSON.parse(localStorage.getItem(KEY) || '[]').forEach(id => {
+      const el = container.querySelector(`[data-id="${id}"]`);
+      if (el) container.appendChild(el);
+    });
+
+    Sortable.create(container, {
+      animation: 200, delay: 150, delayOnTouchOnly: true, ghostClass: 'sortable-ghost',
+      onStart: () => { dragging = true; },
+      onEnd: () => {
+        localStorage.setItem(KEY, JSON.stringify([...container.children].map(el => el.dataset.id)));
+        setTimeout(() => { dragging = false; }, 100);
+      }
+    });
+
+    container.querySelectorAll('a').forEach(a => a.addEventListener('click', e => { if (dragging) e.preventDefault(); }));
+  </script>
+</body>
+</html>

@@ -288,29 +288,88 @@
     let isDragging = false;
     let startX, startY;
 
+    // Variabel untuk pinch-to-zoom
+    let initialPinchDistance = null;
+    let initialScale = 1;
+
     function updateTransform() {
       tree.style.transform = `translateX(calc(-50% + ${translateX}px)) translateY(${translateY}px) scale(${scale})`;
       zoomText.innerText = Math.round(scale * 100) + '%';
     }
     updateTransform();
 
-    // ZOOM IN & OUT
+    // ZOOM IN & OUT (TOMBOL)
     document.getElementById('btn-zoom-in').addEventListener('click', () => { scale = Math.min(scale + 0.1, 2); updateTransform(); });
     document.getElementById('btn-zoom-out').addEventListener('click', () => { scale = Math.max(scale - 0.1, 0.2); updateTransform(); });
     document.getElementById('btn-reset').addEventListener('click', () => { scale = isMobile ? 0.35 : 0.75; translateX = 0; translateY = isMobile ? 150 : 0; updateTransform(); });
 
-    // FUNGSI DRAG (MOUSE / TOUCH)
-    function startDrag(clientX, clientY) { isDragging = true; startX = clientX - translateX; startY = clientY - translateY; container.style.cursor = 'grabbing'; }
-    function moveDrag(clientX, clientY) { if (!isDragging) return; translateX = clientX - startX; translateY = clientY - startY; updateTransform(); }
-    function endDrag() { isDragging = false; container.style.cursor = 'grab'; }
+    // FUNGSI DRAG (MOUSE / TOUCH 1 Jari)
+    function startDrag(clientX, clientY) { 
+      isDragging = true; 
+      startX = clientX - translateX; 
+      startY = clientY - translateY; 
+      container.style.cursor = 'grabbing'; 
+    }
+    function moveDrag(clientX, clientY) { 
+      if (!isDragging) return; 
+      translateX = clientX - startX; 
+      translateY = clientY - startY; 
+      updateTransform(); 
+    }
+    function endDrag() { 
+      isDragging = false; 
+      container.style.cursor = 'grab'; 
+    }
 
+    // EVENT MOUSE (DESKTOP)
     container.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
     window.addEventListener('mousemove', (e) => { if (isDragging) { e.preventDefault(); moveDrag(e.clientX, e.clientY); } });
     window.addEventListener('mouseup', endDrag);
 
-    container.addEventListener('touchstart', (e) => { if(e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
-    container.addEventListener('touchmove', (e) => { if (isDragging && e.touches.length === 1) { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); } }, {passive: false});
-    container.addEventListener('touchend', endDrag);
+    // MENGHITUNG JARAK ANTARA DUA JARI (PINCH)
+    function getDistance(touches) {
+      return Math.hypot(
+        touches[0].clientX - touches[1].clientX,
+        touches[0].clientY - touches[1].clientY
+      );
+    }
+
+    // EVENT TOUCH (MOBILE)
+    container.addEventListener('touchstart', (e) => { 
+      if (e.touches.length === 1) { 
+        startDrag(e.touches[0].clientX, e.touches[0].clientY); 
+      } else if (e.touches.length === 2) {
+        isDragging = false; // Hentikan geser jika sedang mencubit
+        initialPinchDistance = getDistance(e.touches);
+        initialScale = scale;
+      }
+    }, {passive: false});
+
+    container.addEventListener('touchmove', (e) => { 
+      e.preventDefault(); // Cegah scroll bawaan browser
+      if (isDragging && e.touches.length === 1) { 
+        moveDrag(e.touches[0].clientX, e.touches[0].clientY); 
+      } else if (e.touches.length === 2) {
+        if (initialPinchDistance) {
+          const currentDistance = getDistance(e.touches);
+          const pinchRatio = currentDistance / initialPinchDistance;
+          scale = Math.max(0.2, Math.min(initialScale * pinchRatio, 2)); // Batasi zoom 20% - 200%
+          updateTransform();
+        }
+      }
+    }, {passive: false});
+
+    container.addEventListener('touchend', (e) => { 
+      if (e.touches.length < 2) {
+        initialPinchDistance = null;
+      }
+      if (e.touches.length === 0) {
+        endDrag(); 
+      } else if (e.touches.length === 1) {
+        // Lanjutkan geser jika satu jari dilepas tapi jari lain masih menempel
+        startDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    });
 
     container.addEventListener('wheel', (e) => {
       if (e.ctrlKey) { e.preventDefault(); scale = Math.max(0.2, Math.min(scale + (e.deltaY > 0 ? -0.05 : 0.05), 2)); updateTransform(); }

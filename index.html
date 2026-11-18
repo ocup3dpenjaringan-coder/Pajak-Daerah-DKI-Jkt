@@ -9,29 +9,21 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* Menyembunyikan scrollbar tapi tetap bisa di-scroll */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .glass-effect {
       background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.3);
     }
-    .glass-text {
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
+    .glass-text { text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
   </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex items-center justify-center p-4 font-sans">
 
   <!-- MOCKUP HP -->
-  <div class="relative w-[320px] h-[650px] bg-slate-900 rounded-[40px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] border-[8px] border-slate-800 overflow-hidden ring-1 ring-slate-700">
+  <div class="relative w-[320px] h-[650px] bg-slate-900 rounded-[40px] shadow-2xl border-[8px] border-slate-800 overflow-hidden ring-1 ring-slate-700">
     
     <!-- Background Gambar -->
     <div 
@@ -44,7 +36,7 @@
     <!-- Poni (Notch) HP -->
     <div class="absolute top-0 inset-x-0 h-6 bg-slate-800 rounded-b-xl w-32 mx-auto z-20"></div>
     
-    <!-- Area Konten (Bisa di-scroll) -->
+    <!-- Area Konten -->
     <div class="absolute inset-0 z-10 overflow-y-auto no-scrollbar pt-12 pb-20 px-6">
       
       <!-- Info Waktu (Real-time) -->
@@ -62,18 +54,20 @@
       <!-- DAFTAR TOMBOL LINK -->
       <div class="flex flex-col gap-4">
         
+        <!-- PENTING: Ganti link di dalam href="..." dengan alamat tujuan Anda. Wajib gunakan https:// -->
+        
         <!-- Tombol 1: Insentif PBB -->
-        <a href="#" target="_blank" class="block w-full py-4 px-6 rounded-full text-center text-white font-semibold shadow-lg transition-transform transform active:scale-95 glass-effect bg-gradient-to-r from-blue-500 to-blue-700 opacity-95 hover:opacity-100 border border-white/20">
+        <a href="https://bapenda.jakarta.go.id" target="_blank" rel="noopener noreferrer" class="block w-full py-4 px-6 rounded-full text-center text-white font-semibold shadow-lg transition-transform transform active:scale-95 glass-effect bg-gradient-to-r from-blue-500 to-blue-700 opacity-95 hover:opacity-100 border border-white/20">
           Insentif PBB
         </a>
 
         <!-- Tombol 2: Insentif BPHTB -->
-        <a href="#" target="_blank" class="block w-full py-4 px-6 rounded-full text-center text-white font-semibold shadow-lg transition-transform transform active:scale-95 glass-effect bg-gradient-to-r from-purple-500 to-purple-700 opacity-95 hover:opacity-100 border border-white/20">
+        <a href="https://bapenda.jakarta.go.id" target="_blank" rel="noopener noreferrer" class="block w-full py-4 px-6 rounded-full text-center text-white font-semibold shadow-lg transition-transform transform active:scale-95 glass-effect bg-gradient-to-r from-purple-500 to-purple-700 opacity-95 hover:opacity-100 border border-white/20">
           Insentif BPHTB
         </a>
 
         <!-- Tombol 3: Alur Verifikasi BPHTB -->
-        <a href="#" target="_blank" class="block w-full py-4 px-6 rounded-full text-center text-white font-semibold shadow-lg transition-transform transform active:scale-95 glass-effect bg-gradient-to-r from-emerald-500 to-emerald-700 opacity-95 hover:opacity-100 border border-white/20">
+        <a href="https://bapenda.jakarta.go.id" target="_blank" rel="noopener noreferrer" class="block w-full py-4 px-6 rounded-full text-center text-white font-semibold shadow-lg transition-transform transform active:scale-95 glass-effect bg-gradient-to-r from-emerald-500 to-emerald-700 opacity-95 hover:opacity-100 border border-white/20">
           Alur Verifikasi BPHTB
         </a>
 
@@ -101,8 +95,6 @@
       
       document.getElementById('clock').innerText = `${dayName}, ${day}-${monthName}-${year} ${hours}:${minutes}`;
     }
-    
-    // Jalankan jam pertama kali, lalu update setiap 1 detik
     updateClock();
     setInterval(updateClock, 1000);
   </script>

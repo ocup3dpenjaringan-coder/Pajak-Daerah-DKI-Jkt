@@ -3,286 +3,269 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0f172a">
-  <title>Insentif PBB-P2 - DKI Jakarta</title>
+  <title>Bagan Hierarki Insentif PBB - DKI Jakarta</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .glass { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.12); }
-    .glass-card { background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); }
-    /* Transisi untuk Accordion */
-    .acc-content { transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; }
-    .acc-content.open { max-height: 800px; opacity: 1; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; overflow: hidden; margin: 0; }
+    
+    /* Inti CSS untuk Garis Penghubung (Tree) */
+    .tree ul {
+      padding-top: 25px; position: relative; transition: all 0.5s;
+      display: flex; justify-content: center; padding-left: 0;
+    }
+    .tree li {
+      float: left; text-align: center; list-style-type: none;
+      position: relative; padding: 25px 8px 0 8px; transition: all 0.5s;
+    }
+    /* Garis horizontal */
+    .tree li::before, .tree li::after {
+      content: ''; position: absolute; top: 0; right: 50%;
+      border-top: 1.5px solid #94a3b8; width: 50%; height: 25px;
+    }
+    .tree li::after {
+      right: auto; left: 50%; border-left: 1.5px solid #94a3b8;
+    }
+    /* Menghilangkan garis untuk anak tunggal / ujung */
+    .tree li:only-child::after, .tree li:only-child::before { display: none; }
+    .tree li:only-child { padding-top: 0; }
+    .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+    .tree li:last-child::before { border-right: 1.5px solid #94a3b8; border-radius: 0; }
+    .tree li:first-child::after { border-radius: 0; }
+    /* Garis vertikal ke bawah dari induk */
+    .tree ul ul::before {
+      content: ''; position: absolute; top: 0; left: 50%;
+      border-left: 1.5px solid #94a3b8; width: 0; height: 25px; margin-left: -0.75px;
+    }
+
+    /* Efek Hover pada Kotak (Node) */
+    .node-item {
+      display: inline-block;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .node-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Area Kanvas untuk Fitur Drag & Zoom */
+    #canvas-area {
+      cursor: grab;
+      width: 100vw;
+      height: calc(100vh - 120px);
+      overflow: hidden;
+      position: relative;
+    }
+    #canvas-area:active { cursor: grabbing; }
+    
+    #tree-wrapper {
+      transform-origin: top center;
+      position: absolute;
+      left: 50%;
+      top: 40px;
+      transform: translateX(-50%) scale(0.85); /* Skala bawaan */
+      will-change: transform;
+    }
+
+    /* Mode Cetak (Print PDF) */
+    @media print {
+      body { overflow: visible; background: white; }
+      #header, #toolbar, .no-print { display: none !important; }
+      #canvas-area { height: auto; overflow: visible; position: static; cursor: auto; }
+      #tree-wrapper { position: static; transform: scale(0.65) !important; transform-origin: top left; left: 0; top: 0; margin-left: -150px;}
+    }
   </style>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center sm:p-4 font-sans m-0">
+<body class="flex flex-col h-screen">
 
-  <!-- Container HP -->
-  <div class="relative w-full h-[100dvh] sm:w-[330px] sm:h-[670px] sm:rounded-[40px] sm:shadow-2xl sm:border-[8px] sm:border-slate-800 overflow-hidden">
+  <!-- HEADER DAN TOOLBAR BIRU TUA -->
+  <div id="header" class="bg-[#114b7e] text-white pt-5 pb-4 px-8 shadow-md z-50 flex flex-col gap-4 shrink-0 border-b-4 border-[#0d3b66]">
+    <div>
+      <h1 class="text-[22px] font-bold tracking-wide">Bagan Hierarki Pengurangan dan Pembebasan Pokok PBB-P2 — DKI Jakarta</h1>
+      <p class="text-xs text-blue-100 mt-1 max-w-5xl leading-relaxed">Kriteria berdasarkan Keputusan Gubernur DKI Jakarta Nomor 857 Tahun 2025 jo. Nomor 458 Tahun 2026, serta kebijakan Pembebasan Otomatis sesuai Kepgub 281/2025 & 339/2026. Pengurangan dikelompokkan menurut besar persentasenya; kode huruf menunjuk pada urutan kriteria.</p>
+    </div>
     
-    <!-- Background Gambar -->
-    <div class="absolute inset-0 bg-cover bg-center z-0" style="background-image: url('https://images.unsplash.com/photo-1555899434-94d1368aa7af?q=80&w=600&auto=format&fit=crop')">
-      <div class="absolute inset-0 bg-slate-950/80"></div>
-    </div>
-
-    <!-- Poni (Notch) HP -->
-    <div class="hidden sm:block absolute top-0 inset-x-0 h-6 bg-slate-950 rounded-b-xl w-32 mx-auto z-20"></div>
-
-    <!-- Header & Tombol Kembali -->
-    <div class="absolute top-0 inset-x-0 z-30 pt-10 pb-4 px-5 glass border-b border-white/10 flex items-center gap-3">
-      <a href="index.html" class="p-2 rounded-full bg-slate-800/80 text-white hover:bg-blue-600 transition border border-slate-600 active:scale-95 shadow-md">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-      </a>
-      <h1 class="text-lg font-bold text-white drop-shadow-md tracking-wide">Insentif PBB-P2</h1>
-    </div>
-
-    <!-- Area Konten (Dapat di-scroll) -->
-    <div class="absolute inset-0 z-10 overflow-y-auto no-scrollbar pt-28 pb-12 px-4">
+    <!-- Tombol Fitur -->
+    <div id="toolbar" class="flex items-center gap-3 text-sm">
+      <button onclick="window.print()" class="bg-white text-slate-800 hover:bg-slate-100 px-4 py-2 rounded font-semibold shadow-sm flex items-center gap-2 transition">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Simpan sebagai PDF
+      </button>
       
-      <!-- 1. HIGHLIGHT: Aturan Bebas PBB 2 Miliar -->
-      <div class="glass-card p-4 rounded-2xl mb-6 border-l-4 border-l-emerald-500 relative overflow-hidden">
-        <div class="absolute -right-4 -top-4 w-20 h-20 bg-emerald-500/20 blur-2xl rounded-full"></div>
-        <h2 class="text-white font-bold text-sm mb-1 flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          Bebas PBB-P2 (Otomatis)
-        </h2>
-        <p class="text-[11px] text-slate-300 mb-2 leading-relaxed">Tanpa pengajuan (Secara Jabatan) untuk 1 objek (NJOP tertinggi) bagi Wajib Pajak Orang Pribadi dengan NIK valid.</p>
-        <div class="flex gap-2">
-           <div class="bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2 flex-1">
-              <div class="text-[9px] text-emerald-300 font-semibold mb-0.5 uppercase tracking-wider">Rumah Tapak</div>
-              <div class="text-xs text-white font-bold">≤ Rp 2 Miliar</div>
-           </div>
-           <div class="bg-emerald-900/40 border border-emerald-500/30 rounded-lg p-2 flex-1">
-              <div class="text-[9px] text-emerald-300 font-semibold mb-0.5 uppercase tracking-wider">Rusun/Apartemen</div>
-              <div class="text-xs text-white font-bold">≤ Rp 650 Juta</div>
-           </div>
-        </div>
+      <!-- Kontrol Zoom -->
+      <div class="flex items-center bg-white rounded shadow-sm text-slate-800 h-[36px]">
+        <button id="btn-zoom-out" class="px-3.5 h-full hover:bg-slate-100 border-r border-slate-200 font-bold text-lg active:bg-slate-200">−</button>
+        <span id="zoom-level" class="px-4 text-xs font-bold font-mono min-w-[4rem] text-center">85%</span>
+        <button id="btn-zoom-in" class="px-3.5 h-full hover:bg-slate-100 border-l border-slate-200 font-bold text-lg active:bg-slate-200">+</button>
       </div>
-
-      <!-- 2. BAGAN HIERARKI (Dapat di-scroll Horizontal) -->
-      <div class="mb-6">
-        <h3 class="text-white text-sm font-bold mb-2 pl-1">Bagan Hierarki Kebijakan</h3>
-        <div class="overflow-x-auto no-scrollbar bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 shadow-inner relative">
-          <!-- Lebar area bagan dikunci agar bisa discroll jika melebihi layar -->
-          <div class="min-w-[420px] flex flex-col items-center">
-             
-             <!-- Level 1: Root -->
-             <div class="bg-blue-600 text-white font-bold py-2 px-5 rounded-xl shadow-lg z-10 text-[11px] border border-blue-400">Insentif Pokok PBB-P2</div>
-             <div class="w-0.5 h-5 bg-slate-400"></div>
-             
-             <!-- Level 2 & 3 Wrapper -->
-             <div class="flex relative w-[360px] justify-between">
-                 <!-- Garis horizontal penghubung Level 1 ke Level 2 -->
-                 <div class="absolute top-0 left-[25%] right-[25%] h-0.5 bg-slate-400"></div>
-                 
-                 <!-- Kiri: Pengurangan -->
-                 <div class="flex flex-col items-center w-1/2">
-                     <div class="w-0.5 h-5 bg-slate-400 absolute top-0"></div>
-                     <div class="bg-lime-600 text-white font-bold py-1.5 px-4 rounded-lg shadow-lg z-10 text-[11px] mt-5 border border-lime-400">Pengurangan</div>
-                     <div class="w-0.5 h-5 bg-slate-400"></div>
-                     
-                     <div class="flex relative w-full justify-between">
-                         <div class="absolute top-0 left-[25%] right-[25%] h-0.5 bg-slate-400"></div>
-                         <div class="flex flex-col items-center w-1/2">
-                              <div class="w-0.5 h-4 bg-slate-400 absolute top-0"></div>
-                              <div class="bg-amber-500 text-slate-900 font-bold py-1 px-2 rounded-md shadow-lg z-10 text-[9px] mt-4 text-center leading-tight w-16 border border-amber-400">Secara<br>Jabatan</div>
-                         </div>
-                         <div class="flex flex-col items-center w-1/2">
-                              <div class="w-0.5 h-4 bg-slate-400 absolute top-0"></div>
-                              <div class="bg-amber-500 text-slate-900 font-bold py-1 px-2 rounded-md shadow-lg z-10 text-[9px] mt-4 text-center leading-tight w-16 border border-amber-400">Permohonan<br>WP</div>
-                         </div>
-                     </div>
-                 </div>
-
-                 <!-- Kanan: Pembebasan -->
-                 <div class="flex flex-col items-center w-1/2">
-                     <div class="w-0.5 h-5 bg-slate-400 absolute top-0"></div>
-                     <div class="bg-lime-600 text-white font-bold py-1.5 px-4 rounded-lg shadow-lg z-10 text-[11px] mt-5 border border-lime-400">Pembebasan</div>
-                     <div class="w-0.5 h-5 bg-slate-400"></div>
-                     
-                     <div class="flex relative w-full justify-between">
-                         <div class="absolute top-0 left-[25%] right-[25%] h-0.5 bg-slate-400"></div>
-                         <div class="flex flex-col items-center w-1/2">
-                              <div class="w-0.5 h-4 bg-slate-400 absolute top-0"></div>
-                              <div class="bg-amber-500 text-slate-900 font-bold py-1 px-2 rounded-md shadow-lg z-10 text-[9px] mt-4 text-center leading-tight w-16 border border-amber-400">Secara<br>Jabatan</div>
-                         </div>
-                         <div class="flex flex-col items-center w-1/2">
-                              <div class="w-0.5 h-4 bg-slate-400 absolute top-0"></div>
-                              <div class="bg-amber-500 text-slate-900 font-bold py-1 px-2 rounded-md shadow-lg z-10 text-[9px] mt-4 text-center leading-tight w-16 border border-amber-400">Permohonan<br>WP</div>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-          </div>
-        </div>
-        <p class="text-[9px] text-slate-400 text-center mt-2 italic">Geser bagan ke kiri/kanan untuk melihat penuh</p>
-      </div>
-
-      <!-- 3. DETAIL ATURAN (Accordion Interaktif) -->
-      <h3 class="text-white text-sm font-bold mb-3 pl-1">Rincian & Persyaratan</h3>
-      <div class="flex flex-col gap-3">
-        
-        <!-- Accordion 1: Pengurangan Jabatan -->
-        <div class="glass-card rounded-2xl overflow-hidden">
-           <button onclick="toggleAcc('acc1')" class="w-full flex items-center justify-between p-3.5 text-left active:bg-slate-800/50 transition">
-              <div class="flex items-center gap-3">
-                  <span class="w-7 h-7 rounded-full bg-lime-500/20 flex items-center justify-center text-lime-400 font-bold text-xs">%</span>
-                  <span class="font-bold text-white text-[13px]">Pengurangan (Jabatan)</span>
-              </div>
-              <svg id="arrow-acc1" class="w-4 h-4 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-           </button>
-           <div id="acc1" class="acc-content px-4 pb-4 text-[11px] text-slate-300">
-              <div class="border-t border-slate-700 pt-3">
-                <p class="mb-2 text-lime-300 font-semibold">Diberikan otomatis tanpa pengajuan:</p>
-                <ul class="list-disc pl-4 space-y-1.5">
-                   <li><strong class="text-white">Diskon 50%:</strong> RS/Klinik Nirlaba, Perguruan Tinggi Swasta, PAUD/Sekolah Swasta.</li>
-                   <li><strong class="text-white">Diskon 75%:</strong> BLU penyelenggara kegiatan selain pelayanan dasar & olahraga (non-komersial).</li>
-                </ul>
-              </div>
-           </div>
-        </div>
-
-        <!-- Accordion 2: Pengurangan Permohonan -->
-        <div class="glass-card rounded-2xl overflow-hidden">
-           <button onclick="toggleAcc('acc2')" class="w-full flex items-center justify-between p-3.5 text-left active:bg-slate-800/50 transition">
-              <div class="flex items-center gap-3">
-                  <span class="w-7 h-7 rounded-full bg-lime-500/20 flex items-center justify-center text-lime-400">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                  </span>
-                  <span class="font-bold text-white text-[13px]">Pengurangan (Permohonan)</span>
-              </div>
-              <svg id="arrow-acc2" class="w-4 h-4 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-           </button>
-           <div id="acc2" class="acc-content px-4 pb-4 text-[11px] text-slate-300">
-              <div class="border-t border-slate-700 pt-3 space-y-3">
-                <p class="text-amber-300 italic text-[10px]">*Syarat dilampirkan sesuai Kepgub 458/2026</p>
-                
-                <div class="bg-slate-800/60 rounded-lg p-2.5 border border-slate-700">
-                  <div class="font-bold text-blue-300 mb-1">Maksimal s.d. 100%</div>
-                  <ul class="list-disc pl-3 space-y-1">
-                     <li>WP Berpenghasilan Rendah <span class="text-[9px] text-slate-400 block">(Lampirkan Tagihan Listrik/Air)</span></li>
-                     <li>Yayasan Pendidikan <span class="text-[9px] text-slate-400 block">(Lampirkan Akta Pendirian)</span></li>
-                     <li>Bencana Alam / Kerusuhan</li>
-                     <li>WP Pailit <span class="text-[9px] text-slate-400 block">(Lampirkan Putusan Pengadilan & Penunjukan Kurator)</span></li>
-                     <li>WP Badan Rugi <span class="text-[9px] text-slate-400 block">(Lampirkan Laporan Laba Rugi/Aktivitas)</span></li>
-                  </ul>
-                </div>
-
-                <div class="bg-slate-800/60 rounded-lg p-2.5 border border-slate-700">
-                  <div class="font-bold text-blue-300 mb-1">Maksimal s.d. 50%</div>
-                  <ul class="list-disc pl-3 space-y-1">
-                     <li>Kenaikan pokok pajak >25%</li>
-                     <li>Penyedia Ruang Terbuka Hijau (RTH)</li>
-                  </ul>
-                </div>
-
-                <div class="bg-slate-800/60 rounded-lg p-2.5 border border-slate-700">
-                  <div class="font-bold text-blue-300 mb-1">Diskon 50% & 25%</div>
-                  <ul class="list-disc pl-3 space-y-1">
-                     <li><strong class="text-white">50%:</strong> Parpol, Lembaga Agama, Ormas, LBH (Akreditasi B), Organisasi Profesi, LAZ.</li>
-                     <li><strong class="text-white">50%:</strong> Cagar Budaya (Hunian) <span class="text-[9px] text-slate-400 block">(Lampirkan Ket. Pemeliharaan, Foto & Lanskap)</span></li>
-                     <li><strong class="text-white">25%:</strong> Cagar Budaya & Suaka Alam (Komersial).</li>
-                  </ul>
-                </div>
-              </div>
-           </div>
-        </div>
-
-        <!-- Accordion 3: Pembebasan Jabatan -->
-        <div class="glass-card rounded-2xl overflow-hidden">
-           <button onclick="toggleAcc('acc3')" class="w-full flex items-center justify-between p-3.5 text-left active:bg-slate-800/50 transition">
-              <div class="flex items-center gap-3">
-                  <span class="w-7 h-7 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                  </span>
-                  <span class="font-bold text-white text-[13px]">Pembebasan (Jabatan)</span>
-              </div>
-              <svg id="arrow-acc3" class="w-4 h-4 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-           </button>
-           <div id="acc3" class="acc-content px-4 pb-4 text-[11px] text-slate-300">
-              <div class="border-t border-slate-700 pt-3">
-                <p class="mb-2 text-amber-300 font-semibold">Digratiskan 100% otomatis:</p>
-                <ul class="list-disc pl-4 space-y-1.5">
-                   <li>Barang Milik Negara / Daerah (Non-Pemerintah & Non-Komersial).</li>
-                   <li>BLU / BLUD Pelayanan Dasar & Olahraga.</li>
-                   <li>Rumah Negara Golongan I & II.</li>
-                   <li>Barang Rampasan Negara.</li>
-                   <li>Prasarana, Sarana, & Utilitas Umum (Fasum/Fasos).</li>
-                </ul>
-              </div>
-           </div>
-        </div>
-
-        <!-- Accordion 4: Pembebasan Permohonan -->
-        <div class="glass-card rounded-2xl overflow-hidden">
-           <button onclick="toggleAcc('acc4')" class="w-full flex items-center justify-between p-3.5 text-left active:bg-slate-800/50 transition">
-              <div class="flex items-center gap-3">
-                  <span class="w-7 h-7 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                  </span>
-                  <span class="font-bold text-white text-[13px]">Pembebasan (Permohonan)</span>
-              </div>
-              <svg id="arrow-acc4" class="w-4 h-4 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-           </button>
-           <div id="acc4" class="acc-content px-4 pb-4 text-[11px] text-slate-300">
-              <div class="border-t border-slate-700 pt-3 space-y-3">
-                
-                <div class="bg-slate-800/60 rounded-lg p-2.5 border border-slate-700">
-                  <div class="font-bold text-blue-300 mb-1">Golongan Orang Pribadi</div>
-                  <div class="text-[9px] text-emerald-400 font-semibold mb-2 bg-emerald-900/30 p-1 rounded">Syarat Khusus: Berlaku untuk Max 1 Objek (Rumah Tapak/Rusun/Tanah Kosong &lt; 1000m²).</div>
-                  <ul class="list-disc pl-3 space-y-1">
-                     <li>Veteran, Perintis Kemerdekaan, Pahlawan Nasional, & Penerima Bintang RI.</li>
-                     <li>Mantan Presiden/Wapres & Mantan Gubernur/Wagub DKI.</li>
-                     <li>Pensiunan PNS / TNI / POLRI.</li>
-                     <li>Guru & Dosen (PNS maupun Non-PNS).</li>
-                  </ul>
-                </div>
-
-                <div class="bg-slate-800/60 rounded-lg p-2.5 border border-slate-700">
-                  <div class="font-bold text-blue-300 mb-1">Lain-Lain</div>
-                  <ul class="list-disc pl-3 space-y-1">
-                     <li>Lembaga Keagamaan (Fungsi Non-Tempat Ibadah & area komersial &lt; 50%).</li>
-                     <li>Lahan Pertanian & Perikanan (Luas area &gt; 50%).</li>
-                     <li>Objek PBB yang sedang disita oleh Pemerintah.</li>
-                  </ul>
-                </div>
-
-              </div>
-           </div>
-        </div>
-
-      </div>
+      
+      <button id="btn-reset" class="bg-white text-slate-800 hover:bg-slate-100 px-4 py-2 rounded font-semibold shadow-sm transition">Reset</button>
+      
+      <button class="bg-white text-slate-800 hover:bg-slate-100 px-4 py-2 rounded font-semibold shadow-sm transition">Lihat QR Code</button>
+      
+      <!-- Tombol Kembali ke Menu HP -->
+      <a href="index.html" class="ml-auto bg-slate-800/40 border border-slate-400 text-white hover:bg-slate-800/60 px-4 py-2 rounded font-semibold flex items-center gap-2 transition">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Menu Utama
+      </a>
     </div>
-
-    <!-- Garis Bawah HP -->
-    <div class="hidden sm:block absolute bottom-2 inset-x-0 h-1 bg-slate-500 rounded-full w-24 mx-auto z-20"></div>
   </div>
 
-  <script>
-    // Fungsi untuk interaksi Accordion (Tarik-Turun)
-    function toggleAcc(id) {
-       const el = document.getElementById(id);
-       const arrow = document.getElementById('arrow-' + id);
-       
-       // Menutup semua accordion lain (Exclusive Accordion)
-       const allAcc = ['acc1', 'acc2', 'acc3', 'acc4'];
-       allAcc.forEach(acc => {
-          if(acc !== id) {
-             document.getElementById(acc).classList.remove('open');
-             document.getElementById('arrow-' + acc).style.transform = 'rotate(0deg)';
-          }
-       });
+  <!-- AREA KANVAS BAGAN (Bisa ditarik dan digeser) -->
+  <div id="canvas-area">
+    <div id="tree-wrapper" class="tree flex justify-center pb-24">
+      
+      <ul>
+        <li>
+          <!-- Node Induk Utama (Root) -->
+          <div class="node-item bg-[#124d85] text-white rounded-lg shadow-lg px-8 py-3.5 border border-[#0d3b66]">
+            <div class="font-bold text-xl mb-0.5">Insentif PBB-P2 DKI Jakarta</div>
+            <div class="text-[13px] text-blue-200 font-medium">Pajak Bumi dan Bangunan Perdesaan dan Perkotaan</div>
+          </div>
+          
+          <!-- Kategori Level 2 -->
+          <ul>
+            
+            <!-- CABANG 1: BEBAS OTOMATIS -->
+            <li>
+              <div class="node-item bg-[#0d9488] text-white rounded-md shadow px-5 py-2.5 border border-[#0f766e]">
+                <div class="font-bold text-[15px]">Pembebasan PBB-P2</div>
+                <div class="text-[11px] text-teal-100">Diberikan Secara Jabatan (Otomatis)</div>
+              </div>
+              <ul>
+                <li>
+                  <div class="node-item bg-[#14b8a6] text-white rounded shadow-md px-5 py-2 border border-[#0d9488]">
+                    <div class="font-bold text-[22px]">100%</div>
+                    <div class="text-[10px]">Tanpa pengajuan permohonan</div>
+                  </div>
+                  <ul>
+                    <!-- Leaf Nodes Bebas Otomatis -->
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[260px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#14b8a6]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#14b8a6] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">a</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-semibold">Rumah Tapak (NJOP ≤ Rp 2 Miliar)</span>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[260px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#14b8a6]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#14b8a6] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">b</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-semibold">Rusun / Apartemen (NJOP ≤ Rp 650 Juta)</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
 
-       // Membuka / Menutup yang diklik
-       if (!el.classList.contains('open')) {
-           el.classList.add('open');
-           arrow.style.transform = 'rotate(180deg)';
-       } else {
-           el.classList.remove('open');
-           arrow.style.transform = 'rotate(0deg)';
-       }
-    }
-  </script>
-</body>
-</html>
+            <!-- CABANG 2: PENGURANGAN (JABATAN) -->
+            <li>
+              <div class="node-item bg-[#16a34a] text-white rounded-md shadow px-5 py-2.5 border border-[#15803d]">
+                <div class="font-bold text-[15px]">Pengurangan Pokok PBB-P2</div>
+                <div class="text-[11px] text-green-100">Diberikan Secara Jabatan</div>
+              </div>
+              <ul>
+                <li>
+                  <div class="node-item bg-[#22c55e] text-white rounded shadow-md px-5 py-2 border border-[#16a34a]">
+                    <div class="font-bold text-[22px]">75%</div>
+                    <div class="text-[10px]">dari PBB-P2 terutang</div>
+                  </div>
+                  <ul>
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[240px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#22c55e]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#22c55e] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">a</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Objek BLU (selain pelayanan dasar & olahraga)</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node-item bg-[#22c55e] text-white rounded shadow-md px-5 py-2 border border-[#16a34a]">
+                    <div class="font-bold text-[22px]">50%</div>
+                    <div class="text-[10px]">dari PBB-P2 terutang</div>
+                  </div>
+                  <ul>
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[260px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#22c55e]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#22c55e] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">b</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-medium">RS/Klinik Nirlaba, Perguruan Tinggi Swasta, PAUD/Sekolah Swasta</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+
+            <!-- CABANG 3: PENGURANGAN (PERMOHONAN) -->
+            <li>
+              <div class="node-item bg-[#ea580c] text-white rounded-md shadow px-5 py-2.5 border border-[#c2410c]">
+                <div class="font-bold text-[15px]">Pengurangan Pokok PBB-P2</div>
+                <div class="text-[11px] text-orange-100">Atas Permohonan Wajib Pajak</div>
+              </div>
+              <ul>
+                <li>
+                  <div class="node-item bg-[#f97316] text-white rounded shadow-md px-4 py-2 border border-[#ea580c]">
+                    <div class="font-bold text-xl">Maks. 100%</div>
+                  </div>
+                  <ul>
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[240px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#f97316]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#f97316] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">a</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-medium">WP Penghasilan Rendah, Badan Rugi, Pailit, Bencana Alam, Yayasan Pendidikan</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node-item bg-[#f97316] text-white rounded shadow-md px-4 py-2 border border-[#ea580c]">
+                    <div class="font-bold text-xl">Maks. 50%</div>
+                  </div>
+                  <ul>
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[220px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#f97316]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#f97316] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">b</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Kenaikan PBB >25%, serta Penyedia/Pemanfaat RTH</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node-item bg-[#f97316] text-white rounded shadow-md px-5 py-2 border border-[#ea580c]">
+                    <div class="font-bold text-xl">50%</div>
+                  </div>
+                  <ul>
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[240px] relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#f97316]"></div>
+                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
+                          <span class="bg-[#f97316] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">c</span>
+                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Parpol, Ormas Agama, LBH, Organisasi Profesi, LAZ, Cagar Budaya (Hunian)</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <div class="node-item bg-[#f97316] text-white rounded shadow-md px-5 py-2 border border-[#ea580c]">
+                    <div class="font-bold text-xl">25%</div>
+                  </div>
+                  <ul>
+                    <li>
+                      <div class="node-item bg-

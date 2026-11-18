@@ -60,7 +60,7 @@
   <div id="header" class="bg-[#114b7e] text-white pt-4 pb-3 px-5 sm:px-8 shadow-md z-50 flex flex-col gap-3 shrink-0 border-b-4 border-[#0d3b66]">
     <div>
       <h1 class="text-lg sm:text-[22px] font-bold tracking-wide leading-tight">Bagan Hierarki Pengurangan & Pembebasan Pokok PBB-P2</h1>
-      <p class="text-[10px] sm:text-xs text-blue-200 mt-1 max-w-5xl leading-relaxed hidden sm:block">Kriteria berdasarkan Keputusan Gubernur DKI Jakarta Nomor 857 Tahun 2025 jo. Nomor 458 Tahun 2026, serta Kepgub 281/2025 & 339/2026.</p>
+      <p class="text-[10px] sm:text-xs text-blue-200 mt-1 max-w-5xl leading-relaxed hidden sm:block">Kriteria berdasarkan Keputusan Gubernur DKI Jakarta Nomor 857 Tahun 2025 jo. Nomor 458 Tahun 2026, serta Kepgub 281/2025 & 339/2026. Berlaku 1 April - 31 Desember 2026.</p>
     </div>
     
     <!-- Tombol Fitur (Bisa di-scroll menyamping di HP) -->
@@ -87,46 +87,144 @@
     </div>
   </div>
 
-  <!-- AREA KANVAS BAGAN (Flex-1 memastikan kanvas mengisi sisa layar) -->
+  <!-- AREA KANVAS BAGAN -->
   <div id="canvas-area" class="flex-1 bg-[#f4f6f8]">
     <div id="tree-wrapper" class="tree pb-32">
       
-      <!-- Struktur Hirarki (Sama dengan sebelumnya) -->
       <ul>
         <li>
+          <!-- Node Induk Utama (Root) -->
           <div class="node-item bg-[#124d85] text-white rounded-lg shadow-lg px-8 py-3.5 border border-[#0d3b66]">
-            <div class="font-bold text-xl mb-0.5">Insentif PBB-P2 DKI Jakarta</div>
-            <div class="text-[13px] text-blue-200 font-medium">Pajak Bumi dan Bangunan Perdesaan dan Perkotaan</div>
+            <div class="font-bold text-xl mb-0.5">Insentif PBB-P2 DKI Jakarta (Tahun 2026)</div>
+            <div class="text-[13px] text-blue-200 font-medium">Masa Berlaku: 1 April 2026 s.d. 31 Desember 2026</div>
           </div>
+          
           <ul>
-            <!-- CABANG 1: BEBAS OTOMATIS -->
+            <!-- CABANG 1: POKOK PAJAK -->
             <li>
-              <div class="node-item bg-[#0d9488] text-white rounded-md shadow px-5 py-2.5 border border-[#0f766e]">
-                <div class="font-bold text-[15px]">Pembebasan PBB-P2</div>
-                <div class="text-[11px] text-teal-100">Diberikan Secara Jabatan (Otomatis)</div>
+              <div class="node-item bg-[#0369a1] text-white rounded-md shadow px-8 py-2.5 border border-[#0284c7]">
+                <div class="font-bold text-[18px]">1. POKOK PAJAK</div>
               </div>
               <ul>
+                
+                <!-- 1.1 SECARA JABATAN -->
                 <li>
-                  <div class="node-item bg-[#14b8a6] text-white rounded shadow-md px-5 py-2 border border-[#0d9488]">
-                    <div class="font-bold text-[22px]">100%</div>
-                    <div class="text-[10px]">Tanpa pengajuan permohonan</div>
+                  <div class="node-item bg-[#0ea5e9] text-white rounded-md shadow px-5 py-2 border border-[#38bdf8]">
+                    <div class="font-bold text-[15px]">1.1. Diberikan Secara Jabatan (Otomatis)</div>
+                    <div class="text-[10px] text-sky-100 mt-1">Tanpa perlu mengajukan permohonan</div>
+                  </div>
+                  <ul>
+                    
+                    <!-- A. Pembebasan -->
+                    <li>
+                      <div class="node-item bg-[#14b8a6] text-white rounded shadow-md px-4 py-2 border border-[#0d9488]">
+                        <div class="font-bold text-[15px]">A. Pembebasan PBB-P2</div>
+                        <div class="text-[10px] text-teal-100">Diskon 100% Penuh</div>
+                      </div>
+                      <ul>
+                        <li>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[240px] relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#14b8a6]"></div>
+                            <div class="pl-4 py-3 pr-3 flex flex-col gap-1.5">
+                              <span class="text-[12px] text-slate-700 leading-snug font-bold">Rumah Tapak & Rusun</span>
+                              <span class="text-[10.5px] text-slate-600 leading-tight">Rumah Tapak NJOP ≤ Rp2 Miliar atau Rusun/Apartemen NJOP ≤ Rp650 Juta.</span>
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[240px] relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#14b8a6]"></div>
+                            <div class="pl-4 py-3 pr-3 flex flex-col gap-1.5">
+                              <span class="text-[12px] text-slate-700 leading-snug font-bold">Aset Negara/Fasum</span>
+                              <span class="text-[10.5px] text-slate-600 leading-tight">BMN/BMD, BLU Pelayanan Dasar, Rumah Negara I & II, Barang Rampasan.</span>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+                    
+                    <!-- B. Pengurangan -->
+                    <li>
+                      <div class="node-item bg-[#22c55e] text-white rounded shadow-md px-4 py-2 border border-[#16a34a]">
+                        <div class="font-bold text-[15px]">B. Pengurangan Pokok</div>
+                        <div class="text-[10px] text-green-100">Pemotongan Tagihan SPPT 2026</div>
+                      </div>
+                      <ul>
+                        <li>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[220px] relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#22c55e]"></div>
+                            <div class="pl-4 py-3 pr-3 flex flex-col gap-1">
+                              <span class="text-[13px] text-green-600 font-black">Diskon 50%</span>
+                              <span class="text-[10.5px] text-slate-700 leading-tight">Bagi objek yang tidak dapat bebas pajak & tagihan 2025 bernilai Rp0.</span>
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[220px] relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#22c55e]"></div>
+                            <div class="pl-4 py-3 pr-3 flex flex-col gap-1">
+                              <span class="text-[13px] text-green-600 font-black">Pembatasan Naik 5%</span>
+                              <span class="text-[10.5px] text-slate-700 leading-tight">Membatasi lonjakan tagihan max 5% dari tagihan 2025.</span>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+
+                    <!-- C. Keringanan Bayar -->
+                    <li>
+                      <div class="node-item bg-[#eab308] text-white rounded shadow-md px-4 py-2 border border-[#ca8a04]">
+                        <div class="font-bold text-[15px]">C. Keringanan Bayar</div>
+                        <div class="text-[10px] text-yellow-100">Diskon Cepat (Early Bird)</div>
+                      </div>
+                      <ul>
+                        <li>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded flex flex-col w-[260px] overflow-hidden">
+                            <div class="bg-slate-100 px-3 py-1.5 border-b font-bold text-[11px] text-slate-700 text-left">Pajak Tahun 2026</div>
+                            <div class="p-2 flex flex-col gap-1.5 text-left text-[10.5px] text-slate-600">
+                              <div class="flex justify-between items-center"><span class="bg-[#eab308] text-white px-1.5 py-0.5 rounded font-bold">10%</span><span>Bayar 1 April - 31 Mei 2026</span></div>
+                              <div class="flex justify-between items-center"><span class="bg-[#eab308] text-white px-1.5 py-0.5 rounded font-bold">7,5%</span><span>Bayar 1 Juni - 31 Juli 2026</span></div>
+                              <div class="flex justify-between items-center"><span class="bg-[#eab308] text-white px-1.5 py-0.5 rounded font-bold">5%</span><span>Bayar 1 Ags - 30 Sep 2026</span></div>
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded flex flex-col w-[230px] overflow-hidden">
+                            <div class="bg-slate-100 px-3 py-1.5 border-b font-bold text-[11px] text-slate-700 text-left">Tunggakan 2021 s.d. 2025</div>
+                            <div class="p-2 flex flex-col gap-1.5 text-left text-[10.5px] text-slate-600">
+                              <div class="flex justify-between items-center"><span class="bg-[#ca8a04] text-white px-1.5 py-0.5 rounded font-bold">5%</span><span>Bayar s/d 31 Des 2026</span></div>
+                              <div class="text-[9.5px] italic mt-1 text-center bg-yellow-50 p-1 rounded border border-yellow-200">Tidak ada diskon pokok untuk tunggakan 1993-2020 di Kepgub 339/2026</div>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+
+                  </ul>
+                </li>
+
+                <!-- 1.2 ATAS PERMOHONAN -->
+                <li>
+                  <div class="node-item bg-[#f97316] text-white rounded-md shadow px-5 py-2 border border-[#ea580c]">
+                    <div class="font-bold text-[15px]">1.2. Atas Permohonan Wajib Pajak</div>
+                    <div class="text-[10px] text-orange-100 mt-1">Diajukan melalui sistem online (pajakonline)</div>
                   </div>
                   <ul>
                     <li>
-                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[260px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#14b8a6]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#14b8a6] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">a</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-semibold">Rumah Tapak (NJOP ≤ Rp 2 Miliar)</span>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded flex flex-col w-[300px] overflow-hidden text-left">
+                        <div class="bg-orange-50 px-3 py-2 border-b border-orange-200 font-bold text-[12px] text-orange-700">Maks. 100% & 50% (Sesuai Kepgub 857/2025)</div>
+                        <div class="p-3 text-[10.5px] text-slate-700 leading-relaxed">
+                          <span class="font-bold text-orange-600">100%:</span> WP Penghasilan Rendah, Badan Rugi, Pailit, Bencana Alam, Veteran/Pahlawan.<br>
+                          <span class="font-bold text-orange-600">50%:</span> Cagar Budaya, Lembaga Agama, RTH.
                         </div>
                       </div>
                     </li>
                     <li>
-                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[260px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#14b8a6]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#14b8a6] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">b</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-semibold">Rusun / Apartemen (NJOP ≤ Rp 650 Juta)</span>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded flex flex-col w-[300px] overflow-hidden text-left">
+                        <div class="bg-orange-50 px-3 py-2 border-b border-orange-200 font-bold text-[12px] text-orange-700">Pengurangan Khusus 75% (Kepgub 339/2026)</div>
+                        <div class="p-3 text-[10.5px] text-slate-700 leading-relaxed">
+                          Diberikan kepada keluarga (anak kandung sederajat) dari Veteran, Pahlawan, Mantan Presiden/Wapres/Gubernur/Wagub <strong>yang sudah meninggal dunia</strong>. 
+                          <span class="block mt-1 italic text-slate-500 text-[9.5px]">(Berlaku max 1 objek, wajib lampirkan Akta Kematian & KK).</span>
                         </div>
                       </div>
                     </li>
@@ -135,179 +233,33 @@
               </ul>
             </li>
 
-            <!-- CABANG 2: PENGURANGAN (JABATAN) -->
+            <!-- CABANG 2: DENDA / SANKSI -->
             <li>
-              <div class="node-item bg-[#16a34a] text-white rounded-md shadow px-5 py-2.5 border border-[#15803d]">
-                <div class="font-bold text-[15px]">Pengurangan Pokok PBB-P2</div>
-                <div class="text-[11px] text-green-100">Diberikan Secara Jabatan</div>
+              <div class="node-item bg-[#be123c] text-white rounded-md shadow px-8 py-2.5 border border-[#9f1239]">
+                <div class="font-bold text-[18px]">2. DENDA PAJAK (SANKSI)</div>
               </div>
               <ul>
                 <li>
-                  <div class="node-item bg-[#22c55e] text-white rounded shadow-md px-5 py-2 border border-[#16a34a]">
-                    <div class="font-bold text-[22px]">75%</div>
-                    <div class="text-[10px]">dari PBB-P2 terutang</div>
+                  <div class="node-item bg-[#f43f5e] text-white rounded-md shadow px-5 py-2 border border-[#e11d48]">
+                    <div class="font-bold text-[15px]">2.1. Diberikan Secara Jabatan (Otomatis)</div>
+                    <div class="text-[10px] text-rose-100 mt-1">Dihapus penuh saat pembayaran (s.d 31 Des 2026)</div>
                   </div>
                   <ul>
                     <li>
                       <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[240px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#22c55e]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#22c55e] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">a</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Objek BLU (selain pelayanan dasar & olahraga)</span>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node-item bg-[#22c55e] text-white rounded shadow-md px-5 py-2 border border-[#16a34a]">
-                    <div class="font-bold text-[22px]">50%</div>
-                    <div class="text-[10px]">dari PBB-P2 terutang</div>
-                  </div>
-                  <ul>
-                    <li>
-                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[260px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#22c55e]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#22c55e] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">b</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-medium">RS/Klinik Nirlaba, Perguruan Tinggi Swasta, PAUD/Sekolah Swasta</span>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-
-            <!-- CABANG 3: PENGURANGAN (PERMOHONAN) -->
-            <li>
-              <div class="node-item bg-[#ea580c] text-white rounded-md shadow px-5 py-2.5 border border-[#c2410c]">
-                <div class="font-bold text-[15px]">Pengurangan Pokok PBB-P2</div>
-                <div class="text-[11px] text-orange-100">Atas Permohonan Wajib Pajak</div>
-              </div>
-              <ul>
-                <li>
-                  <div class="node-item bg-[#f97316] text-white rounded shadow-md px-4 py-2 border border-[#ea580c]">
-                    <div class="font-bold text-xl">Maks. 100%</div>
-                  </div>
-                  <ul>
-                    <li>
-                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[240px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#f97316]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#f97316] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">a</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-medium">WP Penghasilan Rendah, Badan Rugi, Pailit, Bencana Alam, Yayasan Pendidikan</span>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node-item bg-[#f97316] text-white rounded shadow-md px-4 py-2 border border-[#ea580c]">
-                    <div class="font-bold text-xl">Maks. 50%</div>
-                  </div>
-                  <ul>
-                    <li>
-                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[220px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#f97316]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#f97316] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">b</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Kenaikan PBB >25%, serta Penyedia/Pemanfaat RTH</span>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node-item bg-[#f97316] text-white rounded shadow-md px-5 py-2 border border-[#ea580c]">
-                    <div class="font-bold text-xl">50%</div>
-                  </div>
-                  <ul>
-                    <li>
-                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[240px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#f97316]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#f97316] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">c</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Parpol, Ormas Agama, LBH, Organisasi Profesi, LAZ, Cagar Budaya (Hunian)</span>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <div class="node-item bg-[#f97316] text-white rounded shadow-md px-5 py-2 border border-[#ea580c]">
-                    <div class="font-bold text-xl">25%</div>
-                  </div>
-                  <ul>
-                    <li>
-                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[200px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#f97316]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#f97316] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">d</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Cagar Budaya / Suaka Alam (Komersial)</span>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-
-            <!-- CABANG 4: PEMBEBASAN (JABATAN/NEGARA) -->
-            <li>
-              <div class="node-item bg-[#2563eb] text-white rounded-md shadow px-5 py-2.5 border border-[#1d4ed8]">
-                <div class="font-bold text-[15px]">Pembebasan Pokok PBB-P2</div>
-                <div class="text-[11px] text-blue-100">Diberikan Secara Jabatan (Aset Negara)</div>
-              </div>
-              <ul>
-                <li>
-                  <div class="node-item bg-[#3b82f6] text-white rounded shadow-md px-5 py-2 border border-[#2563eb]">
-                    <div class="font-bold text-[22px]">100%</div>
-                    <div class="text-[10px]">Dibebaskan Penuh</div>
-                  </div>
-                  <ul>
-                    <li>
-                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[250px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#3b82f6]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#3b82f6] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">a</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-medium">BMN / BMD, BLU Pelayanan Dasar, Rumah Negara I & II, Barang Rampasan, Fasum</span>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-
-            <!-- CABANG 5: PEMBEBASAN (PERMOHONAN) -->
-            <li>
-              <div class="node-item bg-[#9333ea] text-white rounded-md shadow px-5 py-2.5 border border-[#7e22ce]">
-                <div class="font-bold text-[15px]">Pembebasan Pokok PBB-P2</div>
-                <div class="text-[11px] text-purple-100">Atas Permohonan Wajib Pajak</div>
-              </div>
-              <ul>
-                <li>
-                  <div class="node-item bg-[#a855f7] text-white rounded shadow-md px-5 py-2 border border-[#9333ea]">
-                    <div class="font-bold text-[22px]">100%</div>
-                    <div class="text-[10px]">Dibebaskan Penuh</div>
-                  </div>
-                  <ul>
-                    <li>
-                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[270px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#a855f7]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#a855f7] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">a</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Veteran, Pahlawan, Pensiunan TNI/Polri/PNS, Guru/Dosen, Mantan Presiden & Kepala Daerah</span>
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#f43f5e]"></div>
+                        <div class="pl-4 py-3 pr-3 flex flex-col gap-1">
+                          <span class="text-[13px] text-rose-600 font-black">Penghapusan (0%)</span>
+                          <span class="text-[10.5px] text-slate-700 leading-tight">Denda <strong>bunga angsuran</strong> bagi WP yang mencicil PBB-P2.</span>
                         </div>
                       </div>
                     </li>
                     <li>
                       <div class="node-item bg-white border border-slate-200 shadow-sm rounded-r flex items-start text-left w-[260px] relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#a855f7]"></div>
-                        <div class="pl-4 py-3 pr-3 flex items-start gap-2.5">
-                          <span class="bg-[#a855f7] text-white text-[11px] font-bold px-1.5 py-0.5 rounded shadow-sm mt-0.5">b</span>
-                          <span class="text-[12px] text-slate-700 leading-snug font-medium">Lembaga Agama (Non-Ibadah), Lahan Pertanian/Perikanan >50%, Objek Sitaan</span>
+                        <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#f43f5e]"></div>
+                        <div class="pl-4 py-3 pr-3 flex flex-col gap-1">
+                          <span class="text-[13px] text-rose-600 font-black">Penghapusan (0%)</span>
+                          <span class="text-[10.5px] text-slate-700 leading-tight">Denda <strong>keterlambatan tunggakan tahun 2021-2025</strong>.<br><br><span class="italic text-[9.5px]">Juga berlaku jika pokok sudah lunas tapi sanksi belum dibayar.</span></span>
                         </div>
                       </div>
                     </li>
@@ -328,11 +280,11 @@
     const tree = document.getElementById('tree-wrapper');
     const zoomText = document.getElementById('zoom-level');
     
-    // Auto-detect mobile vs desktop untuk mengatur skala awal (Lebih kecil di HP)
+    // Auto-detect mobile vs desktop
     const isMobile = window.innerWidth < 768;
-    let scale = isMobile ? 0.45 : 0.85; 
+    let scale = isMobile ? 0.35 : 0.75; 
     let translateX = 0;
-    let translateY = isMobile ? 200 : 0; // Turunkan sedikit di HP agar tidak tertutup header
+    let translateY = isMobile ? 150 : 0;
     let isDragging = false;
     let startX, startY;
 
@@ -340,79 +292,42 @@
       tree.style.transform = `translateX(calc(-50% + ${translateX}px)) translateY(${translateY}px) scale(${scale})`;
       zoomText.innerText = Math.round(scale * 100) + '%';
     }
-    updateTransform(); // Panggil pertama kali
+    updateTransform();
 
-    // 1. ZOOM IN & OUT (TOMBOL KONTROL)
-    document.getElementById('btn-zoom-in').addEventListener('click', () => {
-      scale = Math.min(scale + 0.1, 2); updateTransform();
-    });
-    document.getElementById('btn-zoom-out').addEventListener('click', () => {
-      scale = Math.max(scale - 0.1, 0.2); updateTransform();
-    });
-    document.getElementById('btn-reset').addEventListener('click', () => {
-      scale = isMobile ? 0.45 : 0.85; translateX = 0; translateY = isMobile ? 200 : 0; updateTransform();
-    });
+    // ZOOM IN & OUT
+    document.getElementById('btn-zoom-in').addEventListener('click', () => { scale = Math.min(scale + 0.1, 2); updateTransform(); });
+    document.getElementById('btn-zoom-out').addEventListener('click', () => { scale = Math.max(scale - 0.1, 0.2); updateTransform(); });
+    document.getElementById('btn-reset').addEventListener('click', () => { scale = isMobile ? 0.35 : 0.75; translateX = 0; translateY = isMobile ? 150 : 0; updateTransform(); });
 
-    // 2. FUNGSI DRAG UTAMA (MENANGKAP KOORDINAT MOUSE / JARI)
-    function startDrag(clientX, clientY) {
-      isDragging = true;
-      startX = clientX - translateX;
-      startY = clientY - translateY;
-      container.style.cursor = 'grabbing';
-    }
-    function moveDrag(clientX, clientY) {
-      if (!isDragging) return;
-      translateX = clientX - startX;
-      translateY = clientY - startY;
-      updateTransform();
-    }
-    function endDrag() {
-      isDragging = false;
-      container.style.cursor = 'grab';
-    }
+    // FUNGSI DRAG (MOUSE / TOUCH)
+    function startDrag(clientX, clientY) { isDragging = true; startX = clientX - translateX; startY = clientY - translateY; container.style.cursor = 'grabbing'; }
+    function moveDrag(clientX, clientY) { if (!isDragging) return; translateX = clientX - startX; translateY = clientY - startY; updateTransform(); }
+    function endDrag() { isDragging = false; container.style.cursor = 'grab'; }
 
-    // Aksi Klik dan Tarik Mouse (Desktop)
     container.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
     window.addEventListener('mousemove', (e) => { if (isDragging) { e.preventDefault(); moveDrag(e.clientX, e.clientY); } });
     window.addEventListener('mouseup', endDrag);
 
-    // Aksi Sentuh Jari (Mobile Touch Support - Perbaikan Utama)
-    container.addEventListener('touchstart', (e) => {
-      if(e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
-    }, {passive: false});
-    container.addEventListener('touchmove', (e) => {
-      if (isDragging && e.touches.length === 1) { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); }
-    }, {passive: false});
+    container.addEventListener('touchstart', (e) => { if(e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
+    container.addEventListener('touchmove', (e) => { if (isDragging && e.touches.length === 1) { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); } }, {passive: false});
     container.addEventListener('touchend', endDrag);
 
-    // Aksi Putar Roda Mouse (Scroll to Zoom di Desktop)
     container.addEventListener('wheel', (e) => {
-      if (e.ctrlKey) {
-        e.preventDefault();
-        scale = Math.max(0.2, Math.min(scale + (e.deltaY > 0 ? -0.05 : 0.05), 2));
-        updateTransform();
-      }
+      if (e.ctrlKey) { e.preventDefault(); scale = Math.max(0.2, Math.min(scale + (e.deltaY > 0 ? -0.05 : 0.05), 2)); updateTransform(); }
     }, { passive: false });
 
-    // --- FITUR MODAL QR CODE ---
+    // MODAL QR CODE
     const btnQr = document.getElementById('btn-qr');
     const qrModal = document.getElementById('qr-modal');
     const closeQr = document.getElementById('close-qr');
     const qrContent = document.getElementById('qr-content');
 
-    function openModal() {
-      qrModal.classList.remove('hidden');
-      setTimeout(() => { qrModal.classList.remove('opacity-0'); qrContent.classList.remove('scale-95'); }, 10);
-    }
-    function closeModal() {
-      qrModal.classList.add('opacity-0'); qrContent.classList.add('scale-95');
-      setTimeout(() => { qrModal.classList.add('hidden'); }, 300);
-    }
+    function openModal() { qrModal.classList.remove('hidden'); setTimeout(() => { qrModal.classList.remove('opacity-0'); qrContent.classList.remove('scale-95'); }, 10); }
+    function closeModal() { qrModal.classList.add('opacity-0'); qrContent.classList.add('scale-95'); setTimeout(() => { qrModal.classList.add('hidden'); }, 300); }
 
     btnQr.addEventListener('click', openModal);
     closeQr.addEventListener('click', closeModal);
     qrModal.addEventListener('click', (e) => { if(e.target === qrModal) closeModal(); });
-
   </script>
 </body>
 </html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bagan Hierarki Insentif BPHTB DKI Jakarta</title>
+<style>
+:root{
+  --ink:#16202e; --muted:#5a6676; --line:#9aa7b8; --bg:#f3f6fa;
+  --navy:#0b3b66; --navy2:#0e5a96;
+  --teal:#0f766e; --slate:#334e68;
+  --c75:#1f7a4d; --c50:#d97706; --cb:#6d4fc2; --c0:#0e7fa8;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+header{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;padding:22px 32px}
+header h1{margin:0 0 6px;font-size:22px;font-weight:700;letter-spacing:.2px}
+header p{margin:0;font-size:14px;opacity:.92;line-height:1.5}
+.wrap{overflow-x:auto;padding:28px 24px 12px}
+.tree{display:inline-block;min-width:100%}
+
+/* ===== pohon ===== */
+.tree ul{display:flex;justify-content:center;margin:0;padding:28px 0 0;position:relative}
+.tree>ul{padding-top:0}
+.tree li{list-style:none;position:relative;padding:28px 12px 0;display:flex;flex-direction:column;align-items:center}
+.tree li::before,.tree li::after{content:"";position:absolute;top:0;right:50%;width:50%;height:28px;border-top:2px solid var(--line)}
+.tree li::after{right:auto;left:50%;border-left:2px solid var(--line)}
+.tree li:only-child::before,.tree li:only-child::after{display:none}
+.tree li:only-child{padding-top:0}
+.tree li:first-child::before,.tree li:last-child::after{border:0 none}
+.tree li:last-child::before{border-right:2px solid var(--line);border-radius:0 10px 0 0}
+.tree li:first-child::after{border-radius:10px 0 0 0}
+.tree ul ul::before{content:"";position:absolute;top:0;left:50%;height:28px;border-left:2px solid var(--line)}
+
+/* ===== kotak simpul ===== */
+.node{border-radius:14px;color:#fff;text-align:center;box-shadow:0 4px 12px rgba(16,32,46,.18)}
+.node .t{font-weight:700;line-height:1.25}
+.node .s{margin-top:4px;font-size:13px;opacity:.95;line-height:1.35}
+.root{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:18px 34px}
+.root .t{font-size:20px}
+.root .s{font-size:13.5px}
+.l2{padding:14px 26px;min-width:250px}
+.l2 .t{font-size:17px}
+.l2.a{background:var(--teal)}
+.l2.b{background:var(--slate)}
+.l3{padding:12px 22px;min-width:240px;max-width:300px}
+.l3 .big{font-size:34px;font-weight:800;line-height:1}
+.l3 .s{font-size:13px}
+.l3 .t{font-size:17px}
+.n75{background:var(--c75)}
+.n50{background:var(--c50)}
+.nb{background:var(--cb)}
+.n0{background:var(--c0)}
+
+/* ===== kartu daftar ===== */
+.card{position:relative;margin-top:16px;background:#fff;border:1px solid #d5dde8;border-top-width:4px;border-radius:12px;padding:14px 16px;box-shadow:0 3px 10px rgba(16,32,46,.08);width:290px}
+.card::before{content:"";position:absolute;left:50%;top:-20px;height:16px;border-left:2px solid var(--line)}
+.card.wide{width:620px}
+.card.c75{border-top-color:var(--c75)}
+.card.c50{border-top-color:var(--c50)}
+.card.cb{border-top-color:var(--cb)}
+.card.c0{border-top-color:var(--c0)}
+.card .hd{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.cols{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(8,auto);grid-auto-flow:column;gap:0 22px}
+.it{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed #e2e8f0;font-size:13.5px;line-height:1.45}
+.it:last-child{border-bottom:0}
+.k{flex:none;min-width:26px;text-align:center;font-weight:700;font-size:12px;color:#fff;border-radius:6px;padding:2px 0;margin-top:1px}
+.c75 .k{background:var(--c75)} .c50 .k{background:var(--c50)} .cb .k{background:var(--cb)} .c0 .k{background:var(--c0)}
+.note{margin-top:10px;padding:9px 11px;background:#f4f7fb;border-radius:8px;font-size:12.5px;line-height:1.5;color:var(--muted)}
+
+/* ===== catatan ===== */
+.notes{max-width:1180px;margin:8px auto 0;padding:0 32px 36px}
+.notes h2{font-size:15px;margin:18px 0 8px}
+.notes ol{margin:0;padding-left:20px;font-size:13.5px;line-height:1.65;color:#2b3645}
+.src{margin-top:14px;font-size:12.5px;color:var(--muted)}
+.tools{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px}
+.btn{font:inherit;font-size:14px;font-weight:600;border:0;border-radius:8px;padding:9px 16px;cursor:pointer;background:#fff;color:var(--navy)}
+.btn:hover{background:#e6eef7}
+.qrbox{max-width:1116px;margin:8px auto 36px;padding:18px 20px;background:#fff;border:1px solid #d5dde8;border-radius:12px;display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.qrbox #qr{flex:none;padding:8px;background:#fff;border:1px solid #d5dde8;border-radius:8px;line-height:0}
+.qrbox h2{margin:0 0 6px;font-size:16px}
+.qrbox p{margin:0 0 8px;font-size:13.5px;color:var(--muted);line-height:1.5}
+.qrbox .lnk{font-size:12.5px;word-break:break-all;color:var(--navy2)}
+.qrbox .btn{background:var(--navy);color:#fff;margin-top:6px}
+.qrbox .btn:hover{background:var(--navy2)}
+@page{size:A3 landscape;margin:10mm}
+@media print{
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .card,.node{box-shadow:none}
+  .no-print{display:none!important}
+  .wrap{overflow:visible;padding:12px 0}
+  .tree{zoom:.82!important}
+  .qrbox,.card,.node{break-inside:avoid}
+}
+.zoom{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.16);border-radius:10px;padding:3px}
+.zoom .btn{padding:6px 12px;background:#fff}
+.zoom .zv{min-width:48px;text-align:center;font-size:13px;font-weight:600}
+.btn:disabled{opacity:.6;cursor:wait}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Bagan Hierarki Pengurangan dan Pembebasan Pokok BPHTB — DKI Jakarta</h1>
+  <p>Kriteria berdasarkan Keputusan Gubernur DKI Jakarta Nomor 450 Tahun 2026 (ditetapkan 13 Mei 2026). Pengurangan dikelompokkan menurut besar persentasenya; kode kecil (a, b, c, …) menunjuk huruf pada Lampiran A angka 1.</p>
+  <div class="tools no-print">
+    <button class="btn" id="btnPdf" type="button">⬇ Simpan sebagai PDF</button>
+    <div class="zoom" role="group" aria-label="Zoom bagan">
+      <button class="btn" id="zOut" type="button" aria-label="Perkecil">−</button>
+      <span class="zv" id="zv">100%</span>
+      <button class="btn" id="zIn" type="button" aria-label="Perbesar">+</button>
+      <button class="btn" id="zReset" type="button">Reset</button>
+    </div>
+    <button class="btn" type="button" onclick="document.getElementById('qrbox').scrollIntoView({behavior:'smooth'})">Lihat QR Code</button>
+  </div>
+</header>
+
+<div class="wrap"><div class="tree">
+<ul><li>
+  <div class="node root"><div class="t">Insentif BPHTB DKI Jakarta</div><div class="s">Bea Perolehan Hak atas Tanah dan Bangunan</div></div>
+  <ul>
+
+  <!-- ===== PENGURANGAN ===== -->
+  <li>
+    <div class="node l2 a"><div class="t">Pengurangan Pokok BPHTB</div><div class="s">Lampiran A · diberikan secara jabatan</div></div>
+    <ul>
+
+      <li>
+        <div class="node l3 n75"><div class="big">75%</div><div class="s">dari BPHTB terutang · huruf a–e</div></div>
+        <div class="card c75">
+          <div class="it"><span class="k">a</span><span>Perolehan hak untuk kepentingan sosial, pendidikan, atau kesehatan</span></div>
+          <div class="it"><span class="k">b</span><span>WP orang pribadi veteran, PNS, TNI/Polri, pensiunan PNS, purnawirawan TNI/Polri, atau janda/dudanya, penerima rumah dinas dari pemerintah</span></div>
+          <div class="it"><span class="k">c</span><span>WP orang pribadi, hak baru melalui program nasional pendaftaran tanah, luas tanah s.d. 60 m²</span></div>
+          <div class="it"><span class="k">d</span><span>WP orang pribadi penerima hak program nasional pertanahan yang telah meninggal dunia saat pelaporan</span></div>
+          <div class="it"><span class="k">e</span><span>WP orang pribadi ber-KTP DKI, usia ≥ 18 tahun atau telah kawin, perolehan pertama kali hak baru berupa rumah tapak/tanah kosong, NPOP s.d. Rp1 miliar</span></div>
+        </div>
+      </li>
+
+      <li>
+        <div class="node l3 n50"><div class="big">50%</div><div class="s">dari BPHTB terutang · huruf f–u</div></div>
+        <div class="card c50 wide">
+          <div class="cols">
+            <div class="it"><span class="k">f</span><span>Hibah wasiat</span></div>
+            <div class="it"><span class="k">g</span><span>Waris</span></div>
+            <div class="it"><span class="k">h</span><span>Hak baru kelanjutan perpanjangan hak (setelah hak sebelumnya berakhir), tanpa perubahan nama</span></div>
+            <div class="it"><span class="k">i</span><span>Pengganti tanah yang dibebaskan pemerintah untuk kepentingan umum</span></div>
+            <div class="it"><span class="k">j</span><span>Diserahkan ke pemerintah sebagai kewajiban penyerahan lahan (IPPR/SIPPT atau kewajiban lain)</span></div>
+            <div class="it"><span class="k">k</span><span>Hak baru selain hak pengelolaan, tanah dikuasai fisik lebih dari 20 tahun</span></div>
+            <div class="it"><span class="k">l</span><span>Hak baru dari tanah eks desa atau eks kota praja</span></div>
+            <div class="it"><span class="k">m</span><span>Hak baru di atas hak pengelolaan atas nama Pemprov DKI Jakarta</span></div>
+            <div class="it"><span class="k">n</span><span>Veteran, PNS, TNI/Polri, pensiunan, purnawirawan, atau janda/dudanya memperoleh rumah dinas (jual beli, tukar menukar, hibah, hibah wasiat, waris)</span></div>
+            <div class="it"><span class="k">o</span><span>Hibah antar orang pribadi sedarah garis lurus 1 derajat ke atas / ke bawah</span></div>
+            <div class="it"><span class="k">p</span><span>Hak baru dari tanah waris, diperoleh ahli waris</span></div>
+            <div class="it"><span class="k">q</span><span>WP orang pribadi ber-KTP DKI, usia ≥ 18 tahun atau telah kawin, pertama kali via jual beli rumah tapak / satuan rusun, NPOP s.d. Rp500 juta</span></div>
+            <div class="it"><span class="k">r</span><span>WP badan: penggabungan usaha</span></div>
+            <div class="it"><span class="k">s</span><span>WP badan: peleburan usaha</span></div>
+            <div class="it"><span class="k">t</span><span>WP badan: hak baru berupa hak pengelolaan</span></div>
+            <div class="it"><span class="k">u</span><span>BUMD: bagian penyertaan modal pemerintah daerah</span></div>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="node l3 nb"><div class="t">Sebesar porsi bangunan</div><div class="s">porsi BPHTB terutang atas bangunan · huruf v</div></div>
+        <div class="card cb">
+          <div class="it"><span class="k">v</span><span>WP badan, hak baru selain hak pengelolaan dalam rangka perpanjangan hak atas tanah bersama rumah susun, atas nama pemegang hak yang berbeda dengan pemegang sebelumnya</span></div>
+          <div class="note">Porsi bangunan = selisih BPHTB atas tanah dan bangunan dengan BPHTB atas tanahnya saja.</div>
+        </div>
+      </li>
+
+    </ul>
+  </li>
+
+  <!-- ===== PEMBEBASAN ===== -->
+  <li>
+    <div class="node l2 b"><div class="t">Pembebasan Pokok BPHTB</div><div class="s">Lampiran B · diberikan secara jabatan</div></div>
+    <ul>
+      <li>
+        <div class="node l3 n0"><div class="t">Dibebaskan</div><div class="s">pokok BPHTB tidak terutang</div></div>
+        <div class="card c0">
+          <div class="it"><span class="k">B</span><span>WP yang memperoleh hak atas tanah dan/atau bangunan sebagai pelaksanaan program pemerintah pusat dan/atau daerah berupa kemudahan pembangunan dan perolehan rumah bagi masyarakat berpenghasilan rendah yang tidak memenuhi kriteria pengecualian objek BPHTB</span></div>
+        </div>
+      </li>
+    </ul>
+  </li>
+
+  </ul>
+</li></ul>
+</div></div>
+
+<section class="notes">
+  <h2>Ketentuan penting</h2>
+  <ol>
+    <li>Pengurangan pokok BPHTB diberikan secara jabatan pada saat wajib pajak melakukan pelaporan BPHTB (Diktum Kedua).</li>
+    <li>Huruf e dan q berlaku untuk hak atas tanah/bangunan pertama kali di wilayah DKI Jakarta, termasuk suami/istri, yang tercatat dalam sistem informasi manajemen pajak daerah yang dikelola Bapenda (A.2).</li>
+    <li>Untuk huruf o, bila pemberi atau penerima hibah lebih dari satu orang, pengurangan tetap dapat diberikan selama paling sedikit satu penerima hibah mempunyai hubungan keluarga sedarah garis lurus satu derajat dengan pemberi hibah, atau sebaliknya (A.3).</li>
+    <li>Keputusan ini mencabut Keputusan Gubernur Nomor 840 Tahun 2025 dan berlaku sejak tanggal ditetapkan (Diktum Ketiga dan Keempat).</li>
+  </ol>
+  <p class="src">Sumber: Keputusan Gubernur DKI Jakarta Nomor 450 Tahun 2026 tentang Kriteria Pemberian Pengurangan dan Pembebasan Pokok BPHTB, beserta Lampiran. Uraian pada kotak diringkas; rujuk teks resmi untuk redaksi lengkap.</p>
+</section>
+
+<section class="qrbox" id="qrbox">
+  <div id="qr"></div>
+  <div>
+    <h2>Scan untuk membuka bagan ini</h2>
+    <p>Arahkan kamera ponsel ke QR code untuk membuka halaman ini, atau salin tautan di bawah.</p>
+    <div class="lnk" id="linkTxt"></div>
+    <button class="btn no-print" id="btnCopy" type="button">Salin tautan</button>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+  var PUB="https://claude.ai/artifact/M3jA7LjaSTCxEQoKPxzGMk";
+  var url=PUB||location.href.split('#')[0];
+  document.getElementById('linkTxt').textContent=url;
+  try{
+    new QRCode(document.getElementById('qr'),{text:url,width:170,height:170,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});
+  }catch(e){document.getElementById('qr').textContent='QR tidak dapat dimuat';}
+  var tree=document.querySelector('.tree'),zoom=1;
+  function setZoom(z){zoom=Math.min(2,Math.max(.4,Math.round(z*10)/10));tree.style.zoom=zoom;document.getElementById('zv').textContent=Math.round(zoom*100)+'%';}
+  document.getElementById('zIn').addEventListener('click',function(){setZoom(zoom+.1);});
+  document.getElementById('zOut').addEventListener('click',function(){setZoom(zoom-.1);});
+  document.getElementById('zReset').addEventListener('click',function(){setZoom(1);});
+  var pdfBtn=document.getElementById('btnPdf');
+  pdfBtn.addEventListener('click',async function(){
+    var label=pdfBtn.textContent,prev=zoom;
+    pdfBtn.disabled=true;pdfBtn.textContent='Membuat PDF…';
+    try{
+      var dl=null;
+      try{if(window.claude&&claude.use)dl=await claude.use('downloads');}catch(e){}
+      if(!dl||!window.html2canvas||!window.jspdf){window.print();return;}
+      tree.style.zoom=1;
+      var W=Math.max(document.documentElement.scrollWidth,tree.scrollWidth+48);
+      var canvas=await html2canvas(document.body,{scale:2,backgroundColor:'#f3f6fa',windowWidth:W,width:W,useCORS:true,
+        ignoreElements:function(el){return el.classList&&el.classList.contains('no-print');},
+        onclone:function(d){d.querySelector('.wrap').style.overflow='visible';d.body.style.width=W+'px';}});
+      var w=canvas.width/2,h=canvas.height/2;
+      var pdf=new window.jspdf.jsPDF({orientation:w>h?'l':'p',unit:'px',format:[w,h],hotfixes:['px_scaling']});
+      pdf.addImage(canvas.toDataURL('image/jpeg',.92),'JPEG',0,0,w,h);
+      await dl.save({filename:'Bagan_Insentif_BPHTB_DKI_Jakarta.pdf',data:pdf.output('blob')});
+    }catch(e){
+      if(!e||e.code!=='declined')alert('PDF gagal dibuat. Coba cetak lewat browser (Ctrl+P) dan pilih Simpan sebagai PDF.');
+    }finally{
+      tree.style.zoom=prev;pdfBtn.disabled=false;pdfBtn.textContent=label;
+    }
+  });
+  document.getElementById('btnCopy').addEventListener('click',function(){
+    var b=this;
+    function ok(){b.textContent='Tautan tersalin ✓';setTimeout(function(){b.textContent='Salin tautan';},1800);}
+    try{navigator.clipboard.writeText(url).then(ok,function(){window.prompt('Salin tautan:',url);});}
+    catch(e){window.prompt('Salin tautan:',url);}
+  });
+})();
+</script>
+
+</body>
+</html>

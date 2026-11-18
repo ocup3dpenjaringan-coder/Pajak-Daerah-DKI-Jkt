@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alur Kerja Penelitian BPHTB Secara Elektronik</title>
+<style>
+:root{--bg:#eef2f7;--bar:#0f2a5c;--fg:#0f172a;--card:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1220;--bar:#0a1730;--fg:#e5e7eb;--card:#1e293b}}
+:root[data-theme="dark"]{--bg:#0b1220;--bar:#0a1730;--fg:#e5e7eb;--card:#1e293b}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Segoe UI",Roboto,Arial,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bar);color:#fff;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+header h1{font-size:16px;margin:0;line-height:1.25}
+header small{display:block;font-weight:400;opacity:.8;font-size:12px}
+.tb{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+button{font:600 13px "Segoe UI",Arial,sans-serif;border:0;border-radius:8px;padding:8px 12px;cursor:pointer;background:#fff;color:#0f2a5c}
+button:hover{background:#dbeafe}
+button.pr{background:#16a34a;color:#fff}button.pr:hover{background:#15803d}
+button.qr{background:#f59e0b;color:#111}button.qr:hover{background:#d97706}
+#zl{min-width:48px;text-align:center;font-weight:700;font-size:13px}
+main{padding:16px;display:flex;flex-direction:column;align-items:center;gap:20px;overflow:auto;cursor:grab;user-select:none;-webkit-user-select:none}
+main:active{cursor:grabbing}
+.sheet{width:calc(1180px*var(--z,1));flex:none;background:#fff;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.18);padding:calc(10px*var(--z,1))}
+svg{display:block;width:100%;height:auto;font-family:"Segoe UI",Roboto,Arial,sans-serif}
+.ti{fill:#bfdbfe;stroke:#0f172a;stroke-width:1.5}.tt{font-size:15px;font-weight:700;text-anchor:middle;fill:#0f172a}
+.ln0{fill:#fff}.ln1{fill:#f4f7fb}.lh{fill:#e2e8f0;stroke:#0f172a;stroke-width:1.2}
+.lt{font-size:13.5px;font-weight:700;text-anchor:middle;fill:#0f172a}
+.lb{fill:none;stroke:#64748b;stroke-width:1.2}
+.p{fill:#fff;stroke:#0f172a;stroke-width:1.8}.d{fill:#fde68a;stroke:#0f172a;stroke-width:1.8}
+.o{fill:#fef3c7;stroke:#b7791f;stroke-width:1.8}.t{fill:#0f172a;stroke:#0f172a}.c{fill:#fff;stroke:#1d4ed8;stroke-width:2.2}
+.tx{font-size:12.5px;font-weight:600;text-anchor:middle;fill:#0f172a}.tx.dd{font-size:11.5px}.tx.tm{fill:#fff;font-size:13px}.tx.sm{font-size:11px}
+.tx .b{fill:#1d4ed8;font-weight:800}.tx .r{fill:#dc2626;font-weight:800;font-style:italic}
+.e{fill:none;stroke:#1d4ed8;stroke-width:2.2;stroke-linejoin:round}
+.lq{fill:#fff;stroke:none;opacity:.95}.ly{fill:#15803d;font-size:11.5px;font-weight:800;text-anchor:middle}.ln{fill:#dc2626;font-size:11.5px;font-weight:800;text-anchor:middle}
+dialog{border:0;border-radius:14px;padding:22px;background:var(--card);color:var(--fg);max-width:380px;width:92%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+dialog h2{margin:0 0 4px;font-size:17px}dialog p{margin:4px 0 12px;font-size:12.5px;opacity:.8}
+#qrbox{display:inline-block;background:#fff;padding:12px;border-radius:10px;min-height:120px}
+dialog input{width:100%;margin:12px 0 8px;padding:8px;border:1px solid #94a3b8;border-radius:8px;font-size:12px;background:var(--card);color:var(--fg)}
+dialog .row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+dialog button{background:#0f2a5c;color:#fff}dialog button.x{background:#64748b}
+@media print{
+ @page{size:A4 portrait;margin:8mm}
+ header{display:none}body,main{background:#fff;padding:0;gap:0;display:block}
+ .sheet{width:100%!important;box-shadow:none;padding:0;page-break-after:always;break-after:page;border-radius:0}
+ .sheet:last-child{page-break-after:auto;break-after:auto}
+ svg{max-height:278mm}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<header>
+ <h1>Alur Kerja (Workflow) Penelitian BPHTB Secara Elektronik<small>Lampiran II.A Keputusan Kepala Bapenda DKI Jakarta No. 160 Tahun 2025</small></h1>
+ <div class="tb">
+  <button id="zo" title="Perkecil">&#8722; Zoom Out</button>
+  <span id="zl">100%</span>
+  <button id="zi" title="Perbesar">+ Zoom In</button>
+  <button id="zf" title="Sesuaikan lebar layar">Fit</button>
+  <button class="pr" id="pdf">Simpan sebagai PDF</button>
+  <button class="qr" id="qb">Scan Barcode</button>
+ </div>
+</header>
+<main id="m">
+ <div class="sheet"><svg id="s1"></svg></div>
+ <div class="sheet"><svg id="s2"></svg></div>
+</main>
+
+<dialog id="dlg">
+ <h2>Scan untuk membuka flowchart</h2>
+ <p>Arahkan kamera ponsel ke barcode berikut.</p>
+ <div id="qrbox"></div>
+ <input id="qu" aria-label="Tautan halaman">
+ <div class="row"><button id="qg">Perbarui QR</button><button id="qc">Salin tautan</button><button class="x" id="qx">Tutup</button></div>
+ <p id="qn"></p>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const LW=190,W=LW*6,HD=56;
+const lanes=["WP","Sistem","Pelayanan &amp; Penetapan","Penagihan","Pendataan","Kaunit"];
+const DS={p:[134,56],d:[130,100],o:[132,62],t:[92,34]};
+const esc=s=>s.replace(/&/g,"&amp;");
+
+function txt(x,y,tx,cls,fs){
+ const L=tx.split("|"),lh=fs+3,y0=y-(L.length-1)*lh/2+fs*.35;
+ return `<text class="tx ${cls||""}" x="${x}">`+L.map((l,i)=>{
+  const m=l[0]=="*"?"b":l[0]=="#"?"r":"";const v=esc(m?l.slice(1):l);
+  return `<tspan x="${x}" y="${y0+i*lh}"${m?` class="${m}"`:""}>${v}</tspan>`}).join("")+`</text>`;
+}
+function drawNode(n){
+ const {x,y,hw,hh,t,tx}=n;
+ if(t=="p")return `<rect class="p" x="${x-hw}" y="${y-hh}" width="${2*hw}" height="${2*hh}" rx="10"/>`+txt(x,y,tx,"",12.5);
+ if(t=="t")return `<rect class="t" x="${x-hw}" y="${y-hh}" width="${2*hw}" height="${2*hh}" rx="${hh}"/>`+txt(x,y,tx,"tm",13);
+ if(t=="d")return `<polygon class="d" points="${x},${y-hh} ${x+hw},${y} ${x},${y+hh} ${x-hw},${y}"/>`+txt(x,y,tx,"dd",11.5);
+ if(t=="o"){const a=hw,b=hh;return `<path class="o" transform="translate(${x} ${y})" d="M${-a} ${-b}H${a}V${b-7}C${a*.5} ${b-18} ${a*.5} ${b+8} 0 ${b-4}S${-a*.5} ${b-18} ${-a} ${b-7}Z"/>`+txt(x,y-3,tx,"",12.5);}
+ const sm=tx.includes("|");return `<circle class="c" cx="${x}" cy="${y}" r="${hw}"/>`+txt(x,y,tx,sm?"sm":"",sm?11:13);
+}
+function anchor(n,s,o){o=o||0;return s=="t"?[n.x+o,n.y-n.hh]:s=="b"?[n.x+o,n.y+n.hh]:s=="l"?[n.x-n.hw,n.y+o]:[n.x+n.hw,n.y+o];}
+function route(a,b,fs,ts,via){
+ if(via)return [a,...via.map(p=>[p[0],p[1]+HD]),b];
+ const h=s=>s=="l"||s=="r";
+ if(h(fs)&&!h(ts))return [a,[b[0],a[1]],b];
+ if(!h(fs)&&h(ts))return [a,[a[0],b[1]],b];
+ if(!h(fs)){if(a[0]==b[0])return [a,b];const m=(a[1]+b[1])/2;return [a,[a[0],m],[b[0],m],b];}
+ if(a[1]==b[1])return [a,b];const mx=(a[0]+b[0])/2;return [a,[mx,a[1]],[mx,b[1]],b];
+}
+function pathD(p){
+ let d=`M${p[0][0]} ${p[0][1]}`;
+ for(let i=1;i<p.length-1;i++){
+  const a=p[i-1],b=p[i],c=p[i+1],l1=Math.hypot(b[0]-a[0],b[1]-a[1]),l2=Math.hypot(c[0]-b[0],c[1]-b[1]);
+  if(!l1||!l2)continue;const r=Math.min(10,l1/2,l2/2);
+  d+=`L${b[0]-(b[0]-a[0])/l1*r} ${b[1]-(b[1]-a[1])/l1*r}Q${b[0]} ${b[1]} ${b[0]+(c[0]-b[0])/l2*r} ${b[1]+(c[1]-b[1])/l2*r}`;
+ }
+ const z=p[p.length-1];return d+`L${z[0]} ${z[1]}`;
+}
+function build(el,title,nodes,edges,H){
+ let s=`<defs><marker id="ar${el}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker></defs>`;
+ s+=`<rect class="ti" x="0" y="0" width="${W}" height="28"/><text class="tt" x="${W/2}" y="20">${title}</text>`;
+ lanes.forEach((l,i)=>{s+=`<rect class="ln${i%2}" x="${i*LW}" y="28" width="${LW}" height="${H+28}"/><rect class="lh" x="${i*LW}" y="28" width="${LW}" height="28"/><text class="lt" x="${i*LW+LW/2}" y="47">${l}</text>`});
+ s+=`<rect class="lb" x="0" y="28" width="${W}" height="${H+28}"/>`;
+ const M={};
+ nodes.forEach(([id,l,y,t,tx,w,h])=>{
+  let hw,hh;if(t=="c"){hw=hh=tx.includes("|")?36:16}else{const d=DS[t];hw=(w||d[0])/2;hh=(h||d[1])/2}
+  M[id]={x:l*LW+LW/2,y:y+HD,hw,hh,t,tx};
+ });
+ let ed="",lab="";
+ edges.forEach(([f,fs,t,ts,lb,via,o1,o2])=>{
+  const A=anchor(M[f],fs,o1),B=anchor(M[t],ts,o2),P=route(A,B,fs,ts,via);
+  ed+=`<path class="e" d="${pathD(P)}" marker-end="url(#ar${el})"/>`;
+  if(lb){const a=P[0],b=P[1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),k=Math.min(20,L/2),
+   cx=a[0]+(b[0]-a[0])/L*k,cy=a[1]+(b[1]-a[1])/L*k,cl=lb=="ya"?"ly":"ln";
+   lab+=`<rect class="lq" x="${cx-14}" y="${cy-9}" width="28" height="17" rx="5"/><text class="${cl}" x="${cx}" y="${cy+4}">${lb}</text>`;}
+ });
+ s+=ed+Object.values(M).map(drawNode).join("")+lab;
+ const e=document.getElementById(el);e.setAttribute("viewBox",`-4 -4 ${W+8} ${H+HD+8}`);e.innerHTML=s;
+}
+
+/* ===== Bagian 1 ===== */
+build("s1","Alur Kerja (Workflow) Penelitian BPHTB Secara Elektronik",[
+["s",0,50,"t","Mulai"],
+["n1",0,135,"p","WP membayar &|melaporkan|perolehan hak"],
+["n2",1,135,"p","e-BPHTB|menerbitkan|e-SSPD"],
+["n3",2,135,"p","Penelitian formal|& syarat adm"],
+["n4",0,255,"p","WP unduh / cetak|e-SSPD|status: reported"],
+["d1",2,265,"d","formal|terpenuhi/|lengkap?"],
+["n5",3,265,"p","Penelitian|materiil|Penagihan"],
+["k1",0,365,"o","e-SSPD|*status: dilaporkan"],
+["d2",3,370,"d","kurang|dok.?",120,104],
+["n6",2,415,"p","mengirim notifikasi|elektronik: formal/|berkas tdk terpenuhi"],
+["k2",0,500,"o","notifikasi|elektronik|(diterima WP)"],
+["d3",3,495,"d","hasil analisa|sistem perlu|penelitian|lapangan?",160,116],
+["d4",0,640,"d","WP memenuhi|dlm waktu|14 hari kerja?",150,110],
+["n8",2,640,"p","meneliti dan|meneruskan ke|Satpel Penagihan"],
+["n7",3,640,"p","meneruskan|kepada Satpel|Pendataan"],
+["d5",4,640,"d","hasil analisa|sistem: dapat|penelitian|kantor?",140,116],
+["n9",4,765,"p","Satpel dapat|kembalikan ke|Penagihan"],
+["n10",1,790,"p","sistem otomatis|ubah status SSPD|menjadi un-verified"],
+["k3",0,790,"o","e-SSPD|#status: un-verified"],
+["n11",4,860,"p","Lakukan|Penelitian Lap"],
+["d6",0,915,"d","WP memenuhi|di luar|jangka waktu",150,110],
+["n12",4,945,"p","- mengisi BA|- foto objek"],
+["d7",4,1040,"d","data|bangunan|sesuai?",128,100],
+["n13",4,1150,"p","1. Rekam data bgn|2. Kalibrasi petugas|3. Hitung NJOP bgn",150,64],
+["n14",4,1250,"p","membuat LHP"],
+["n15",3,1250,"p","membuat KKP"],
+["ca",3,1340,"c","a"],["cb",5,1340,"c","b"]
+],[
+["s","b","n1","t"],["n1","r","n2","l"],["n2","r","n3","l"],["n2","b","n4","r"],["n4","b","k1","t"],
+["n3","b","d1","t"],["d1","r","n5","l","ya"],["d1","b","n6","t","tdk"],["n5","b","d2","t"],
+["d2","r","n3","r","ya",[[752,370],[752,135]]],["d2","b","d3","t","tdk"],
+["n6","l","k2","t"],["k2","b","d4","t"],["d4","r","n8","l","ya"],["d4","b","n10","t","tdk"],
+["n10","l","k3","r"],["k3","b","d6","t"],["d6","r","n8","b","ya"],["d6","l","k3","l","tdk",[[12,915],[12,790]]],
+["n8","t","n3","b","",[[415,598],[392,598],[392,190],[415,190]],-60,-60],
+["d3","b","n7","t","ya"],["d3","l","n15","t","tdk",[[585,495],[585,1195],[620,1195]],0,-45],
+["n7","r","d5","l"],["d5","b","n9","t","ya"],["d5","r","n11","r","tdk",[[940,640],[940,860]]],
+["n9","l","n15","t","",null,0,45],["n11","b","n12","t"],["n12","b","d7","t"],["d7","b","n13","t","tdk"],
+["d7","r","n14","r","ya",[[942,1040],[942,1250]]],["n13","b","n14","t"],["n14","l","n15","r"],["n15","b","ca","t"]
+],1385);
+
+/* ===== Bagian 2 ===== */
+build("s2","Alur Kerja (Workflow) Penelitian BPHTB Secara Elektronik (Lanjutan)",[
+["ca",3,40,"c","a"],["cb",5,40,"c","b"],
+["d8",3,150,"d","Hasil|penelitian ada|indikasi KB?",140,104],
+["n21",5,110,"p","Ka. UPPPD|reviu"],
+["d9",5,225,"d","Ka. UPPPD|setuju TTE|surat?",130,104],
+["n20",3,290,"p","membuat draf|surat imbauan"],
+["n22",5,335,"p","Ka.UPPPD TTE"],
+["k4",0,335,"o","surat imbauan KB/|notifikasi elektronik",140,66],
+["n23",3,440,"p","Usulkan|TTE Verified"],
+["n24",5,520,"p","Ka.UPPPD reviu:|SSPD, KKP, LHP"],
+["d10",0,520,"d","WP bayar dlm|jangka wkt 30|hari kerja?",150,110],
+["d11",5,640,"d","Ka.UPPPD|setuju TTE lulus|verifikasi?",150,110],
+["k5",0,650,"o","e-SSPD|#status: SSPD-KB"],
+["d12",0,770,"d","WP bayar|di luar batas|waktu 30 hari",150,110],
+["d13",3,770,"d","Potensi KB|>Rp100jt ?",120,96],
+["n25",5,900,"p","Ka.UPPPD TTE|SSPD lulus|verifikasi",134,64],
+["k6",0,900,"o","e-SSPD|*status: lulus verifikasi",140,62],
+["n26",3,985,"p","terbitkan STPD",120,56],
+["n27",5,985,"p","Ka. UPPPD reviu:|draft STPD"],
+["e",0,1000,"t","Selesai"],
+["d14",5,1085,"d","Ka. UPPPD|setuju TTE?",130,96],
+["n28",3,1150,"p","dapat usulkan|pemeriksaan|ke Suban"],
+["n29",5,1215,"p","Ka.UPPPD|TTE STPD"],
+["k7",0,1215,"o","STPD",110,56],
+["c1",0,1325,"c","SOP|Penagihan"],["c2",3,1325,"c","SOP|Pemeriksaan"]
+],[
+["ca","b","d8","t"],["d8","b","n20","t","ya"],["d8","l","n23","l","tdk",[[590,150],[590,440]]],
+["n20","r","n21","l"],["n21","b","d9","t"],["d9","b","n22","t","ya"],
+["d9","r","cb","r","tdk",[[1128,225],[1128,40]]],["n22","l","k4","r","ya"],["k4","b","d10","t"],
+["n23","r","n24","t"],["d10","r","n24","l","ya"],["d10","b","k5","t","tdk"],["n24","b","d11","t"],
+["d11","r","cb","r","tdk",[[1128,640],[1128,40]]],["d11","b","n25","t","ya"],["k5","b","d12","t"],
+["d12","r","n24","l","ya",[[540,770],[540,520]]],["d12","b","d13","l","tdk",[[95,838],[584,838],[584,770]]],
+["d13","r","n28","r","ya",[[780,770],[780,1150]]],["d13","b","n26","t","tdk"],
+["n25","l","k6","r","ya"],["k6","b","e","t"],["n26","r","n27","l"],["n27","b","d14","t"],
+["d14","l","n26","l","tdk",[[584,1085],[584,985]]],["d14","b","n29","t","ya"],
+["n28","b","c2","t"],["n29","l","k7","r"],["k7","b","c1","t"]
+],1385);
+
+/* ===== Zoom & Drag-to-Scroll (Pan) ===== */
+const root=document.documentElement;let z=1;
+function setZ(v){z=Math.max(.3,Math.min(2.5,v));root.style.setProperty("--z",z);document.getElementById("zl").textContent=Math.round(z*100)+"%"}
+function fit(){setZ(Math.min(1,(document.getElementById("m").clientWidth-34)/1200))}
+zi.onclick=()=>setZ(z+.15);zo.onclick=()=>setZ(z-.15);zf.onclick=fit;
+addEventListener("resize",()=>{});fit();
+pdf.onclick=()=>window.print();
+
+const mainContainer = document.getElementById("m");
+let isDown = false;
+let startX, startY, scrollLeft, scrollTop;
+
+mainContainer.addEventListener("mousedown", (e) => {
+    isDown = true;
+    startX = e.pageX - mainContainer.offsetLeft;
+    startY = e.pageY - mainContainer.offsetTop;
+    scrollLeft = mainContainer.scrollLeft;
+    scrollTop = mainContainer.scrollTop;
+});
+
+mainContainer.addEventListener("mouseleave", () => { isDown = false; });
+mainContainer.addEventListener("mouseup", () => { isDown = false; });
+
+mainContainer.addEventListener("mousemove", (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - mainContainer.offsetLeft;
+    const y = e.pageY - mainContainer.offsetTop;
+    mainContainer.scrollLeft = scrollLeft - (x - startX);
+    mainContainer.scrollTop = scrollTop - (y - startY);
+});
+
+/* ===== QR ===== */
+function clean(u){return u.split("#")[0]}
+function gen(){
+ const box=document.getElementById("qrbox"),v=qu.value.trim();box.innerHTML="";
+ if(typeof QRCode=="undefined"){box.textContent="Library QR gagal dimuat (cek koneksi).";return}
+ if(!v)return;try{new QRCode(box,{text:v,width:230,height:230,correctLevel:QRCode.CorrectLevel.M})}catch(e){box.textContent="Tautan terlalu panjang."}
+ qn.textContent=/^https?:/i.test(v)?"":"Halaman ini dibuka dari file lokal. Tempel tautan publik halaman ini di kolom, lalu klik Perbarui QR.";
+}
+qb.onclick=()=>{qu.value=clean(location.href);dlg.showModal();gen()};
+qg.onmousedown=(e)=>e.stopPropagation(); // Biar tombol dialog tetap bisa diklik normal
+qg.onclick=gen;qx.onclick=()=>dlg.close();
+qc.onclick=async()=>{try{await navigator.clipboard.writeText(qu.value);qc.textContent="Tersalin"}catch(e){qu.select()}setTimeout(()=>qc.textContent="Salin tautan",1500)};
+</script>
+</body>
+</html>

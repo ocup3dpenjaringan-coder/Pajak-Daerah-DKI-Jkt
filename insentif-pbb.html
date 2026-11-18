@@ -1,300 +1,121 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bagan Hierarki Insentif PBB-P2 DKI Jakarta</title>
-<style>
-:root{
-  --ink:#111c2b; --muted:#4a5565; --line:#8795a8; --bg:#f2f5f9;
-  --navy:#0b3b66; --navy2:#0e5a96;
-  --teal:#0f766e; --slate:#334e68;
-  --c100:#0e7fa8; --c75:#1f7a4d; --c50:#c76a00; --c25:#b4376b; --cb:#5b46b5;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-header{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;padding:22px 32px}
-header h1{margin:0 0 6px;font-size:23px;font-weight:700}
-header p{margin:0;font-size:14.5px;line-height:1.55;opacity:.95;max-width:1100px}
-.bar{display:flex;align-items:center;gap:8px;padding:12px 24px 0;font-size:13px;color:var(--muted)}
-.bar button{border:1px solid #c5cfdb;background:#fff;color:var(--ink);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
-.bar button:hover{background:#e9eff6}
-.wrap{overflow:auto;padding:20px 24px 12px}
-.tree{display:inline-block;min-width:100%}
-
-/* ===== pohon ===== */
-.tree ul{display:flex;justify-content:center;margin:0;padding:30px 0 0;position:relative}
-.tree>ul{padding-top:0}
-.tree li{list-style:none;position:relative;padding:30px 12px 0;display:flex;flex-direction:column;align-items:center}
-.tree li::before,.tree li::after{content:"";position:absolute;top:0;right:50%;width:50%;height:30px;border-top:2.5px solid var(--line)}
-.tree li::after{right:auto;left:50%;border-left:2.5px solid var(--line)}
-.tree li:only-child::before,.tree li:only-child::after{display:none}
-.tree li:only-child{padding-top:0}
-.tree li:first-child::before,.tree li:last-child::after{border:0 none}
-.tree li:last-child::before{border-right:2.5px solid var(--line);border-radius:0 10px 0 0}
-.tree li:first-child::after{border-radius:10px 0 0 0}
-.tree ul ul::before{content:"";position:absolute;top:0;left:50%;height:30px;border-left:2.5px solid var(--line)}
-
-/* ===== simpul ===== */
-.node{border-radius:14px;color:#fff;text-align:center;box-shadow:0 4px 12px rgba(16,32,46,.2)}
-.node .t{font-weight:700;line-height:1.25}
-.node .s{margin-top:4px;font-size:14px;line-height:1.35}
-.root{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:20px 40px}
-.root .t{font-size:23px}
-.root .s{font-size:14.5px}
-.l2{padding:15px 28px;min-width:260px}
-.l2 .t{font-size:19px}
-.l2.a{background:var(--teal)} .l2.b{background:var(--slate)}
-.l3{padding:12px 20px;width:300px}
-.l3 .big{font-size:36px;font-weight:800;line-height:1}
-.l3 .big small{font-size:15px;font-weight:700;display:block;margin-bottom:3px;letter-spacing:.3px}
-.l3 .t{font-size:19px}
-.n100{background:var(--c100)} .n75{background:var(--c75)} .n50{background:var(--c50)} .n25{background:var(--c25)} .nb{background:var(--cb)}
-
-/* ===== kartu ===== */
-.card{position:relative;margin-top:18px;background:#fff;border:1px solid #cfd8e3;border-top-width:5px;border-radius:12px;padding:14px 16px 10px;box-shadow:0 3px 10px rgba(16,32,46,.1);width:300px}
-.card::before{content:"";position:absolute;left:50%;top:-23px;height:18px;border-left:2.5px solid var(--line)}
-.card.c100{border-top-color:var(--c100)} .card.c75{border-top-color:var(--c75)} .card.c50{border-top-color:var(--c50)} .card.c25{border-top-color:var(--c25)} .card.cb{border-top-color:var(--cb)}
-.card.wide{width:340px}
-.hd{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#fff;border-radius:999px;padding:3px 11px;margin:0 0 8px}
-.c100 .hd{background:var(--c100)} .c75 .hd{background:var(--c75)} .c50 .hd{background:var(--c50)} .c25 .hd{background:var(--c25)} .cb .hd{background:var(--cb)}
-.sub{margin:12px 0 4px;font-size:13px;font-weight:700;color:var(--ink);border-left:4px solid currentColor;padding-left:8px}
-.c50 .sub{color:var(--c50)}
-.sub span{color:var(--ink)}
-.it{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed #dde4ed;font-size:14.5px;line-height:1.45;color:var(--ink)}
-.it:last-child{border-bottom:0}
-.k{flex:none;min-width:30px;text-align:center;font-weight:700;font-size:12.5px;color:#fff;border-radius:6px;padding:2px 0;margin-top:1px}
-.c100 .k{background:var(--c100)} .c75 .k{background:var(--c75)} .c50 .k{background:var(--c50)} .c25 .k{background:var(--c25)} .cb .k{background:var(--cb)}
-.tag{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
-
-/* ===== catatan ===== */
-.notes{max-width:1200px;margin:6px auto 0;padding:0 32px 40px}
-.notes h2{font-size:16px;margin:18px 0 8px}
-.notes ol{margin:0;padding-left:22px;font-size:14.5px;line-height:1.7;color:#232f3f}
-.src{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.55}
-.bar{flex-wrap:wrap}
-.bar .zv{min-width:46px;text-align:center;font-weight:700;color:var(--ink)}
-.bar .sp{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-.bar .pri{background:var(--navy);color:#fff;border-color:var(--navy)}
-.bar .pri:hover{background:var(--navy2)}
-.bar button:disabled{opacity:.6;cursor:wait}
-.modal{position:fixed;inset:0;background:rgba(10,20,35,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
-.modal.on{display:flex}
-.mbox{background:#fff;border-radius:14px;padding:22px;max-width:340px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
-.mbox h2{margin:0 0 6px;font-size:17px}
-.mbox p{margin:0 0 12px;font-size:13.5px;color:var(--muted);line-height:1.5}
-#qr{display:inline-block;padding:8px;background:#fff;border:1px solid #d5dde8;border-radius:8px;line-height:0}
-.mbox .lnk{margin:12px 0 10px;font-size:12px;word-break:break-all;color:var(--navy2)}
-.mbox button{border:1px solid #c5cfdb;background:#fff;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;margin:0 3px}
-.mbox button.pri{background:var(--navy);color:#fff;border-color:var(--navy)}
-@page{size:A3 landscape;margin:10mm}
-@media print{body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.bar,.modal{display:none!important}.card,.node{box-shadow:none}.wrap{overflow:visible}.tree{zoom:.82!important}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f172a">
+  <title>Insentif PBB - DKI Jakarta</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .glass { background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .glass-card { background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); }
+  </style>
 </head>
-<body>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center sm:p-4 font-sans m-0">
 
-<header>
-  <h1>Bagan Hierarki Pengurangan dan Pembebasan Pokok PBB-P2 — DKI Jakarta</h1>
-  <p>Kriteria menurut Keputusan Gubernur DKI Jakarta Nomor 857 Tahun 2025, sebagaimana diubah (khusus tabel dokumen persyaratan) dengan Keputusan Gubernur Nomor 458 Tahun 2026. Pengurangan dikelompokkan menurut besar persentasenya; kode huruf menunjuk butir pada lampiran.</p>
-</header>
+  <!-- Container HP -->
+  <div class="relative w-full h-[100dvh] sm:w-[330px] sm:h-[670px] sm:rounded-[40px] sm:shadow-2xl sm:border-[8px] sm:border-slate-800 overflow-hidden">
+    
+    <!-- Background Gambar -->
+    <div class="absolute inset-0 bg-cover bg-center z-0" style="background-image: url('https://images.unsplash.com/photo-1555899434-94d1368aa7af?q=80&w=600&auto=format&fit=crop')">
+      <div class="absolute inset-0 bg-slate-950/80"></div>
+    </div>
 
-<div class="bar no-print">
-  <span>Zoom:</span>
-  <button id="zOut" type="button" aria-label="Zoom out">− Zoom out</button>
-  <span class="zv" id="zv">100%</span>
-  <button id="zIn" type="button" aria-label="Zoom in">+ Zoom in</button>
-  <button id="zReset" type="button">Reset</button>
-  <span class="sp">
-    <button class="pri" id="btnPdf" type="button">⬇ Simpan sebagai PDF</button>
-    <button class="pri" id="btnQr" type="button">QR Code</button>
-  </span>
-</div>
+    <!-- Poni (Notch) HP -->
+    <div class="hidden sm:block absolute top-0 inset-x-0 h-6 bg-slate-950 rounded-b-xl w-32 mx-auto z-20"></div>
 
-<div class="modal no-print" id="qm" role="dialog" aria-modal="true" aria-label="QR Code">
-  <div class="mbox">
-    <h2>Scan untuk membuka bagan ini</h2>
-    <p>Arahkan kamera ponsel ke QR code untuk membuka halaman ini.</p>
-    <div id="qr"></div>
-    <div class="lnk" id="linkTxt"></div>
-    <button class="pri" id="btnCopy" type="button">Salin tautan</button>
-    <button id="btnClose" type="button">Tutup</button>
+    <!-- Header & Tombol Kembali -->
+    <div class="absolute top-0 inset-x-0 z-30 pt-10 pb-4 px-5 glass border-b-0 border-white/5 flex items-center gap-3">
+      <a href="index.html" class="p-2 rounded-full bg-slate-800/80 text-white hover:bg-blue-600 transition border border-slate-600 active:scale-95" title="Kembali">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+      </a>
+      <h1 class="text-lg font-bold text-white tracking-wide">Insentif PBB-P2</h1>
+    </div>
+
+    <!-- Area Konten (Bisa di-scroll) -->
+    <div class="absolute inset-0 z-10 overflow-y-auto no-scrollbar pt-28 pb-10 px-5">
+      
+      <!-- Kartu Informasi -->
+      <div class="glass-card rounded-3xl p-5 relative overflow-hidden mb-6">
+        <!-- Aksen Garis Biru -->
+        <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
+        
+        <h2 class="text-white font-bold text-lg leading-tight mb-1">
+          Pembebasan Pokok PBB-P2
+        </h2>
+        <span class="inline-block bg-blue-500/20 text-blue-300 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md mb-4 border border-blue-500/30">
+          Secara Jabatan (Otomatis)
+        </span>
+
+        <p class="text-slate-300 text-xs leading-relaxed mb-4">
+          Berdasarkan <strong>Kepgub DKI Jakarta No. 281 Tahun 2025</strong> dan <strong>Kepgub No. 339 Tahun 2026</strong>, berikut adalah ketentuan pembebasan PBB-P2:
+        </p>
+
+        <!-- Daftar Syarat & Ketentuan -->
+        <ul class="space-y-4">
+          
+          <li class="flex gap-3 items-start">
+            <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 mt-0.5">
+              <span class="text-blue-400 text-xs">Rp</span>
+            </div>
+            <div>
+              <h3 class="text-white text-sm font-semibold mb-0.5">Batas NJOP</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">Maksimal <strong>Rp 2 Miliar</strong> untuk rumah tapak, dan maksimal <strong>Rp 650 Juta</strong> untuk rumah susun/apartemen.</p>
+            </div>
+          </li>
+
+          <li class="flex gap-3 items-start">
+            <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 mt-0.5">
+              <svg class="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+            </div>
+            <div>
+              <h3 class="text-white text-sm font-semibold mb-0.5">Subjek Pajak</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">Berlaku khusus untuk Wajib Pajak (WP) <strong>Orang Pribadi</strong>.</p>
+            </div>
+          </li>
+
+          <li class="flex gap-3 items-start">
+            <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 mt-0.5">
+              <svg class="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+            </div>
+            <div>
+              <h3 class="text-white text-sm font-semibold mb-0.5">Jumlah Objek</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">Maksimal <strong>1 objek pajak</strong> per WP. Jika memiliki lebih dari 1 objek yang memenuhi syarat, akan dipilih yang memiliki NJOP tertinggi.</p>
+            </div>
+          </li>
+
+          <li class="flex gap-3 items-start">
+            <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-900/50 flex items-center justify-center border border-blue-500/50 mt-0.5">
+              <svg class="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <div>
+              <h3 class="text-white text-sm font-semibold mb-0.5">Validasi NIK</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">NIK wajib tervalidasi pada sistem <strong>Pajak Online</strong> (sesuai dengan data SPPT dan memiliki status kependudukan aktif).</p>
+            </div>
+          </li>
+
+          <li class="flex gap-3 items-start">
+            <div class="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-900/50 flex items-center justify-center border border-emerald-500/50 mt-0.5">
+              <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            </div>
+            <div>
+              <h3 class="text-white text-sm font-semibold mb-0.5">Mekanisme</h3>
+              <p class="text-slate-400 text-xs leading-relaxed text-emerald-300">Diberikan secara <strong>otomatis (secara jabatan)</strong> tanpa perlu mengajukan permohonan, selama data WP dan objek pajak telah sesuai.</p>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Garis Bawah Navigasi -->
+    <div class="hidden sm:block absolute bottom-2 inset-x-0 h-1 bg-slate-500 rounded-full w-24 mx-auto z-20"></div>
   </div>
-</div>
 
-<div class="wrap"><div class="tree" id="tree">
-<ul><li>
-  <div class="node root"><div class="t">Insentif PBB-P2 DKI Jakarta</div><div class="s">Pajak Bumi dan Bangunan Perdesaan dan Perkotaan</div></div>
-  <ul>
-
-  <!-- ================= PENGURANGAN ================= -->
-  <li>
-    <div class="node l2 a"><div class="t">Pengurangan Pokok</div><div class="s">Lampiran I · dikelompokkan menurut persentase</div></div>
-    <ul>
-
-      <li>
-        <div class="node l3 n100"><div class="big"><small>PALING TINGGI</small>100%</div><div class="s">dari PBB-P2 pada SPPT</div></div>
-        <div class="card c100">
-          <span class="hd">Atas permohonan</span>
-          <div class="it"><span class="k">B.a</span><span>Orang pribadi berpenghasilan rendah sehingga kewajiban PBB-P2 sulit dipenuhi</span></div>
-          <div class="it"><span class="k">B.b</span><span>Badan yang mengalami kerugian atau penurunan nilai aktiva bersih pada tahun pajak sebelumnya</span></div>
-          <div class="it"><span class="k">B.c</span><span>Wajib pajak yang dinyatakan pailit berdasarkan putusan pengadilan</span></div>
-          <div class="it"><span class="k">B.d</span><span>Objek terdampak bencana alam, kebakaran, huru-hara, dan/atau kerusuhan</span></div>
-          <div class="it"><span class="k">B.e</span><span>Pendidikan anak usia dini, dasar, menengah, dan/atau khusus oleh swasta yang berbentuk yayasan</span></div>
-        </div>
-      </li>
-
-      <li>
-        <div class="node l3 n75"><div class="big">75%</div><div class="s">dari PBB-P2 terutang</div></div>
-        <div class="card c75">
-          <span class="hd">Secara jabatan</span>
-          <div class="it"><span class="k">A.d</span><span>Objek yang dikelola BLU penyelenggara pelayanan atau kegiatan selain pelayanan dasar dan olahraga, dan tidak dikerjasamakan dengan pihak ketiga</span></div>
-        </div>
-      </li>
-
-      <li>
-        <div class="node l3 n50"><div class="big">50%</div><div class="s">tetap, atau paling tinggi 50%</div></div>
-        <div class="card c50 wide">
-          <span class="hd">Secara jabatan · 50%</span>
-          <div class="it"><span class="k">A.a</span><span>Rumah sakit atau klinik yang diselenggarakan badan hukum nirlaba</span></div>
-          <div class="it"><span class="k">A.b</span><span>Perguruan tinggi swasta</span></div>
-          <div class="it"><span class="k">A.c</span><span>Pendidikan anak usia dini, dasar, menengah, dan/atau khusus oleh swasta</span></div>
-
-          <div class="sub">Atas permohonan · <span>tetap 50%</span></div>
-          <div class="it"><span class="k">B.h</span><span>Kantor partai politik</span></div>
-          <div class="it"><span class="k">B.i</span><span>Kantor lembaga keagamaan atau organisasi kemasyarakatan keagamaan</span></div>
-          <div class="it"><span class="k">B.j</span><span>Kantor organisasi bantuan hukum terakreditasi paling kurang B</span></div>
-          <div class="it"><span class="k">B.k</span><span>Kantor organisasi profesi yang telah disahkan pemerintah</span></div>
-          <div class="it"><span class="k">B.l</span><span>Kantor lembaga amil zakat berizin operasional</span></div>
-          <div class="it"><span class="k">B.m</span><span>Bangunan cagar budaya yang digunakan untuk hunian dan telah dipelihara sesuai bentuk aslinya</span></div>
-
-          <div class="sub">Atas permohonan · <span>paling tinggi 50%</span></div>
-          <div class="it"><span class="k">B.f</span><span>Kenaikan pokok pajak lebih dari 25% dari tahun pajak sebelumnya</span></div>
-          <div class="it"><span class="k">B.g</span><span>Penyediaan dan pemanfaatan ruang terbuka hijau sesuai rencana tata ruang wilayah</span></div>
-        </div>
-      </li>
-
-      <li>
-        <div class="node l3 n25"><div class="big">25%</div><div class="s">dari PBB-P2 pada SPPT</div></div>
-        <div class="card c25">
-          <span class="hd">Atas permohonan</span>
-          <div class="it"><span class="k">B.n</span><span>Bangunan cagar budaya yang digunakan untuk kegiatan usaha atau sejenisnya guna memperoleh keuntungan</span></div>
-          <div class="it"><span class="k">B.o</span><span>Kawasan suaka alam dan/atau pelestarian alam yang dimanfaatkan untuk kegiatan usaha atau sejenisnya guna memperoleh keuntungan</span></div>
-        </div>
-      </li>
-
-    </ul>
-  </li>
-
-  <!-- ================= PEMBEBASAN ================= -->
-  <li>
-    <div class="node l2 b"><div class="t">Pembebasan Pokok</div><div class="s">Lampiran II · pokok PBB-P2 dibebaskan</div></div>
-    <ul>
-
-      <li>
-        <div class="node l3 nb"><div class="t">Secara jabatan</div></div>
-        <div class="card cb">
-          <div class="it"><span class="k">A.a</span><span>Barang milik negara/daerah yang penggunaannya bukan untuk kantor pemerintah, tidak dikerjasamakan dengan pihak ketiga</span></div>
-          <div class="it"><span class="k">A.b</span><span>Objek yang dikelola BLU yang semata-mata menyelenggarakan pelayanan dasar dan/atau olahraga, tidak dikerjasamakan</span></div>
-          <div class="it"><span class="k">A.c</span><span>Objek yang dikelola BLUD, tidak dikerjasamakan dengan pihak ketiga</span></div>
-          <div class="it"><span class="k">A.d</span><span>Rumah Negara Golongan I dan Golongan II</span></div>
-          <div class="it"><span class="k">A.e</span><span>Barang rampasan negara</span></div>
-          <div class="it"><span class="k">A.f</span><span>Prasarana, sarana, dan utilitas umum untuk kepentingan umum, bukan untuk mencari keuntungan</span></div>
-        </div>
-      </li>
-
-      <li>
-        <div class="node l3 nb"><div class="t">Atas permohonan</div></div>
-        <div class="card cb wide">
-          <div class="sub" style="color:var(--cb);margin-top:0">Satu objek: rumah tapak, rusun, atau tanah kosong s.d. 1.000 m²</div>
-          <div class="it"><span class="k">B.a</span><span>Veteran dan perintis kemerdekaan, atau janda/dudanya</span></div>
-          <div class="it"><span class="k">B.b</span><span>Penerima gelar pahlawan nasional, atau janda/dudanya</span></div>
-          <div class="it"><span class="k">B.c</span><span>Penerima tanda kehormatan bintang dari Presiden RI, atau janda/dudanya</span></div>
-          <div class="it"><span class="k">B.d</span><span>Mantan Presiden, Wakil Presiden, Gubernur, dan Wakil Gubernur DKI Jakarta, atau janda/dudanya</span></div>
-          <div class="it"><span class="k">B.e</span><span>Pensiunan PNS, atau purnawirawan TNI/Polri, atau janda/dudanya</span></div>
-          <div class="it"><span class="k">B.f</span><span>Guru, tenaga kependidikan, dan dosen tetap/penuh waktu, PNS maupun non-PNS, termasuk pensiunannya</span></div>
-
-          <div class="sub" style="color:var(--cb)">Berdasarkan kondisi objek</div>
-          <div class="it"><span class="k">B.g</span><span>Layanan kepentingan umum bidang keagamaan (bukan tempat ibadah), tidak komersial atau kurang dari 50% lahan untuk komersial</span></div>
-          <div class="it"><span class="k">B.h</span><span>Lebih dari 50% luas lahan untuk pertanian dan perikanan</span></div>
-          <div class="it"><span class="k">B.i</span><span>Objek yang disita oleh instansi pemerintah</span></div>
-        </div>
-      </li>
-
-    </ul>
-  </li>
-
-  </ul>
-</li></ul>
-</div></div>
-
-<section class="notes">
-  <h2>Ketentuan penting</h2>
-  <ol>
-    <li><b>Pengurangan atas permohonan</b> dapat diberikan bila pajak terutang belum dilunasi, tanpa syarat bebas tunggakan pajak daerah, untuk tahun pajak berjalan dan/atau paling lama 5 tahun terakhir sejak kondisi objek terpenuhi. Khusus huruf B.f (kenaikan pokok pajak lebih dari 25%), hanya untuk tahun pajak berjalan.</li>
-    <li><b>Pembebasan atas permohonan</b> huruf B.a–B.f hanya untuk satu objek (rumah tapak, satuan rumah susun, atau tanah kosong s.d. 1.000 m²). Bila memiliki lebih dari satu objek, wajib pajak menentukan salah satunya. Bila tidak memiliki objek sendiri, dapat diberikan atas objek atas nama istri/suami.</li>
-    <li><b>Pembebasan secara jabatan</b> huruf A.d–A.f berlaku untuk ketetapan tahun pajak sebelum keputusan berlaku yang belum dibayar, dan penetapan tahun pajak setelahnya.</li>
-    <li><b>Dasar hukum:</b> Kepgub No. 857 Tahun 2025 (ditetapkan 24 September 2025, berlaku surut sejak 27 Agustus 2025). Kepgub No. 458 Tahun 2026 (18 Mei 2026) hanya mengganti tabel dokumen persyaratan khusus (Romawi I huruf B angka 4); kriteria dan persentase tidak berubah.</li>
-  </ol>
-  <p class="src">Uraian pada kotak diringkas dari teks lampiran; rujuk dokumen resmi untuk redaksi lengkap dan dokumen persyaratan tiap kriteria.</p>
-</section>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script>
-(function(){
-  var PUB="https://claude.ai/artifact/YXKjZcPkuRHbJTvK5dcDMA";
-  var url=PUB||location.href.split('#')[0];
-  var t=document.getElementById('tree'),cur=1;
-  function zs(v){cur=Math.min(2,Math.max(.4,Math.round(v*10)/10));t.style.zoom=cur;document.getElementById('zv').textContent=Math.round(cur*100)+'%';}
-  document.getElementById('zIn').addEventListener('click',function(){zs(cur+.1);});
-  document.getElementById('zOut').addEventListener('click',function(){zs(cur-.1);});
-  document.getElementById('zReset').addEventListener('click',function(){zs(1);});
-
-  var qm=document.getElementById('qm'),qrDone=false;
-  document.getElementById('linkTxt').textContent=url;
-  document.getElementById('btnQr').addEventListener('click',function(){
-    qm.classList.add('on');
-    if(!qrDone){
-      try{new QRCode(document.getElementById('qr'),{text:url,width:200,height:200,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});qrDone=true;}
-      catch(e){document.getElementById('qr').textContent='QR tidak dapat dimuat';}
-    }
-  });
-  function closeQ(){qm.classList.remove('on');}
-  document.getElementById('btnClose').addEventListener('click',closeQ);
-  qm.addEventListener('click',function(e){if(e.target===qm)closeQ();});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeQ();});
-  document.getElementById('btnCopy').addEventListener('click',function(){
-    var b=this;
-    function ok(){b.textContent='Tautan tersalin ✓';setTimeout(function(){b.textContent='Salin tautan';},1800);}
-    try{navigator.clipboard.writeText(url).then(ok,function(){window.prompt('Salin tautan:',url);});}
-    catch(e){window.prompt('Salin tautan:',url);}
-  });
-
-  var pdfBtn=document.getElementById('btnPdf');
-  pdfBtn.addEventListener('click',async function(){
-    var label=pdfBtn.textContent,prev=cur;
-    pdfBtn.disabled=true;pdfBtn.textContent='Membuat PDF…';
-    try{
-      var dl=null;
-      try{if(window.claude&&claude.use)dl=await claude.use('downloads');}catch(e){}
-      if(!dl||!window.html2canvas||!window.jspdf){window.print();return;}
-      t.style.zoom=1;
-      var W=Math.max(document.documentElement.scrollWidth,t.scrollWidth+48);
-      var canvas=await html2canvas(document.body,{scale:2,backgroundColor:'#f2f5f9',windowWidth:W,width:W,useCORS:true,
-        ignoreElements:function(el){return el.classList&&el.classList.contains('no-print');},
-        onclone:function(d){d.querySelector('.wrap').style.overflow='visible';d.body.style.width=W+'px';}});
-      var w=canvas.width/2,h=canvas.height/2;
-      var pdf=new window.jspdf.jsPDF({orientation:w>h?'l':'p',unit:'px',format:[w,h],hotfixes:['px_scaling']});
-      pdf.addImage(canvas.toDataURL('image/jpeg',.92),'JPEG',0,0,w,h);
-      await dl.save({filename:'Bagan_Insentif_PBB-P2_DKI_Jakarta.pdf',data:pdf.output('blob')});
-    }catch(e){
-      if(!e||e.code!=='declined')alert('PDF gagal dibuat. Coba cetak lewat browser (Ctrl+P) dan pilih Simpan sebagai PDF.');
-    }finally{
-      t.style.zoom=prev;pdfBtn.disabled=false;pdfBtn.textContent=label;
-    }
-  });
-})();
-</script>
 </body>
 </html>

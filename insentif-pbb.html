@@ -23,7 +23,7 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* CSS Bagan Hierarki (Tree) */
+    /* CSS Bagan Hierarki (Tree) - Menggunakan selector anak langsung (>) agar tidak merusak ul/li di dalam kartu */
     .tree ul { padding-top: 28px; position: relative; display: flex; justify-content: center; padding-left: 0; margin: 0; }
     .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 28px 10px 0 10px; }
     .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #94a3b8; width: 50%; height: 28px; }
@@ -34,6 +34,36 @@
     .tree li:last-child::before { border-right: 2px solid #94a3b8; border-radius: 0; }
     .tree li:first-child::after { border-radius: 0; }
     .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid #94a3b8; width: 0; height: 28px; margin-left: -1px; }
+
+    /* Reset CSS untuk list poin di dalam kartu kotak */
+    .node-item ul.card-list {
+      display: block !important;
+      padding-top: 12px !important;
+      padding-bottom: 12px !important;
+      padding-left: 26px !important;
+      padding-right: 12px !important;
+      list-style-type: disc !important;
+      text-align: left !important;
+    }
+    .node-item ul.card-list::before {
+      display: none !important;
+      content: none !important;
+    }
+    .node-item ul.card-list li {
+      float: none !important;
+      display: list-item !important;
+      text-align: left !important;
+      list-style-type: disc !important;
+      padding: 0 !important;
+      margin-bottom: 4px !important;
+      position: static !important;
+    }
+    .node-item ul.card-list li::before,
+    .node-item ul.card-list li::after {
+      display: none !important;
+      content: none !important;
+      border: none !important;
+    }
 
     .node-item { display: inline-block; text-decoration: none; }
     
@@ -86,7 +116,7 @@
   <div id="header" class="bg-[#114b7e] text-white py-3 px-4 sm:px-8 shadow-md z-50 flex flex-col justify-center gap-2 shrink-0 border-b-4 border-[#0d3b66]">
     <div>
       <h1 class="text-base sm:text-[20px] font-bold tracking-wide leading-tight truncate">Bagan Hierarki Insentif PBB-P2 DKI Jakarta (Lengkap)</h1>
-      <p class="text-[10px] sm:text-xs text-blue-200 hidden sm:block truncate">Kepgub DKI Jakarta Nomor 339 Tahun 2026 & Kepgub 857/2025 (Berlaku 1 April - 31 Desember 2026)</p>
+      <p class="text-[10px] sm:text-xs text-blue-200 hidden sm:block truncate">Kepgub No. 339/2026, Kepgub 857/2025, & Pergub No. 124/2017 (Piutang Lama)</p>
     </div>
     
     <div class="flex items-center gap-2 text-sm overflow-x-auto no-scrollbar">
@@ -117,7 +147,7 @@
           <!-- LEVEL 1: ROOT -->
           <div class="node-item bg-[#124d85] text-white rounded-xl shadow-lg px-10 py-4 border-2 border-[#0d3b66]">
             <div class="font-extrabold text-2xl mb-1">INSENTIF PBB-P2 DKI JAKARTA (TAHUN 2026)</div>
-            <div class="text-xs text-blue-200 font-medium">Dasar Hukum: Kepgub No. 339 Tahun 2026 (Berlaku 1 April 2026) & Kepgub 857/2025</div>
+            <div class="text-xs text-blue-200 font-medium">Dasar Hukum: Kepgub No. 339/2026, Kepgub 857/2025, & Pergub No. 124 Tahun 2017</div>
             <div class="mt-2 inline-block bg-blue-900/60 border border-blue-400/30 rounded px-3 py-1 text-[11px] text-amber-300 font-semibold">
               ★ KETENTUAN UMUM: Diberikan TANPA mensyaratkan bebas tunggakan pajak daerah (Diktum KETIGA)
             </div>
@@ -164,7 +194,7 @@
                             <li>
                               <div class="node-item bg-teal-50 border border-teal-200 shadow-sm rounded-lg flex flex-col w-[280px] overflow-hidden text-left">
                                 <div class="bg-teal-100 text-teal-900 px-3 py-1.5 font-bold text-[11px]">Syarat & Ketentuan Wajib</div>
-                                <ul class="p-3 text-[10.5px] text-slate-700 list-disc pl-6 space-y-1">
+                                <ul class="card-list text-[10.5px] text-slate-700">
                                   <li>Wajib Pajak <strong>Orang Pribadi</strong>.</li>
                                   <li><strong>NIK sudah tervalidasi</strong> di sistem pajak daerah.</li>
                                   <li>Hanya berlaku untuk <strong>1 (satu) objek</strong> dengan NJOP terbesar per 1 Januari 2026.</li>
@@ -204,7 +234,7 @@
                             <li>
                               <div class="node-item bg-green-50 border border-green-200 shadow-sm rounded-lg flex flex-col w-[260px] overflow-hidden text-left">
                                 <div class="bg-green-100 text-green-900 px-3 py-1.5 font-bold text-[11px]">Syarat & Ketentuan</div>
-                                <ul class="p-3 text-[10.5px] text-slate-700 list-disc pl-6 space-y-1">
+                                <ul class="card-list text-[10.5px] text-slate-700">
                                   <li>Tidak memenuhi syarat bebas 100% (angka 1).</li>
                                   <li>Bukan objek PBB-P2 baru ditetapkan tahun 2026.</li>
                                   <li>SPPT tahun 2025 bernilai <strong>Rp 0,00</strong> (bukan karena salah data/rekam).</li>
@@ -225,7 +255,7 @@
                             <li>
                               <div class="node-item bg-green-50 border border-green-200 shadow-sm rounded-lg flex flex-col w-[280px] overflow-hidden text-left">
                                 <div class="bg-green-100 text-green-900 px-3 py-1.5 font-bold text-[11px]">Syarat & Ketentuan</div>
-                                <ul class="p-3 text-[10.5px] text-slate-700 list-disc pl-6 space-y-1">
+                                <ul class="card-list text-[10.5px] text-slate-700">
                                   <li>Tidak memenuhi kriteria bebas 100%.</li>
                                   <li>Kenaikan asli tahun 2026 > 5% dari SPPT 2025.</li>
                                   <li>SPPT 2025 bernilai <strong>> Rp 0,00</strong>.</li>
@@ -267,28 +297,44 @@
                         </li>
 
                         <li>
-                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[250px] overflow-hidden text-left">
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[280px] overflow-hidden text-left">
                             <div class="bg-[#eab308] text-white px-3 py-1.5 font-bold text-xs">2. Tunggakan 2021 – 2025</div>
                             <div class="p-3 flex flex-col gap-2 text-[11px] text-slate-700">
                               <div class="flex justify-between items-center">
                                 <span class="bg-amber-600 text-white px-2 py-0.5 rounded font-bold">Diskon 5%</span>
                                 <span>1 Apr – 31 Des 2026</span>
                               </div>
-                              <div class="text-[10px] bg-amber-50 text-amber-800 p-2 rounded border border-amber-200 mt-1">
-                                <strong>Catatan:</strong> Tunggakan tahun 1993–2020 tidak mendapatkan diskon pokok pada Kepgub 339/2026.
-                              </div>
+                              <div class="text-[10px] text-slate-500">Dasar: Kepgub No. 339 Tahun 2026 (Otomatis di sistem).</div>
                             </div>
                           </div>
+                          <ul>
+                            <li>
+                              <div class="node-item bg-yellow-50 border border-yellow-300 shadow-sm rounded-lg flex flex-col w-[450px] overflow-hidden text-left">
+                                <div class="bg-yellow-100 text-yellow-900 px-3 py-1.5 font-bold text-[11px]">Mekanisme Pembayaran yang Diakui (Kepgub 339/2026 Angka 6)</div>
+                                <div class="p-2.5 text-[10.5px] text-slate-700 grid grid-cols-3 gap-2">
+                                  <div class="bg-white p-2 rounded border"><strong>1. Angsuran:</strong> Berdasarkan SK Fasilitas Angsuran.</div>
+                                  <div class="bg-white p-2 rounded border"><strong>2. SK Pengurangan:</strong> Pembayaran atas SK Pengurangan/Keringanan.</div>
+                                  <div class="bg-white p-2 rounded border"><strong>3. Kompensasi:</strong> Melalui pemindahbukuan atau kompensasi.</div>
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
                         </li>
-                      </ul>
-                      <ul>
+
                         <li>
-                          <div class="node-item bg-yellow-50 border border-yellow-300 shadow-sm rounded-lg flex flex-col w-[450px] overflow-hidden text-left">
-                            <div class="bg-yellow-100 text-yellow-900 px-3 py-1.5 font-bold text-[11px]">Mekanisme Pembayaran yang Diakui (Angka 6)</div>
-                            <div class="p-2.5 text-[10.5px] text-slate-700 grid grid-cols-3 gap-2">
-                              <div class="bg-white p-2 rounded border"><strong>1. Angsuran:</strong> Berdasarkan SK Fasilitas Angsuran.</div>
-                              <div class="bg-white p-2 rounded border"><strong>2. SK Pengurangan:</strong> Pembayaran atas SK Pengurangan/Keringanan.</div>
-                              <div class="bg-white p-2 rounded border"><strong>3. Kompensasi:</strong> Melalui pemindahbukuan atau kompensasi.</div>
+                          <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[290px] overflow-hidden text-left">
+                            <div class="bg-[#ca8a04] text-white px-3 py-1.5 font-bold text-xs">3. Tunggakan Lama 1993 – 2020</div>
+                            <div class="p-3 flex flex-col gap-2 text-[11px] text-slate-700">
+                              <div class="flex justify-between items-center border-b pb-1">
+                                <span class="bg-amber-700 text-white px-2 py-0.5 rounded font-bold">Diskon 50%</span>
+                                <span>Otomatis di Sistem</span>
+                              </div>
+                              <div class="text-[10.5px] leading-snug">
+                                <strong>Dasar Hukum:</strong> Pergub No. 124 Tahun 2017 (Piutang sebelum pengelolaan Pemda / s.d. 2009: 50%, 2010–2012: 25%, serta kebijakan penyesuaian piutang 1993–2020).
+                              </div>
+                              <div class="text-[9.5px] bg-amber-50 text-amber-900 p-1.5 rounded border border-amber-200">
+                                <strong>Ketentuan:</strong> Tidak dapat diajukan angsuran/penundaan pembayaran (Pasal 7 Pergub 124/2017).
+                              </div>
                             </div>
                           </div>
                         </li>
@@ -324,7 +370,7 @@
                             <li>
                               <div class="node-item bg-orange-50 border border-orange-200 shadow-sm rounded-lg flex flex-col w-[290px] overflow-hidden text-left">
                                 <div class="bg-orange-100 text-orange-900 px-3 py-1.5 font-bold text-[11px]">Ketentuan & Dokumen Lampiran</div>
-                                <ul class="p-3 text-[10.5px] text-slate-700 list-disc pl-6 space-y-1">
+                                <ul class="card-list text-[10.5px] text-slate-700">
                                   <li>Hanya untuk <strong>1 objek</strong> pilihan WP & 1 kali permohonan per SK Gelar.</li>
                                   <li>SPPT yang dimohonkan <strong>belum dilunasi</strong>.</li>
                                   <li><strong>Wajib Lampirkan:</strong> Fotokopi SK Penetapan Gelar/Veteran, Surat Kematian, dan KK/Akta Kelahiran.</li>
@@ -360,7 +406,7 @@
                             <li>
                               <div class="node-item bg-orange-50 border border-orange-200 shadow-sm rounded-lg flex flex-col w-[270px] overflow-hidden text-left">
                                 <div class="bg-orange-100 text-orange-900 px-3 py-1.5 font-bold text-[11px]">Persyaratan Dokumen</div>
-                                <ul class="p-3 text-[10.5px] text-slate-700 list-disc pl-6 space-y-1">
+                                <ul class="card-list text-[10.5px] text-slate-700">
                                   <li>Fotokopi KTP & SPPT PBB-P2.</li>
                                   <li>Bukti pendukung (SK Pensiun, Laporan Keuangan Audit, SKTM, atau SK Bencana).</li>
                                   <li>Tidak sedang dalam sengketa pajak.</li>
@@ -403,12 +449,24 @@
                         <div class="bg-[#f43f5e] text-white px-3 py-1.5 font-bold text-xs">B. Bunga Terlambat Bayar (2021 – 2025)</div>
                         <div class="p-3 text-[11px] text-slate-700 space-y-2">
                           <div class="border-b pb-1.5">
-                            <span class="font-bold text-rose-700 block">1. Pembayaran Tunggakan:</span>
+                            <span class="font-bold text-rose-700 block">1. Pembayaran Tunggakan (Kepgub 339/2026):</span>
                             Diberikan kepada WP yang melunasi pokok PBB-P2 tahun pajak <strong>2021 s.d. 2025</strong> pada 1 April – 31 Desember 2026.
                           </div>
                           <div>
                             <span class="font-bold text-rose-700 block">2. Tunggakan Sanksi Saja:</span>
-                            Berlaku bagi WP yang <strong>sudah melunasi pokok</strong> 2021–2025 sebelum aturan ini terbit, namun masih memiliki tagihan denda/sanksi yang belum dibayar (baik sudah/belum terbit STPD).
+                            Berlaku bagi WP yang <strong>sudah melunasi pokok</strong> 2021–2025 sebelum aturan terbit, namun masih memiliki tagihan denda/sanksi yang belum dibayar.
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+
+                    <li>
+                      <div class="node-item bg-white border border-slate-200 shadow-sm rounded-lg flex flex-col w-[290px] overflow-hidden text-left">
+                        <div class="bg-[#be123c] text-white px-3 py-1.5 font-bold text-xs">C. Denda Tunggakan 1993 – 2020 (Dihapuskan)</div>
+                        <div class="p-3 text-[11px] text-slate-700 space-y-2">
+                          <div>
+                            <span class="font-bold text-rose-700 block">Penghapusan Sanksi Otomatis (0%):</span>
+                            Sanksi administrasi berupa bunga atas piutang PBB-P2 tahun <strong>1993 s.d. 2020</strong> (termasuk piutang sebelum pengelolaan Pemda berdasarkan <strong>Pergub No. 124 Tahun 2017</strong>) dihapuskan secara otomatis di sistem saat pembayaran pokok.
                           </div>
                         </div>
                       </div>
@@ -450,7 +508,6 @@
       zoomText.innerText = Math.round(scale * 100) + '%';
     }
 
-    // Inisialisasi posisi setelah DOM dan font selesai dimuat
     window.addEventListener('load', centerInitialView);
     setTimeout(centerInitialView, 100);
 

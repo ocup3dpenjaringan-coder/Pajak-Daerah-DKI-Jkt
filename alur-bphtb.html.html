@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alur Kerja (Workflow) Penelitian BPHTB Secara Elektronik - SK Kaban 160/2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .canvas-scroll::-webkit-scrollbar {
+            height: 10px;
+            width: 10px;
+        }
+        .canvas-scroll::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        .canvas-scroll::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 5px;
+        }
+        .canvas-scroll::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Animasi denyut untuk Belah Ketupat Keputusan Interaktif (Opsi 2) */
+        @keyframes pulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 0px rgba(37, 99, 235, 0)); }
+            50% { filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.75)); }
+        }
+        .interactive-diamond {
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .interactive-diamond.highlight-active {
+            animation: pulseGlow 2s infinite;
+        }
+        .interactive-diamond:hover {
+            filter: drop-shadow(0 4px 10px rgba(37, 99, 235, 0.6));
+        }
+
+        /* Transisi panel Opsi 1 */
+        #opsi1-panel {
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .panel-hidden {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: translateY(-6px);
+        }
+
+        /* Styling tabel kompak di dalam Swimlane */
+        .mini-risk-table th, .mini-risk-table td {
+            border: 1px solid #cbd5e1;
+            padding: 3px 6px;
+            font-size: 10.5px;
+            line-height: 1.25;
+        }
+        .mini-risk-table th {
+            background-color: #e2e8f0;
+            color: #0f172a;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Top Control Bar Coretax -->
+    <header class="bg-slate-900 text-white px-4 py-3 shadow-md sticky top-0 z-40 border-b border-slate-700">
+        <div class="max-w-[1440px] mx-auto flex flex-wrap items-center justify-between gap-3">
+            <!-- Kiri: Tombol Kembali & Identitas Halaman -->
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Menu Utama</span>
+                </a>
+                <div class="h-6 w-px bg-slate-700 hidden sm:block"></div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Coretax Petugas</span>
+                        <h1 class="text-sm sm:text-base font-bold tracking-tight">Alur Kerja (Workflow) Penelitian BPHTB Secara Elektronik</h1>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Dasar Hukum: SK Kepala Bapenda Provinsi DKI Jakarta No. 160 Tahun 2025 (Lampiran I Bab II & Lampiran II Huruf A)</p>
+                </div>
+            </div>
+
+            <!-- Kanan: Kontrol Fitur Opsi 1, Opsi 2 & Zoom -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Toggle Opsi 1 -->
+                <button id="btn-toggle-opsi1" onclick="toggleOpsi1()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
+                    <i class="fa-solid fa-table-cells"></i>
+                    <span id="label-opsi1">Opsi 1: Panel di Swimlane (ON)</span>
+                </button>
+
+                <!-- Tombol Buka Opsi 2 -->
+                <button onclick="openRiskModal('general')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    <span>Opsi 2: Matriks & Simulasi Risiko</span>
+                </button>
+
+                <!-- Kontrol Zoom -->
+                <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg overflow-hidden text-xs">
+                    <button onclick="adjustZoom(-0.1)" class="px-2.5 py-1.5 hover:bg-slate-700 text-slate-300" title="Perkecil">
+                        <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <span id="zoom-level" class="px-2 py-1.5 font-mono font-semibold text-slate-200 min-w-[48px] text-center">100%</span>
+                    <button onclick="adjustZoom(0.1)" class="px-2.5 py-1.5 hover:bg-slate-700 text-slate-300" title="Perbesar">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <button onclick="resetZoom()" class="px-2.5 py-1.5 hover:bg-slate-700 text-slate-300 border-l border-slate-700" title="Reset Zoom">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner Petunjuk Singkat -->
+    <div class="bg-blue-50 border-b border-blue-200 px-4 py-2 text-xs text-blue-900">
+        <div class="max-w-[1440px] mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-blue-600"></i>
+                <span><strong>Panduan Interaktif:</strong> Klik simbol keputusan kuning <strong>"hasil analisa sistem perlu penelitian lapangan?"</strong> (Penagihan) atau <strong>"dapat penelitian kantor?"</strong> (Pendataan) untuk melihat detail matriks & simulasi risiko.</span>
+            </div>
+            <div class="flex items-center gap-3 text-[11px] font-semibold">
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Risiko Rendah (Kantor)</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Risiko Menengah (Kantor/Lapangan)</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Risiko Tinggi (Lapangan)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Area Utama Kanvas Swimlane Flowchart -->
+    <main class="flex-1 p-3 sm:p-5 overflow-auto canvas-scroll flex justify-center items-start">
+        <div id="zoom-wrapper" style="transform-origin: top center; transition: transform 0.15s ease;">
+            
+            <!-- BAGIAN 1: ALUR KERJA (WORKFLOW) PENELITIAN BPHTB SECARA ELEKTRONIK -->
+            <div class="relative bg-white border-2 border-slate-800 shadow-xl w-[1260px] select-none mb-8">
+                
+                <!-- Judul Header Diagram -->
+                <div class="bg-[#bdd7ee] border-b-2 border-slate-800 py-2 text-center">
+                    <h2 class="text-[15px] font-extrabold text-slate-950 tracking-wide">Alur Kerja (Workflow) Penelitian BPHTB Secara Elektronik</h2>
+                </div>
+
+                <!-- Header 6 Kolom Swimlane -->
+                <div class="grid grid-cols-6 border-b-2 border-slate-800 bg-[#e9edf4] text-center font-bold text-[13px] text-slate-900">
+                    <div class="py-2 border-r border-slate-800">WP</div>
+                    <div class="py-2 border-r border-slate-800">Sistem</div>
+                    <div class="py-2 border-r border-slate-800">Pelayanan &amp; Penetapan</div>
+                    <div class="py-2 border-r border-slate-800">Penagihan</div>
+                    <div class="py-2 border-r border-slate-800">Pendataan</div>
+                    <div class="py-2">Kaunit</div>
+                </div>
+
+                <!-- Badan Swimlane (Latar Kolom + SVG Flowchart + Overlay Opsi 1) -->
+                <div class="relative w-[1256px] h-[1180px]">
+                    <!-- Latar Belakang 6 Kolom (Selang-seling putih & abu sangat muda seperti dokumen asli) -->
+                    <div class="absolute inset-0 grid grid-cols-6 pointer-events-none">
+                        <div class="bg-white border-r border-slate-400"></div>
+                        <div class="bg-[#f4f7fa] border-r border-slate-400"></div>
+                        <div class="bg-white border-r border-slate-400"></div>
+                        <div class="bg-[#f4f7fa] border-r border-slate-400"></div>
+                        <div class="bg-white border-r border-slate-400"></div>
+                        <div class="bg-[#f4f7fa]"></div>
+                    </div>
+
+                    <!-- OPSI 1: PANEL MATRIKS PENELITIAN BERBASIS RISIKO DI AREA KOSONG KANAN ATAS (KOLOM PENDATAAN & KAUNIT) -->
+                    <div id="opsi1-panel" class="absolute top-[16px] left-[852px] w-[390px] z-20 bg-white/95 backdrop-blur-sm border-2 border-blue-700 rounded-lg shadow-lg overflow-hidden">
+                        <div class="bg-blue-800 text-white px-2.5 py-1.5 flex items-center justify-between">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-shield-halved text-amber-300 text-xs"></i>
+                                <span class="text-[11px] font-bold tracking-tight">Acuan Analisis Risiko Sistem (Bab II Huruf B)</span>
+                            </div>
+                            <button onclick="openRiskModal('general')" class="text-[10px] bg-blue-700 hover:bg-blue-600 px-1.5 py-0.5 rounded border border-blue-400 font-semibold">
+                                Simulasi <i class="fa-solid fa-up-right-from-square ml-0.5"></i>
+                            </button>
+                        </div>
+                        <div class="p-2">
+                            <table class="w-full border-collapse mini-risk-table text-left">
+                                <thead>
+                                    <tr>
+                                        <th>Objek Perolehan</th>
+                                        <th>NPOP</th>
+                                        <th class="text-center">Risiko &amp; Model</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-slate-100 font-bold text-slate-800">
+                                        <td colspan="3">1. Hunian</td>
+                                    </tr>
+                                    <tr>
+                                        <td>a. Satuan Rumah Susun</td>
+                                        <td>Semua</td>
+                                        <td class="text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">Rendah</span> (Kantor)</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" class="align-top">b. Rumah Tapak</td>
+                                        <td>&gt; 0 s.d. &le; 1 M</td>
+                                        <td class="text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">Rendah</span> (Kantor)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&gt; 1 M s.d. &le; 10 M</td>
+                                        <td class="text-center"><span class="bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">Menengah</span> (Kantor/Lap)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&gt; 10 M</td>
+                                        <td class="text-center"><span class="bg-rose-100 text-rose-800 font-bold px-1.5 py-0.2 rounded">Tinggi</span> (Lapangan)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>c. Non-objek</td>
+                                        <td>Semua</td>
+                                        <td class="text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">Rendah</span> (Kantor)</td>
+                                    </tr>
+                                    <tr class="bg-slate-100 font-bold text-slate-800">
+                                        <td colspan="3">2. Selain Hunian</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" class="align-top">a. Tanah Kosong</td>
+                                        <td>&gt; 0 s.d. &le; 1 M</td>
+                                        <td class="text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">Rendah</span> (Kantor)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&gt; 1 M s.d. &le; 10 M</td>
+                                        <td class="text-center"><span class="bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">Menengah</span> (Kantor/Lap)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&gt; 10 M</td>
+                                        <td class="text-center"><span class="bg-rose-100 text-rose-800 font-bold px-1.5 py-0.2 rounded">Tinggi</span> (Lapangan)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>b.1) Sarusun Komersial/Camp.</td>
+                                        <td>Semua</td>
+                                        <td class="text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">Rendah</span> (Kantor)</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3" class="align-top">b.2) Lainnya (Toko, Ruko, Kantor, Gudang, Pabrik)</td>
+                                        <td>&gt; 0 s.d. &le; 2 M</td>
+                                        <td class="text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">Rendah</span> (Kantor)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&gt; 2 M s.d. &le; 10 M</td>
+                                        <td class="text-center"><span class="bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">Menengah</span> (Kantor/Lap)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>&gt; 10 M</td>
+                                        <td class="text-center"><span class="bg-rose-100 text-rose-800 font-bold px-1.5 py-0.2 rounded">Tinggi</span> (Lapangan)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>c. Non-objek</td>
+                                        <td>Semua</td>
+                                        <td class="text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">Rendah</span> (Kantor)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="mt-1.5 bg-amber-50 border border-amber-200 rounded px-2 py-1 text-[10px] text-amber-900 flex items-start gap-1.5">
+                                <i class="fa-solid fa-hand-pointer text-amber-600 mt-0.5"></i>
+                                <span>Klik <strong>belah ketupat kuning</strong> pada kolom Penagihan atau Pendataan untuk detail &amp; kalkulator risiko.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SVG FLOWCHART UTAMA (HALAMAN 1) -->
+                    <svg viewBox="0 0 1256 1180" class="w-full h-full relative z-10" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 1 L 10 5 L 0 9 z" fill="#1d4ed8"/>
+                            </marker>
+                            <filter id="boxShadow" x="-5%" y="-5%" width="110%" height="110%">
+                                <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#0f172a" flood-opacity="0.12"/>
+                            </filter>
+                        </defs>
+
+                        <!-- ==================== GARIS PANAH (CONNECTORS) ==================== -->
+                        <!-- Mulai -> WP membayar -->
+                        <line x1="104" y1="68" x2="104" y2="102" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- WP membayar -> e-BPHTB menerbitkan -->
+                        <line x1="176" y1="135" x2="236" y2="135" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- e-BPHTB menerbitkan -> Penelitian formal -->
+                        <line x1="388" y1="135" x2="444" y2="135" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- e-BPHTB menerbitkan -> WP unduh/cetak -->
+                        <path d="M 312 168 L 312 248 Q 312 258 302 258 L 180 258" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- WP unduh -> e-SSPD status dilaporkan -->
+                        <line x1="104" y1="292" x2="104" y2="336" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- Penelitian formal -> formal terpenuhi? -->
+                        <line x1="523" y1="168" x2="523" y2="206" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- formal terpenuhi? (ya) -> Penelitian materiil Penagihan -->
+                        <line x1="590" y1="262" x2="646" y2="262" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- formal terpenuhi? (tdk) -> mengirim notifikasi -->
+                        <line x1="523" y1="318" x2="523" y2="366" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- mengirim notifikasi -> notifikasi elektronik WP -->
+                        <path d="M 446 400 L 114 400 Q 104 400 104 410 L 104 446" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- notifikasi elektronik -> WP memenuhi dlm 14 hari? -->
+                        <line x1="104" y1="506" x2="104" y2="546" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- WP memenuhi dlm 14 hari? (ya) -> meneliti dan meneruskan -->
+                        <line x1="176" y1="606" x2="444" y2="606" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- WP memenuhi dlm 14 hari? (tdk) -> sistem otomatis ubah status -->
+                        <path d="M 104 666 L 104 694 Q 104 702 112 702 L 304 702 Q 312 702 312 710 L 312 726" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- sistem otomatis -> e-SSPD status un-verified -->
+                        <line x1="242" y1="760" x2="180" y2="760" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- e-SSPD un-verified -> WP memenuhi di luar jangka waktu -->
+                        <line x1="104" y1="794" x2="104" y2="834" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- WP memenuhi di luar jangka waktu (ya) -> meneliti dan meneruskan -->
+                        <path d="M 176 894 L 523 894 L 523 644" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- WP memenuhi di luar jangka waktu (tdk) -> Selesai / end loop kiri -->
+                        <path d="M 32 894 L 18 894 L 18 760 L 30 760" fill="none" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+                        <!-- meneliti dan meneruskan -> Penelitian formal (loop atas) -->
+                        <path d="M 446 606 L 426 606 L 426 145 L 444 145" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- Penelitian materiil Penagihan -> kurang dok.? -->
+                        <line x1="726" y1="296" x2="726" y2="332" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- kurang dok.? (ya) -> kembali ke Penelitian formal -->
+                        <path d="M 792 388 L 818 388 L 818 135 L 604 135" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- kurang dok.? (tdk) -> hasil analisa sistem perlu penelitian lapangan? -->
+                        <line x1="726" y1="444" x2="726" y2="482" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- hasil analisa perlu penelitian lapangan? (ya) -> meneruskan kepada Satpel Pendataan -->
+                        <line x1="726" y1="606" x2="726" y2="646" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- hasil analisa perlu penelitian lapangan? (tdk) -> langsung ke membuat KKP -->
+                        <path d="M 646 544 L 632 544 L 632 1068 L 654 1068" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- meneruskan kepada Satpel Pendataan -> hasil analisa sistem: dapat penelitian kantor? -->
+                        <line x1="802" y1="680" x2="862" y2="680" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- dapat penelitian kantor? (ya) -> Satpel dapat kembalikan ke Penagihan -->
+                        <line x1="942" y1="744" x2="942" y2="782" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Satpel dapat kembalikan ke Penagihan -> membuat KKP -->
+                        <path d="M 868 815 L 796 815 L 796 1056 L 788 1056" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- dapat penelitian kantor? (tdk) -> Lakukan Penelitian Lap -->
+                        <path d="M 1022 680 L 1036 680 L 1036 876 L 1018 876" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- Lakukan Penelitian Lap -> mengisi BA & foto objek -->
+                        <line x1="942" y1="904" x2="942" y2="930" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- mengisi BA -> data bangunan sesuai? -->
+                        <line x1="942" y1="984" x2="942" y2="1008" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- data bangunan sesuai? (tdk) -> Rekam data bgn -->
+                        <line x1="942" y1="1084" x2="942" y2="1104" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- data bangunan sesuai? (ya) -> membuat LHP -->
+                        <path d="M 1002 1046 L 1034 1046 L 1034 1136 L 1014 1136" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Rekam data bgn -> membuat LHP (kiri ke kanan atau bawah) -->
+                        <line x1="868" y1="1136" x2="788" y2="1076" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- membuat KKP -> Konektor (a) -->
+                        <line x1="726" y1="1096" x2="726" y2="1132" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Garis vertikal panjang di kolom Kaunit menuju konektor (b) -->
+                        <line x1="1152" y1="490" x2="1152" y2="1132" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- ==================== NODES KOLOM 1: WP ==================== -->
+                        <rect x="54" y="28" width="100" height="40" rx="20" fill="#0f172a" filter="url(#boxShadow)"/>
+                        <text x="104" y="53" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="700">Mulai</text>
+
+                        <rect x="32" y="104" width="144" height="62" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="104" y="125" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">WP membayar &amp;</text>
+                        <text x="104" y="140" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">melaporkan</text>
+                        <text x="104" y="155" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">perolehan hak</text>
+
+                        <rect x="32" y="228" width="144" height="62" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="104" y="249" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">WP unduh / cetak</text>
+                        <text x="104" y="264" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">e-SSPD</text>
+                        <text x="104" y="279" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">status: reported</text>
+
+                        <!-- Dokumen e-SSPD status: dilaporkan -->
+                        <path d="M 34 338 L 174 338 L 174 390 Q 139 402 104 390 Q 69 378 34 390 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1.6" filter="url(#boxShadow)"/>
+                        <text x="104" y="361" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">e-SSPD</text>
+                        <text x="104" y="377" text-anchor="middle" fill="#1d4ed8" font-size="11.5" font-weight="700">status: dilaporkan</text>
+
+                        <!-- Dokumen notifikasi elektronik -->
+                        <path d="M 34 448 L 174 448 L 174 500 Q 139 512 104 500 Q 69 488 34 500 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1.6" filter="url(#boxShadow)"/>
+                        <text x="104" y="468" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">notifikasi</text>
+                        <text x="104" y="481" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">elektronik</text>
+                        <text x="104" y="494" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">(diterima WP)</text>
+
+                        <!-- Diamond WP memenuhi dlm waktu 14 hari kerja? -->
+                        <polygon points="104,548 176,606 104,664 32,606" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="104" y="595" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">WP memenuhi</text>
+                        <text x="104" y="608" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">dlm waktu</text>
+                        <text x="104" y="621" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">14 hari kerja?</text>
+                        <rect x="182" y="596" width="22" height="16" rx="3" fill="#dcfce7"/>
+                        <text x="193" y="608" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <rect x="92" y="668" width="24" height="16" rx="3" fill="#fee2e2"/>
+                        <text x="104" y="680" text-anchor="middle" fill="#b91c1c" font-size="11" font-weight="700">tdk</text>
+
+                        <!-- Dokumen e-SSPD status: un-verified -->
+                        <path d="M 34 730 L 174 730 L 174 784 Q 139 796 104 784 Q 69 772 34 784 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1.6" filter="url(#boxShadow)"/>
+                        <text x="104" y="753" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">e-SSPD</text>
+                        <text x="104" y="769" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700">status: un-verified</text>
+
+                        <!-- Diamond WP memenuhi di luar jangka waktu -->
+                        <polygon points="104,836 176,894 104,952 32,894" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="104" y="884" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">WP memenuhi</text>
+                        <text x="104" y="897" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">di luar jangka</text>
+                        <text x="104" y="910" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">waktu</text>
+                        <rect x="182" y="884" width="22" height="16" rx="3" fill="#dcfce7"/>
+                        <text x="193" y="896" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <text x="20" y="888" text-anchor="middle" fill="#b91c1c" font-size="10" font-weight="700">tdk</text>
+
+                        <!-- ==================== NODES KOLOM 2: SISTEM ==================== -->
+                        <rect x="240" y="104" width="144" height="62" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="312" y="125" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">e-BPHTB</text>
+                        <text x="312" y="140" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">menerbitkan</text>
+                        <text x="312" y="155" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">e-SSPD</text>
+
+                        <rect x="242" y="728" width="142" height="64" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="313" y="748" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">sistem otomatis</text>
+                        <text x="313" y="762" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">ubah status SSPD</text>
+                        <text x="313" y="776" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">menjadi un-verified</text>
+
+                        <!-- ==================== NODES KOLOM 3: PELAYANAN & PENETAPAN ==================== -->
+                        <rect x="448" y="104" width="150" height="62" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="523" y="132" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">Penelitian formal</text>
+                        <text x="523" y="148" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">&amp; syarat adm</text>
+
+                        <!-- Diamond formal terpenuhi/lengkap? -->
+                        <polygon points="523,208 590,262 523,316 456,262" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="523" y="252" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">formal</text>
+                        <text x="523" y="266" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">terpenuhi/</text>
+                        <text x="523" y="280" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">lengkap?</text>
+                        <rect x="602" y="252" width="22" height="16" rx="3" fill="#dcfce7"/>
+                        <text x="613" y="264" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <rect x="511" y="328" width="24" height="16" rx="3" fill="#fee2e2"/>
+                        <text x="523" y="340" text-anchor="middle" fill="#b91c1c" font-size="11" font-weight="700">tdk</text>
+
+                        <rect x="448" y="368" width="150" height="64" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="523" y="389" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">mengirim notifikasi</text>
+                        <text x="523" y="403" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">elektronik: formal/</text>
+                        <text x="523" y="417" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">berkas tdk terpenuhi</text>
+
+                        <rect x="448" y="576" width="150" height="62" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="523" y="597" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">meneliti dan</text>
+                        <text x="523" y="611" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">meneruskan ke</text>
+                        <text x="523" y="625" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">Satpel Penagihan</text>
+
+                        <!-- ==================== NODES KOLOM 4: PENAGIHAN ==================== -->
+                        <rect x="650" y="230" width="152" height="64" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="726" y="251" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">Penelitian</text>
+                        <text x="726" y="266" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">materiil</text>
+                        <text x="726" y="281" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">Penagihan</text>
+
+                        <!-- Diamond kurang dok.? -->
+                        <polygon points="726,334 792,388 726,442 660,388" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="726" y="384" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">kurang</text>
+                        <text x="726" y="399" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">dok.?</text>
+                        <rect x="795" y="379" width="22" height="16" rx="3" fill="#dcfce7"/>
+                        <text x="806" y="391" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <rect x="714" y="450" width="24" height="16" rx="3" fill="#fee2e2"/>
+                        <text x="726" y="462" text-anchor="middle" fill="#b91c1c" font-size="11" font-weight="700">tdk</text>
+
+                        <!-- OPSI 2: INTERACTIVE DIAMOND #1 (PENAGIHAN) -->
+                        <g class="interactive-diamond highlight-active" onclick="openRiskModal('penagihan')">
+                            <polygon points="726,484 804,544 726,604 648,544" fill="#fde68a" stroke="#1d4ed8" stroke-width="2.5" filter="url(#boxShadow)"/>
+                            <text x="726" y="527" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="700">hasil analisa</text>
+                            <text x="726" y="540" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="700">sistem perlu</text>
+                            <text x="726" y="553" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="700">penelitian</text>
+                            <text x="726" y="566" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="700">lapangan?</text>
+                            <!-- Badge Klik Info -->
+                            <circle cx="786" cy="512" r="10" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.5"/>
+                            <text x="786" y="516" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">i</text>
+                        </g>
+                        <rect x="715" y="612" width="22" height="16" rx="3" fill="#dcfce7"/>
+                        <text x="726" y="624" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <rect x="622" y="525" width="24" height="16" rx="3" fill="#fee2e2"/>
+                        <text x="634" y="537" text-anchor="middle" fill="#b91c1c" font-size="11" font-weight="700">tdk</text>
+
+                        <rect x="650" y="648" width="152" height="62" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="726" y="669" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">meneruskan</text>
+                        <text x="726" y="684" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">kepada Satpel</text>
+                        <text x="726" y="699" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">Pendataan</text>
+
+                        <!-- membuat KKP -->
+                        <rect x="656" y="1034" width="130" height="60" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="721" y="1060" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">membuat</text>
+                        <text x="721" y="1076" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">KKP</text>
+                        <!-- Dokumen KKP kecil -->
+                        <path d="M 744 1082 L 792 1082 L 792 1110 Q 780 1116 768 1110 Q 756 1104 744 1110 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1.4"/>
+                        <text x="768" y="1100" text-anchor="middle" fill="#0f172a" font-size="10" font-weight="700">KKP</text>
+
+                        <!-- Konektor (a) -->
+                        <circle cx="726" cy="1150" r="14" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+                        <text x="726" y="1154" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="700">a</text>
+
+                        <!-- ==================== NODES KOLOM 5: PENDATAAN ==================== -->
+                        <!-- OPSI 2: INTERACTIVE DIAMOND #2 (PENDATAAN) -->
+                        <g class="interactive-diamond highlight-active" onclick="openRiskModal('pendataan')">
+                            <polygon points="942,616 1020,680 942,744 864,680" fill="#fde68a" stroke="#1d4ed8" stroke-width="2.5" filter="url(#boxShadow)"/>
+                            <text x="942" y="663" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="700">hasil analisa</text>
+                            <text x="942" y="676" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="700">sistem: dapat</text>
+                            <text x="942" y="689" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="700">penelitian</text>
+                            <text x="942" y="702" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="700">kantor?</text>
+                            <!-- Badge Klik Info -->
+                            <circle cx="1002" cy="648" r="10" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.5"/>
+                            <text x="1002" y="652" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="800">i</text>
+                        </g>
+                        <rect x="931" y="752" width="22" height="16" rx="3" fill="#dcfce7"/>
+                        <text x="942" y="764" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <rect x="1024" y="662" width="24" height="16" rx="3" fill="#fee2e2"/>
+                        <text x="1036" y="674" text-anchor="middle" fill="#b91c1c" font-size="11" font-weight="700">tdk</text>
+
+                        <rect x="870" y="784" width="144" height="62" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="942" y="805" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">Satpel dapat</text>
+                        <text x="942" y="819" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">kembalikan ke</text>
+                        <text x="942" y="833" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">Penagihan</text>
+
+                        <rect x="870" y="862" width="144" height="40" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="942" y="886" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">Lakukan Penelitian Lap</text>
+
+                        <rect x="870" y="932" width="144" height="50" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="942" y="953" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">- mengisi BA</text>
+                        <text x="942" y="968" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">- foto objek</text>
+                        <!-- Dokumen BA kecil -->
+                        <path d="M 994 970 L 1034 970 L 1034 996 Q 1024 1002 1014 996 Q 1004 990 994 996 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1.4"/>
+                        <text x="1014" y="986" text-anchor="middle" fill="#0f172a" font-size="9.5" font-weight="700">BA</text>
+
+                        <!-- Diamond data bangunan sesuai? -->
+                        <polygon points="942,1008 1002,1046 942,1084 882,1046" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="942" y="1042" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">data bangunan</text>
+                        <text x="942" y="1056" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">sesuai?</text>
+                        <rect x="1006" y="1032" width="20" height="14" rx="3" fill="#dcfce7"/>
+                        <text x="1016" y="1043" text-anchor="middle" fill="#15803d" font-size="10" font-weight="700">ya</text>
+                        <rect x="931" y="1086" width="22" height="14" rx="3" fill="#fee2e2"/>
+                        <text x="942" y="1097" text-anchor="middle" fill="#b91c1c" font-size="10" font-weight="700">tdk</text>
+
+                        <rect x="868" y="1106" width="146" height="58" rx="6" fill="#ffffff" stroke="#1e293b" stroke-width="1.6" filter="url(#boxShadow)"/>
+                        <text x="941" y="1121" text-anchor="middle" fill="#0f172a" font-size="9.5" font-weight="600">1. Rekam data bgn di sistem</text>
+                        <text x="941" y="1135" text-anchor="middle" fill="#0f172a" font-size="9.5" font-weight="600">2. Petugas kalibrasi;</text>
+                        <text x="941" y="1149" text-anchor="middle" fill="#0f172a" font-size="9.5" font-weight="600">3. Sistem hitung NJOP bgn</text>
+
+                        <!-- ==================== NODES KOLOM 6: KAUNIT ==================== -->
+                        <!-- Konektor (b) -->
+                        <circle cx="1152" cy="1150" r="14" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+                        <text x="1152" y="1154" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="700">b</text>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- BAGIAN 2: ALUR KERJA (WORKFLOW) PENELITIAN BPHTB SECARA ELEKTRONIK (LANJUTAN) -->
+            <div class="relative bg-white border-2 border-slate-800 shadow-xl w-[1260px] select-none">
+                
+                <!-- Judul Header Diagram Lanjutan -->
+                <div class="bg-[#bdd7ee] border-b-2 border-slate-800 py-2 text-center">
+                    <h2 class="text-[15px] font-extrabold text-slate-950 tracking-wide">Alur Kerja (Workflow) Penelitian BPHTB Secara Elektronik (Lanjutan)</h2>
+                </div>
+
+                <!-- Header 6 Kolom Swimlane -->
+                <div class="grid grid-cols-6 border-b-2 border-slate-800 bg-[#e9edf4] text-center font-bold text-[13px] text-slate-900">
+                    <div class="py-2 border-r border-slate-800">WP</div>
+                    <div class="py-2 border-r border-slate-800">Sistem</div>
+                    <div class="py-2 border-r border-slate-800">Pelayanan &amp; Penetapan</div>
+                    <div class="py-2 border-r border-slate-800">Penagihan</div>
+                    <div class="py-2 border-r border-slate-800">Pendataan</div>
+                    <div class="py-2">Kaunit</div>
+                </div>
+
+                <!-- Badan Swimlane Lanjutan -->
+                <div class="relative w-[1256px] h-[1060px]">
+                    <div class="absolute inset-0 grid grid-cols-6 pointer-events-none">
+                        <div class="bg-white border-r border-slate-400"></div>
+                        <div class="bg-[#f4f7fa] border-r border-slate-400"></div>
+                        <div class="bg-white border-r border-slate-400"></div>
+                        <div class="bg-[#f4f7fa] border-r border-slate-400"></div>
+                        <div class="bg-white border-r border-slate-400"></div>
+                        <div class="bg-[#f4f7fa]"></div>
+                    </div>
+
+                    <svg viewBox="0 0 1256 1060" class="w-full h-full relative z-10" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Garis Panah Lanjutan -->
+                        <!-- (a) -> Hasil penelitian ada indikasi KB? -->
+                        <line x1="726" y1="44" x2="726" y2="74" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- ada indikasi KB? (ya) -> membuat draft surat imbauan -->
+                        <line x1="726" y1="186" x2="726" y2="218" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- ada indikasi KB? (tdk) -> Usulkan TTE Verified -->
+                        <path d="M 660 130 L 634 130 L 634 396 L 652 396" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- membuat draft surat imbauan -> Ka. UPPPD reviu -->
+                        <path d="M 798 248 L 832 248 L 832 106 L 1080 106" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Ka. UPPPD reviu -> Ka. UPPPD setujui TTE surat? -->
+                        <line x1="1152" y1="136" x2="1152" y2="168" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- setujui TTE surat? (ya) -> Ka. UPPPD TTE -->
+                        <line x1="1152" y1="276" x2="1152" y2="306" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- setujui TTE surat? (tdk) -> kembali ke (b) -->
+                        <path d="M 1216 222 L 1236 222 L 1236 30 L 1168 30" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Ka. UPPPD TTE -> surat imbauan KB WP -->
+                        <line x1="1082" y1="336" x2="180" y2="336" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- surat imbauan KB WP -> WP bayar dlm jangka wkt 30 hari? -->
+                        <line x1="104" y1="370" x2="104" y2="410" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- WP bayar dlm 30 hari? (ya) -> Ka. UPPPD reviu: SSPD, KKP, LHP -->
+                        <line x1="176" y1="470" x2="1080" y2="470" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Usulkan TTE Verified -> Ka. UPPPD reviu: SSPD, KKP, LHP -->
+                        <path d="M 798 396 L 832 396 L 832 456 L 1080 456" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- WP bayar dlm 30 hari? (tdk) -> e-SSPD status: SSPD-KB -->
+                        <line x1="104" y1="530" x2="104" y2="564" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- e-SSPD status: SSPD-KB -> WP bayar di luar batas waktu 30 hari -->
+                        <line x1="104" y1="622" x2="104" y2="656" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- WP bayar di luar batas waktu 30 hari (ya) -> garis menuju Ka. UPPPD reviu -->
+                        <path d="M 176 716 L 832 716 L 832 484 L 1080 484" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- WP bayar di luar batas waktu 30 hari (tdk) -> Potensi KB > Rp100jt? -->
+                        <path d="M 104 776 L 104 794 L 656 794" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- Ka. UPPPD reviu: SSPD, KKP, LHP -> setuju TTE lulus verifikasi? -->
+                        <line x1="1152" y1="504" x2="1152" y2="538" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- setuju TTE lulus verifikasi? (ya) -> Ka. UPPPD TTE SSPD lulus verifikasi -->
+                        <line x1="1152" y1="650" x2="1152" y2="710" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- setuju TTE lulus verifikasi? (tdk) -> kembali ke atas (b) -->
+                        <path d="M 1218 594 L 1244 594 L 1244 30 L 1168 30" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Ka. UPPPD TTE SSPD lulus verifikasi -> e-SSPD status: lulus verifikasi WP -->
+                        <line x1="1082" y1="744" x2="180" y2="744" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- e-SSPD status: lulus verifikasi -> Selesai -->
+                        <line x1="104" y1="780" x2="104" y2="824" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- Potensi KB > Rp100jt? (ya) -> dapat usulkan pemeriksaan ke Suban -->
+                        <path d="M 792 794 L 814 794 L 814 960 L 798 960" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Potensi KB > Rp100jt? (tdk) -> terbitkan STPD -->
+                        <line x1="726" y1="848" x2="726" y2="878" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- terbitkan STPD -> Ka. UPPPD reviu: draft STPD -->
+                        <path d="M 798 906 L 832 906 L 832 820 L 1080 820" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Ka. UPPPD reviu: draft STPD -> Ka. UPPPD setujui TTE? -->
+                        <line x1="1152" y1="850" x2="1152" y2="880" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Ka. UPPPD setujui TTE? (ya) -> Ka. UPPPD TTE STPD -->
+                        <line x1="1152" y1="984" x2="1152" y2="1002" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Ka. UPPPD setujui TTE? (tdk) -> kembali ke terbitkan STPD -->
+                        <path d="M 1086 932 L 784 932" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+                        <!-- Ka. UPPPD TTE STPD -> STPD WP -->
+                        <line x1="1082" y1="1026" x2="180" y2="1026" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        <!-- ==================== NODES LANJUTAN ==================== -->
+                        <!-- Konektor (a) & (b) atas -->
+                        <circle cx="726" cy="30" r="14" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+                        <text x="726" y="34" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="700">a</text>
+
+                        <circle cx="1152" cy="30" r="14" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+                        <text x="1152" y="34" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="700">b</text>
+
+                        <!-- Penagihan: Hasil penelitian ada indikasi KB? -->
+                        <polygon points="726,76 792,130 726,184 660,130" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="726" y="118" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">Hasil</text>
+                        <text x="726" y="131" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">penelitian</text>
+                        <text x="726" y="144" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">ada indikasi</text>
+                        <text x="726" y="157" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">KB?</text>
+                        <rect x="715" y="190" width="22" height="16" rx="3" fill="#dcfce7"/>
+                        <text x="726" y="202" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <rect x="636" y="112" width="24" height="16" rx="3" fill="#fee2e2"/>
+                        <text x="648" y="124" text-anchor="middle" fill="#b91c1c" font-size="11" font-weight="700">tdk</text>
+
+                        <rect x="654" y="220" width="144" height="58" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="726" y="244" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">membuat draft</text>
+                        <text x="726" y="260" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">surat imbauan</text>
+
+                        <rect x="654" y="366" width="144" height="58" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="726" y="390" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">Usulkan</text>
+                        <text x="726" y="406" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="600">TTE Verified</text>
+
+                        <!-- Diamond Potensi KB > Rp100jt? -->
+                        <polygon points="726,740 792,794 726,848 660,794" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="726" y="790" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">Potensi KB</text>
+                        <text x="726" y="805" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">&gt;Rp100jt ?</text>
+                        <rect x="794" y="776" width="22" height="16" rx="3" fill="#dcfce7"/>
+                        <text x="805" y="788" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <rect x="714" y="852" width="24" height="16" rx="3" fill="#fee2e2"/>
+                        <text x="726" y="864" text-anchor="middle" fill="#b91c1c" font-size="11" font-weight="700">tdk</text>
+
+                        <rect x="654" y="880" width="144" height="52" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="726" y="902" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">terbitkan</text>
+                        <text x="726" y="917" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">STPD</text>
+
+                        <rect x="654" y="948" width="144" height="62" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="726" y="968" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">dapat usulkan</text>
+                        <text x="726" y="982" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">pemeriksaan</text>
+                        <text x="726" y="996" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">ke Suban</text>
+
+                        <!-- WP Lanjutan -->
+                        <path d="M 34 308 L 174 308 L 174 364 Q 139 376 104 364 Q 69 352 34 364 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1.6" filter="url(#boxShadow)"/>
+                        <text x="104" y="328" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">surat imbauan KB/</text>
+                        <text x="104" y="341" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">notifikasi elektronik/</text>
+
+                        <polygon points="104,412 176,470 104,528 32,470" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="104" y="459" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">WP bayar</text>
+                        <text x="104" y="472" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">dlm jangka wkt 30</text>
+                        <text x="104" y="485" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">hari kerja?</text>
+                        <rect x="182" y="460" width="22" height="16" rx="3" fill="#dcfce7"/>
+                        <text x="193" y="472" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <rect x="92" y="534" width="24" height="16" rx="3" fill="#fee2e2"/>
+                        <text x="104" y="546" text-anchor="middle" fill="#b91c1c" font-size="11" font-weight="700">tdk</text>
+
+                        <path d="M 34 566 L 174 566 L 174 618 Q 139 630 104 618 Q 69 606 34 618 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1.6" filter="url(#boxShadow)"/>
+                        <text x="104" y="588" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">e-SSPD</text>
+                        <text x="104" y="604" text-anchor="middle" fill="#dc2626" font-size="11" font-weight="700">status: SSPD-KB</text>
+
+                        <polygon points="104,658 176,716 104,774 32,716" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="104" y="705" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">WP bayar</text>
+                        <text x="104" y="718" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">di luar batas waktu</text>
+                        <text x="104" y="731" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">30 hari</text>
+                        <rect x="182" y="706" width="22" height="16" rx="3" fill="#dcfce7"/>
+                        <text x="193" y="718" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <text x="88" y="786" text-anchor="middle" fill="#b91c1c" font-size="10.5" font-weight="700">tdk</text>
+
+                        <!-- e-SSPD status: lulus verifikasi -->
+                        <path d="M 34 720 L 174 720 L 174 774 Q 139 786 104 774 Q 69 762 34 774 Z" transform="translate(0, 8)" fill="#fef3c7" stroke="#b45309" stroke-width="1.6" filter="url(#boxShadow)"/>
+                        <text x="104" y="751" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">e-SSPD</text>
+                        <text x="104" y="766" text-anchor="middle" fill="#1d4ed8" font-size="11" font-weight="700">status: lulus verifikasi</text>
+
+                        <!-- Selesai -->
+                        <ellipse cx="104" cy="846" rx="52" ry="20" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="104" y="850" text-anchor="middle" fill="#0f172a" font-size="12" font-weight="700">Selesai</text>
+
+                        <!-- Dokumen STPD -->
+                        <path d="M 34 996 L 174 996 L 174 1042 Q 139 1052 104 1042 Q 69 1032 34 1042 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1.6" filter="url(#boxShadow)"/>
+                        <text x="104" y="1024" text-anchor="middle" fill="#0f172a" font-size="11.5" font-weight="700">STPD</text>
+
+                        <!-- Kaunit Lanjutan -->
+                        <rect x="1084" y="80" width="136" height="54" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="1152" y="103" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">Ka. UPPPD</text>
+                        <text x="1152" y="118" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">reviu</text>
+
+                        <polygon points="1152,170 1216,222 1152,274 1088,222" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="1152" y="211" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">Ka. UPPPD</text>
+                        <text x="1152" y="224" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">setujui TTE</text>
+                        <text x="1152" y="237" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">surat?</text>
+                        <text x="1164" y="292" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <text x="1225" y="214" text-anchor="middle" fill="#b91c1c" font-size="10.5" font-weight="700">tdk</text>
+
+                        <rect x="1084" y="308" width="136" height="54" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="1152" y="339" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">Ka. UPPPD TTE</text>
+
+                        <rect x="1084" y="442" width="136" height="60" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="1152" y="467" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">Ka. UPPPD reviu:</text>
+                        <text x="1152" y="482" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">SSPD, KKP, LHP</text>
+
+                        <polygon points="1152,540 1218,594 1152,648 1086,594" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="1152" y="583" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">Ka. UPPPD</text>
+                        <text x="1152" y="596" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">setuju TTE lulus</text>
+                        <text x="1152" y="609" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">verifikasi?</text>
+                        <text x="1164" y="672" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <text x="1229" y="586" text-anchor="middle" fill="#b91c1c" font-size="10.5" font-weight="700">tdk</text>
+
+                        <rect x="1084" y="712" width="136" height="60" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="1152" y="738" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">Ka. UPPPD</text>
+                        <text x="1152" y="753" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="600">TTE SSPD lulus</text>
+
+                        <rect x="1084" y="794" width="136" height="54" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="1152" y="817" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">Ka. UPPPD reviu:</text>
+                        <text x="1152" y="832" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">draft STPD</text>
+
+                        <polygon points="1152,882 1216,932 1152,982 1088,932" fill="#fde68a" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="1152" y="925" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">Ka. UPPPD</text>
+                        <text x="1152" y="939" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">setujui TTE?</text>
+                        <text x="1164" y="996" text-anchor="middle" fill="#15803d" font-size="11" font-weight="700">ya</text>
+                        <text x="1074" y="926" text-anchor="middle" fill="#b91c1c" font-size="10.5" font-weight="700">tdk</text>
+
+                        <rect x="1084" y="1004" width="136" height="44" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" filter="url(#boxShadow)"/>
+                        <text x="1152" y="1024" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">Ka. UPPPD</text>
+                        <text x="1152" y="1038" text-anchor="middle" fill="#0f172a" font-size="10.5" font-weight="600">TTE STPD</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== OPSI 2: FLOATING MODAL MATRIKS & SIMULASI RISIKO ==================== -->
+    <div id="risk-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            
+            <!-- Modal Header -->
+            <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between border-b border-slate-700">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-amber-400 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded uppercase">Lampiran I Bab II Huruf B</span>
+                        <h3 class="text-base font-bold">Kriteria &amp; Pedoman Penelitian Berbasis Risiko</h3>
+                    </div>
+                    <p id="modal-subtitle" class="text-xs text-slate-300 mt-0.5">Acuan Logika Sistem pada Titik Keputusan Satpel Penagihan &amp; Satpel Pendataan</p>
+                </div>
+                <button onclick="closeRiskModal()" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-lg flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-5 overflow-y-auto space-y-5 text-sm">
+                
+                <!-- Konteks Titik Keputusan yang Diklik -->
+                <div id="context-callout" class="bg-blue-50 border-l-4 border-blue-600 p-3.5 rounded-r-lg text-xs text-blue-950">
+                    <!-- Diisi dinamis lewat JS -->
+                </div>
+
+                <!-- Simulasi Cepat Cek Profil Risiko -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-calculator text-blue-600"></i>
+                        <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Simulasi Penentuan Profil Risiko &amp; Model Penelitian</h4>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Jenis Objek Perolehan</label>
+                            <select id="sim-objek" onchange="hitungRisiko()" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="sarusun_hunian">1.a. Hunian - Satuan Rumah Susun</option>
+                                <option value="rumah_tapak" selected>1.b. Hunian - Rumah Tapak</option>
+                                <option value="non_objek_hunian">1.c. Hunian - Non-objek</option>
+                                <option value="tanah_kosong">2.a. Selain Hunian - Tanah Kosong</option>
+                                <option value="sarusun_komersial">2.b.1) Sarusun Komersial &amp; Campuran</option>
+                                <option value="lainnya_komersial">2.b.2) Lainnya (Toko, Ruko, Kantor, Gudang, Pabrik)</option>
+                                <option value="non_objek_selain">2.c. Selain Hunian - Non-objek</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nilai Perolehan Objek Pajak (NPOP)</label>
+                            <select id="sim-npop" onchange="hitungRisiko()" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="500000000">Rp 500.000.000 (&gt; 0 s.d. &le; 1 M)</option>
+                                <option value="1500000000">&gt; Rp 1 Miliar s.d. &le; Rp 2 Miliar</option>
+                                <option value="5000000000" selected>&gt; Rp 2 Miliar s.d. &le; Rp 10 Miliar</option>
+                                <option value="15000000000">&gt; Rp 10 Miliar</option>
+                            </select>
+                        </div>
+                        <div id="sim-result" class="bg-white border border-slate-300 rounded-lg p-2.5 flex flex-col justify-center">
+                            <!-- Hasil simulasi diisi JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabel Gabungan Kriteria Poin 3 & Poin 4 SK Kaban 160/2025 -->
+                <div>
+                    <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2">Tabel Matriks Kriteria &amp; Pedoman Penelitian Berbasis Risiko (Angka 3 &amp; 4)</h4>
+                    <div class="overflow-x-auto border border-slate-300 rounded-lg">
+                        <table class="w-full border-collapse text-xs text-left">
+                            <thead class="bg-slate-200 text-slate-900 font-bold">
+                                <tr>
+                                    <th class="border-b border-r border-slate-300 px-3 py-2 w-10 text-center">No</th>
+                                    <th class="border-b border-r border-slate-300 px-3 py-2">Objek Perolehan</th>
+                                    <th class="border-b border-r border-slate-300 px-3 py-2">NPOP (Rupiah)</th>
+                                    <th class="border-b border-r border-slate-300 px-3 py-2 text-center">Profil Risiko</th>
+                                    <th class="border-b border-slate-300 px-3 py-2">Model Penelitian (Pedoman Angka 4)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr class="bg-slate-700 text-white font-bold">
+                                    <td class="px-3 py-1.5 text-center">1.</td>
+                                    <td colspan="4" class="px-3 py-1.5">Hunian</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2"></td>
+                                    <td class="border-r border-slate-200 px-3 py-2 font-medium">a. Satuan Rumah Susun</td>
+                                    <td class="border-r border-slate-200 px-3 py-2">Semua</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Rendah</span></td>
+                                    <td class="px-3 py-2">Penelitian kantor</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2" rowspan="3"></td>
+                                    <td class="border-r border-slate-200 px-3 py-2 font-medium align-top" rowspan="3">b. Rumah Tapak</td>
+                                    <td class="border-r border-slate-200 px-3 py-2">&gt; 0 s.d. &le; 1 M</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Rendah</span></td>
+                                    <td class="px-3 py-2">Penelitian kantor</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2">&gt; 1 M s.d. &le; 10 M</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Menengah</span></td>
+                                    <td class="px-3 py-2">1.) Penelitian kantor; atau<br>2.) Penelitian lapangan</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2">&gt; 10 M</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded-full">Tinggi</span></td>
+                                    <td class="px-3 py-2">Penelitian lapangan</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2"></td>
+                                    <td class="border-r border-slate-200 px-3 py-2 font-medium">c. Non-objek</td>
+                                    <td class="border-r border-slate-200 px-3 py-2">Semua</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Rendah</span></td>
+                                    <td class="px-3 py-2">Penelitian kantor</td>
+                                </tr>
+
+                                <tr class="bg-slate-700 text-white font-bold">
+                                    <td class="px-3 py-1.5 text-center">2.</td>
+                                    <td colspan="4" class="px-3 py-1.5">Selain Hunian</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2" rowspan="3"></td>
+                                    <td class="border-r border-slate-200 px-3 py-2 font-medium align-top" rowspan="3">a. Tanah Kosong</td>
+                                    <td class="border-r border-slate-200 px-3 py-2">&gt; 0 s.d. &le; 1 M</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Rendah</span></td>
+                                    <td class="px-3 py-2">Penelitian kantor</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2">&gt; 1 M s.d. &le; 10 M</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Menengah</span></td>
+                                    <td class="px-3 py-2">1.) Penelitian kantor; atau<br>2.) Penelitian lapangan</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2">&gt; 10 M</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded-full">Tinggi</span></td>
+                                    <td class="px-3 py-2">Penelitian lapangan</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2"></td>
+                                    <td class="border-r border-slate-200 px-3 py-2 font-medium">b.1) Satuan Rumah Susun Komersial dan campuran</td>
+                                    <td class="border-r border-slate-200 px-3 py-2">Semua</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Rendah</span></td>
+                                    <td class="px-3 py-2">Penelitian kantor</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2" rowspan="3"></td>
+                                    <td class="border-r border-slate-200 px-3 py-2 font-medium align-top" rowspan="3">b.2) Lainnya (toko, ruko, kantor, rukan, gudang, pabrik, dan sejenisnya)</td>
+                                    <td class="border-r border-slate-200 px-3 py-2">&gt; 0 s.d. &le; 2 M</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Rendah</span></td>
+                                    <td class="px-3 py-2">Penelitian kantor</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2">&gt; 2 M s.d. &le; 10 M</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Menengah</span></td>
+                                    <td class="px-3 py-2">1.) Penelitian kantor; atau<br>2.) Penelitian lapangan</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2">&gt; 10 M</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded-full">Tinggi</span></td>
+                                    <td class="px-3 py-2">Penelitian lapangan</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-r border-slate-200 px-3 py-2"></td>
+                                    <td class="border-r border-slate-200 px-3 py-2 font-medium">c. Non-objek</td>
+                                    <td class="border-r border-slate-200 px-3 py-2">Semua</td>
+                                    <td class="border-r border-slate-200 px-3 py-2 text-center"><span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Rendah</span></td>
+                                    <td class="px-3 py-2">Penelitian kantor</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Catatan Percepatan Penelitian Angka 5 -->
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-950">
+                    <p class="font-bold mb-1"><i class="fa-solid fa-bolt text-amber-600 mr-1"></i> Percepatan Waktu Proses Penelitian (Lampiran I Bab II Huruf B Angka 5):</p>
+                    <ul class="list-disc pl-5 space-y-0.5">
+                        <li>Pelaporan SPTPD/SSPD Pembetulan yang menyebabkan pokok BPHTB kurang dibayar;</li>
+                        <li>Pelaporan perolehan jual beli/lelang dengan harga transaksi lebih tinggi dari NJOP PBB-P2; dan</li>
+                        <li>Pelaporan perolehan selain jual beli/lelang dengan nilai pasar lebih tinggi dari NJOP PBB-P2.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-slate-100 px-5 py-3 border-t border-slate-200 flex justify-end">
+                <button onclick="closeRiskModal()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition">
+                    Tutup Panduan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Kontrol Zoom
+        let currentZoom = 1.0;
+        const zoomWrapper = document.getElementById('zoom-wrapper');
+        const zoomLabel = document.getElementById('zoom-level');
+
+        function adjustZoom(delta) {
+            currentZoom = Math.min(1.5, Math.max(0.6, +(currentZoom + delta).toFixed(1)));
+            zoomWrapper.style.transform = `scale(${currentZoom})`;
+            zoomLabel.textContent = `${Math.round(currentZoom * 100)}%`;
+        }
+
+        function resetZoom() {
+            currentZoom = 1.0;
+            zoomWrapper.style.transform = 'scale(1)';
+            zoomLabel.textContent = '100%';
+        }
+
+        // Kontrol Toggle Opsi 1
+        let opsi1Visible = true;
+        function toggleOpsi1() {
+            opsi1Visible = !opsi1Visible;
+            const panel = document.getElementById('opsi1-panel');
+            const btn = document.getElementById('btn-toggle-opsi1');
+            const label = document.getElementById('label-opsi1');
+
+            if (opsi1Visible) {
+                panel.classList.remove('panel-hidden');
+                btn.classList.replace('bg-slate-700', 'bg-emerald-600');
+                btn.classList.replace('hover:bg-slate-600', 'hover:bg-emerald-500');
+                label.textContent = 'Opsi 1: Panel di Swimlane (ON)';
+            } else {
+                panel.classList.add('panel-hidden');
+                btn.classList.replace('bg-emerald-600', 'bg-slate-700');
+                btn.classList.replace('hover:bg-emerald-500', 'hover:bg-slate-600');
+                label.textContent = 'Opsi 1: Panel di Swimlane (OFF)';
+            }
+        }
+
+        // Kontrol Modal Opsi 2
+        const modal = document.getElementById('risk-modal');
+        const contextCallout = document.getElementById('context-callout');
+
+        function openRiskModal(source) {
+            if (source === 'penagihan') {
+                contextCallout.innerHTML = `
+                    <p class="font-bold text-blue-900 mb-1"><i class="fa-solid fa-code-branch mr-1"></i> Titik Keputusan Satpel Penagihan: "hasil analisa sistem perlu penelitian lapangan?"</p>
+                    <p>• Pilih jalur <strong>TIDAK</strong> (langsung membuat KKP): Jika kriteria objek &amp; NPOP masuk <strong>Profil Risiko Rendah</strong> (Model: Penelitian kantor).</p>
+                    <p>• Pilih jalur <strong>YA</strong> (teruskan ke Satpel Pendataan): Jika kriteria objek &amp; NPOP masuk <strong>Profil Risiko Menengah atau Tinggi</strong>.</p>
+                `;
+            } else if (source === 'pendataan') {
+                contextCallout.innerHTML = `
+                    <p class="font-bold text-blue-900 mb-1"><i class="fa-solid fa-code-branch mr-1"></i> Titik Keputusan Satpel Pendataan: "hasil analisa sistem: dapat penelitian kantor?"</p>
+                    <p>• Pilih jalur <strong>YA</strong> (kembalikan ke Penagihan): Khusus untuk <strong>Profil Risiko Menengah</strong> apabila Satpel Pendataan memutuskan cukup dilakukan penelitian kantor.</p>
+                    <p>• Pilih jalur <strong>TIDAK</strong> (Lakukan Penelitian Lapangan): Wajib untuk <strong>Profil Risiko Tinggi</strong> (atau Risiko Menengah yang diputuskan survei lapangan).</p>
+                `;
+            } else {
+                contextCallout.innerHTML = `
+                    <p class="font-bold text-blue-900 mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Panduan Terpadu Penelitian Berbasis Risiko (SK Kaban No. 160 Tahun 2025)</p>
+                    <p>Sistem Coretax otomatis mengklasifikasikan setiap pelaporan SSPD BPHTB menjadi risiko <strong>Rendah</strong>, <strong>Menengah</strong>, atau <strong>Tinggi</strong> berdasarkan jenis objek perolehan dan besaran NPOP untuk menentukan alur di Satpel Penagihan dan Satpel Pendataan.</p>
+                `;
+            }
+
+            hitungRisiko();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeRiskModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Tutup modal jika klik area luar
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeRiskModal();
+            }
+        });
+
+        // Kalkulator Simulasi Risiko
+        function hitungRisiko() {
+            const objek = document.getElementById('sim-objek').value;
+            const npop = parseInt(document.getElementById('sim-npop').value, 10);
+            const resultBox = document.getElementById('sim-result');
+
+            let risiko = 'Rendah';
+            let model = 'Penelitian kantor';
+            let alur = 'Penagihan langsung membuat KKP (tidak ke Pendataan)';
+            let badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-300';
+
+            if (objek === 'rumah_tapak' || objek === 'tanah_kosong') {
+                if (npop <= 1000000000) {
+                    risiko = 'Rendah';
+                    model = 'Penelitian kantor';
+                    alur = 'Penagihan → Langsung KKP';
+                } else if (npop <= 10000000000) {
+                    risiko = 'Menengah';
+                    model = '1.) Penelitian kantor; atau 2.) Penelitian lapangan';
+                    alur = 'Diteruskan ke Pendataan (Dapat dikembalikan jika cukup kantor)';
+                    badgeClass = 'bg-amber-100 text-amber-800 border-amber-300';
+                } else {
+                    risiko = 'Tinggi';
+                    model = 'Penelitian lapangan';
+                    alur = 'Diteruskan ke Pendataan → Wajib Penelitian Lapangan & LHP';
+                    badgeClass = 'bg-rose-100 text-rose-800 border-rose-300';
+                }
+            } else if (objek === 'lainnya_komersial') {
+                if (npop <= 2000000000) {
+                    risiko = 'Rendah';
+                    model = 'Penelitian kantor';
+                    alur = 'Penagihan → Langsung KKP';
+                } else if (npop <= 10000000000) {
+                    risiko = 'Menengah';
+                    model = '1.) Penelitian kantor; atau 2.) Penelitian lapangan';
+                    alur = 'Diteruskan ke Pendataan (Dapat dikembalikan jika cukup kantor)';
+                    badgeClass = 'bg-amber-100 text-amber-800 border-amber-300';
+                } else {
+                    risiko = 'Tinggi';
+                    model = 'Penelitian lapangan';
+                    alur = 'Diteruskan ke Pendataan → Wajib Penelitian Lapangan & LHP';
+                    badgeClass = 'bg-rose-100 text-rose-800 border-rose-300';
+                }
+            }
+
+            resultBox.innerHTML = `
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-semibold text-slate-500">Hasil Analisis Sistem:</span>
+                    <span class="text-[11px] font-extrabold px-2 py-0.5 rounded border ${badgeClass}">Risiko ${risiko}</span>
+                </div>
+                <p class="text-[11px] font-bold text-slate-900 leading-tight">${model}</p>
+                <p class="text-[10px] text-slate-600 mt-0.5 leading-tight">${alur}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
